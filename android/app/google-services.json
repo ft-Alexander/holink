@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "184456395100",
+    "project_id": "holink-69aed",
+    "storage_bucket": "holink-69aed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:184456395100:android:9ded1177998e19b37b6999",
+        "android_client_info": {
+          "package_name": "com.example.holink"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQ-24HHDpLHkk8WIqRMMtqagcR1qPx7xY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

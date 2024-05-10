@@ -78,7 +78,7 @@ class LoginButtons extends StatelessWidget {
             shadowColor: MaterialStateProperty.all<Color>(Colors.transparent),
             elevation: MaterialStateProperty.all<double>(0),
             padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-              EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
+              const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
             ),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
