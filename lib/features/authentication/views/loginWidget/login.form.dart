@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:holink/constants/global.color.dart';
 import 'package:holink/constants/sizes.dart';
+import 'package:holink/features/scheduling/view/scheduling.dart';
+import 'package:http/http.dart' as http;
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -12,6 +16,10 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
+  String _msg = "";
+  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _passwordConttroller = TextEditingController();
+
   String dropDown = 'Parishioners';
 
   @override
@@ -64,6 +72,7 @@ class _LoginFormState extends State<LoginForm> {
           ),
           const SizedBox(height: 5.0),
           TextField(
+            controller: _usernameController,
             decoration: InputDecoration(
               labelText: 'Username',
               labelStyle: GoogleFonts.dmSans(
@@ -86,6 +95,7 @@ class _LoginFormState extends State<LoginForm> {
           ),
           const SizedBox(height: 5.0),
           TextField(
+            controller: _passwordConttroller,
             decoration: InputDecoration(
               labelText: 'Password',
               labelStyle: GoogleFonts.dmSans(
@@ -108,8 +118,135 @@ class _LoginFormState extends State<LoginForm> {
             obscureText: true,
           ),
           const SizedBox(height: 20.0),
+          Text(
+            _msg,
+            style: GoogleFonts.dmSans(
+              color: HexColor(tbrown),
+              fontSize: h6,
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              login();
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => Scheduling()),
+              // );
+            },
+            style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(HexColor(tbrown)),
+              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
+              ),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+              ),
+            ),
+            child: const Text(
+              'Login',
+              style: TextStyle(
+                fontSize: 16.0,
+                color: Colors.white,
+                fontFamily: 'DM Sans', // Adjust the font family as needed
+              ),
+            ),
+          ),
+          const SizedBox(height: 15.0),
+          ElevatedButton(
+            onPressed: () {
+              // Add your login functionality here
+            },
+            style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(HexColor(twhite)),
+              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
+              ),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                  side: BorderSide(
+                    color: HexColor(tbrown),
+                    width: 1.0,
+                  ),
+                ),
+              ),
+            ),
+            child: Text(
+              'Register',
+              style: TextStyle(
+                fontSize: 16.0,
+                color: HexColor(tbrown),
+                fontFamily: 'DM Sans', // Adjust the font family as needed
+              ),
+            ),
+          ),
+          const SizedBox(height: 15.0),
+          ElevatedButton(
+            onPressed: () {
+              // Add your login functionality here
+            },
+            style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(Colors.transparent),
+              shadowColor: MaterialStateProperty.all<Color>(Colors.transparent),
+              elevation: MaterialStateProperty.all<double>(0),
+              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
+              ),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+              ),
+            ),
+            child: Text(
+              'Forgot Password?',
+              style: TextStyle(
+                fontSize: 16.0,
+                color: HexColor(tbrown),
+                fontFamily: 'DM Sans', // Adjust the font family as needed
+              ),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  void login() async {
+    String url = "http://localhost/dashboard/myfolder/login.php";
+
+    String username = _usernameController.text;
+    String password = _passwordConttroller.text;
+
+    final Map<String, dynamic> queryParams = {
+      "username": username, // Pass username as string
+      "password": password, // Pass password as string
+    };
+
+    try {
+      http.Response response =
+          await http.get(Uri.parse(url).replace(queryParameters: queryParams));
+      if (response.statusCode == 200) {
+        var user = jsonDecode(response.body); // return type listmap
+        if (user.isNotEmpty) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Scheduling()),
+          );
+        } else {
+          _msg = "Invalid Username Or Password";
+        }
+        // print(response.body);
+      } else {
+        print("Error: ${response.statusCode}");
+      }
+    } catch (error) {
+      _msg = "$error";
+    }
   }
 }
