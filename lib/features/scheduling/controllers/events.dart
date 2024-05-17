@@ -1,9 +1,9 @@
 class Event {
   final String title;
-  // final DateTime date;
-  // , required this.date
-  Event({required this.title});
+  final DateTime date;
+
+  Event({required this.title, required this.date});
 
   String toStringTitle() => this.title;
-  // String toStringDate() => this.date.toString();
+  DateTime toStringDate() => this.date;
 }
