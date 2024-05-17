@@ -127,11 +127,11 @@ class _LoginFormState extends State<LoginForm> {
           ),
           ElevatedButton(
             onPressed: () {
-              login();
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => Scheduling()),
-              // );
+              // login();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Scheduling()),
+              );
             },
             style: ButtonStyle(
               backgroundColor:
@@ -212,13 +212,21 @@ class _LoginFormState extends State<LoginForm> {
               ),
             ),
           ),
+          Text(
+            _msg,
+            style: TextStyle(
+              fontSize: 16.0,
+              color: HexColor(tbrown),
+              fontFamily: 'DM Sans', // Adjust the font family as needed
+            ),
+          )
         ],
       ),
     );
   }
 
   void login() async {
-    String url = "http://localhost/dashboard/myfolder/login.php";
+    String url = "http://192.168.1.15/dashboard/myfolder/login.php";
 
     String username = _usernameController.text;
     String password = _passwordConttroller.text;
@@ -227,7 +235,6 @@ class _LoginFormState extends State<LoginForm> {
       "username": username, // Pass username as string
       "password": password, // Pass password as string
     };
-
     try {
       http.Response response =
           await http.get(Uri.parse(url).replace(queryParameters: queryParams));
