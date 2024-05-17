@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:holink/features/authentication/views/loginWidget/login.buttons.dart';
 import 'package:holink/features/authentication/views/loginWidget/login.form.dart';
 
 import 'package:holink/features/authentication/views/loginWidget/login.welcome.dart';
@@ -23,7 +22,6 @@ class _LoginState extends State<Login> {
               children: [
                 LoginWelcome(),
                 LoginForm(),
-                // LoginButtons(),
               ],
             ),
           ),
