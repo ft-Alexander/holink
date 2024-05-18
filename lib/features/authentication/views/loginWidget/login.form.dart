@@ -129,23 +129,23 @@ class _LoginFormState extends State<LoginForm> {
           ElevatedButton(
             onPressed: () {
               // login();
-              switch (dropDown) {
-                case "Parishioners":
-                  loginParishioners();
-                  break;
-                case "Parish Staff":
-                  loginParish();
-                  break;
-                case "Diocese Staff":
-                  loginDiocese();
-                  break;
-                default:
-                  break;
-              }
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => Service()),
-              // );
+              // switch (dropDown) {
+              //   case "Parishioners":
+              //     loginParishioners();
+              //     break;
+              //   case "Parish Staff":
+              //     loginParish();
+              //     break;
+              //   case "Diocese Staff":
+              //     loginDiocese();
+              //     break;
+              //   default:
+              //     break;
+              // }
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Scheduling()),
+              );
             },
             style: ButtonStyle(
               backgroundColor:
