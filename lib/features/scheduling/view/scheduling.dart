@@ -10,6 +10,6 @@ class Scheduling extends StatefulWidget {
 class _SchedulingState extends State<Scheduling> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return const Scaffold();
   }
 }

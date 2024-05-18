@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:holink/constants/global.color.dart';
-import 'package:holink/features/authentication/views/loginWidget/login.form.dart';
 import 'package:holink/features/scheduling/view/scheduling.dart';
 
 class LoginButtons extends StatelessWidget {
-  const LoginButtons({Key? key}) : super(key: key);
+  const LoginButtons({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +15,13 @@ class LoginButtons extends StatelessWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Scheduling()),
+              MaterialPageRoute(builder: (context) => const Scheduling()),
             );
           },
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all<Color>(HexColor(tbrown)),
             padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-              EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
+              const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
             ),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(

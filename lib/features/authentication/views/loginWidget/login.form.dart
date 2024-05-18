@@ -9,7 +9,7 @@ import 'package:holink/features/scheduling/view/scheduling.dart';
 import 'package:http/http.dart' as http;
 
 class LoginForm extends StatefulWidget {
-  const LoginForm({Key? key}) : super(key: key);
+  const LoginForm({super.key});
 
   @override
   State<LoginForm> createState() => _LoginFormState();
@@ -17,8 +17,8 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   String _msg = "";
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordConttroller = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordConttroller = TextEditingController();
 
   String dropDown = 'Parishioners';
 
@@ -26,7 +26,7 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 1.0),
+      padding: const EdgeInsets.symmetric(horizontal: 1.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -87,7 +87,7 @@ class _LoginFormState extends State<LoginForm> {
                 borderSide: BorderSide(color: HexColor(tbrown)),
                 borderRadius: BorderRadius.circular(3.0),
               ),
-              contentPadding: EdgeInsets.symmetric(
+              contentPadding: const EdgeInsets.symmetric(
                 vertical: 10.0,
                 horizontal: 12.0,
               ),
@@ -110,7 +110,7 @@ class _LoginFormState extends State<LoginForm> {
                 borderSide: BorderSide(color: HexColor(tbrown)),
                 borderRadius: BorderRadius.circular(3.0),
               ),
-              contentPadding: EdgeInsets.symmetric(
+              contentPadding: const EdgeInsets.symmetric(
                 vertical: 10.0,
                 horizontal: 12.0,
               ),
@@ -137,7 +137,7 @@ class _LoginFormState extends State<LoginForm> {
               backgroundColor:
                   MaterialStateProperty.all<Color>(HexColor(tbrown)),
               padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
+                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
               ),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
@@ -236,7 +236,7 @@ class _LoginFormState extends State<LoginForm> {
         if (user.isNotEmpty) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Scheduling()),
+            MaterialPageRoute(builder: (context) => const Scheduling()),
           );
         } else {
           _msg = "Invalid Username Or Password";

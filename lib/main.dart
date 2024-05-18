@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:holink/features/authentication/views/login.dart';
+import 'package:provider/provider.dart';
+
+import 'package:holink/features/financial/view/financial_transactions.dart';
+import 'package:holink/features/financial/controller/transaction_state.dart';
 
 void main() {
-  runApp(const HolinkApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => TransactionState(),
+      child: const HolinkApp(),
+    ),
+  );
 }
 
 class HolinkApp extends StatelessWidget {
@@ -10,8 +18,8 @@ class HolinkApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Login(),
+    return const MaterialApp(
+      home: TransactionsPage(),
     );
   }
 }
