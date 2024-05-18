@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:holink/features/scheduling/controllers/events.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
@@ -16,6 +17,12 @@ class _SchedulingState extends State<Scheduling> {
   DateTime selectedDate = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
   TextEditingController _eventController = TextEditingController();
+  TextEditingController _priestController = TextEditingController();
+  TextEditingController _sacristanController = TextEditingController();
+  TextEditingController _lectorsController = TextEditingController();
+  TextEditingController _addressController = TextEditingController();
+  TextEditingController _detailsController = TextEditingController();
+
   TimeOfDay? _selectedTime;
 
   @override
@@ -31,6 +38,11 @@ class _SchedulingState extends State<Scheduling> {
   @override
   void dispose() {
     _eventController.dispose();
+    _priestController.dispose();
+    _sacristanController.dispose();
+    _lectorsController.dispose();
+    _addressController.dispose();
+    _detailsController.dispose();
     super.dispose();
   }
 
@@ -188,41 +200,113 @@ class _SchedulingState extends State<Scheduling> {
         builder: (context, setState) {
           return AlertDialog(
             title: Text('Add Event'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: _eventController,
-                  decoration: InputDecoration(
-                    hintText: 'Enter event title',
-                  ),
+            content: SingleChildScrollView(
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    bool isWideScreen = constraints.maxWidth > 600;
+
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextFormField(
+                          controller: _eventController,
+                          decoration: InputDecoration(
+                            hintText: 'Enter event title',
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        isWideScreen
+                            ? Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _priestController,
+                                      decoration: InputDecoration(
+                                        hintText: 'Enter Priest name',
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 16),
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _lectorsController,
+                                      decoration: InputDecoration(
+                                        hintText: 'Enter Lectors names',
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  TextFormField(
+                                    controller: _priestController,
+                                    decoration: InputDecoration(
+                                      hintText: 'Enter Priest name',
+                                    ),
+                                  ),
+                                  SizedBox(height: 16),
+                                  TextFormField(
+                                    controller: _lectorsController,
+                                    decoration: InputDecoration(
+                                      hintText: 'Enter Lectors names',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          controller: _sacristanController,
+                          decoration: InputDecoration(
+                            hintText: 'Enter Sacristan name',
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          controller: _addressController,
+                          decoration: InputDecoration(
+                            hintText: 'Enter Address',
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          controller: _detailsController,
+                          decoration: InputDecoration(
+                            hintText: 'Enter Details',
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: () async {
+                                final TimeOfDay? picked = await showTimePicker(
+                                  context: context,
+                                  initialTime: TimeOfDay.now(),
+                                );
+                                if (picked != null) {
+                                  setState(() {
+                                    localSelectedTime = picked;
+                                  });
+                                }
+                              },
+                              child: Text("Select Time"),
+                            ),
+                            Spacer(),
+                            Text(
+                              localSelectedTime == null
+                                  ? 'No time selected'
+                                  : '${localSelectedTime?.format(context)}',
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  },
                 ),
-                SizedBox(height: 16),
-                Row(
-                  children: [
-                    TextButton(
-                      onPressed: () async {
-                        final TimeOfDay? picked = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                        );
-                        if (picked != null) {
-                          setState(() {
-                            localSelectedTime = picked;
-                          });
-                        }
-                      },
-                      child: Text("Select Time"),
-                    ),
-                    Spacer(),
-                    Text(
-                      localSelectedTime == null
-                          ? 'No time selected'
-                          : '${localSelectedTime?.format(context)}',
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
             actions: [
               TextButton(
@@ -232,6 +316,11 @@ class _SchedulingState extends State<Scheduling> {
               TextButton(
                 onPressed: () {
                   if (_eventController.text.isNotEmpty &&
+                      _priestController.text.isNotEmpty &&
+                      _lectorsController.text.isNotEmpty &&
+                      _sacristanController.text.isNotEmpty &&
+                      _addressController.text.isNotEmpty &&
+                      _detailsController.text.isNotEmpty &&
                       localSelectedTime != null) {
                     final DateTime eventDateTime = DateTime(
                       selectedDate.year,
@@ -241,23 +330,28 @@ class _SchedulingState extends State<Scheduling> {
                       localSelectedTime!.minute,
                     );
 
+                    final event = Event(
+                      title: _eventController.text,
+                      date: eventDateTime,
+                      priest: _priestController.text,
+                      lectors: _lectorsController.text,
+                      sacristan: _sacristanController.text,
+                      address: _addressController.text,
+                      details: _detailsController.text,
+                    );
+
                     if (selectedEvents[selectedDate] != null) {
-                      selectedEvents[selectedDate]?.add(
-                        Event(
-                          title: _eventController.text,
-                          date: eventDateTime,
-                        ),
-                      );
+                      selectedEvents[selectedDate]?.add(event);
                     } else {
-                      selectedEvents[selectedDate] = [
-                        Event(
-                          title: _eventController.text,
-                          date: eventDateTime,
-                        ),
-                      ];
+                      selectedEvents[selectedDate] = [event];
                     }
                     Navigator.pop(context);
                     _eventController.clear();
+                    _priestController.clear();
+                    _lectorsController.clear();
+                    _sacristanController.clear();
+                    _addressController.clear();
+                    _detailsController.clear();
                     setState(() {
                       _selectedTime = null;
                     });
