@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:holink/features/service/view/serviceWidget/service_information.dart'; // Service information
 import 'package:holink/features/scheduling/view/scheduling.dart'; // Import the Scheduling widget
+import 'package:holink/features/service/controllers/userAgreement.dart'; // Import the User Agreement widget
+import 'package:holink/features/service/view/view_edit_service/ViewEditInformation.dart'; // Import the ViewEditInformation widget
 
 class Service extends StatefulWidget {
   const Service({super.key});
@@ -40,6 +42,7 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
       case 1:
         return Scaffold(
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             actions: [
               IconButton(
                 icon: Icon(Icons.notifications),
@@ -66,6 +69,7 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    
                     // Dropdown for Church Selection
                     DropdownButton<String>(
                       value: selectedChurch,
@@ -101,7 +105,13 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
                         children: [
                           Center(
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                // Navigate to the UserAgreement page
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const UserAgreement()),
+                                );
+                              },
                               style: ElevatedButton.styleFrom(
                                 fixedSize: Size(400, 60), // Adjust the width and height as needed
                                 alignment: Alignment.centerLeft, // Align text to the left
@@ -133,7 +143,13 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
                           SizedBox(height: 8),
                           Center(
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                // Navigate to the ViewEditInformation page
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const ViewEditInformation()),
+                                );
+                              },
                               style: ElevatedButton.styleFrom(
                                 fixedSize: Size(400, 60), // Adjust the width and height as needed
                                 alignment: Alignment.centerLeft, // Align text to the left
