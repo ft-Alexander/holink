@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:holink/features/scheduling/controllers/events.dart';
 import 'package:holink/features/scheduling/view/add_new_event.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class Scheduling extends StatefulWidget {
   const Scheduling({super.key});
@@ -19,17 +21,45 @@ class _SchedulingState extends State<Scheduling> {
 
   @override
   void initState() {
-    selectedEvents = {};
     super.initState();
+    selectedEvents = {};
+    fetchAndSetEvents();
+  }
+
+  Future<List<Event>> fetchEvents() async {
+    final response = await http
+        .get(Uri.parse('http://192.168.1.46/dashboard/myfolder/getEvents.php'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((json) => Event.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load events');
+    }
+  }
+
+  Future<void> fetchAndSetEvents() async {
+    try {
+      final events = await fetchEvents();
+      setState(() {
+        selectedEvents = {};
+        for (var event in events) {
+          final date =
+              DateTime(event.date.year, event.date.month, event.date.day);
+          if (selectedEvents[date] != null) {
+            selectedEvents[date]!.add(event);
+          } else {
+            selectedEvents[date] = [event];
+          }
+        }
+      });
+    } catch (error) {
+      print('Error fetching events: $error');
+    }
   }
 
   List<Event> _getEventsFromDay(DateTime date) {
     return selectedEvents[DateTime(date.year, date.month, date.day)] ?? [];
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override
@@ -198,10 +228,12 @@ class _SchedulingState extends State<Scheduling> {
     );
 
     setState(() {
-      if (selectedEvents[selectedDate] != null) {
-        selectedEvents[selectedDate]?.add(event);
+      final date =
+          DateTime(eventDateTime.year, eventDateTime.month, eventDateTime.day);
+      if (selectedEvents[date] != null) {
+        selectedEvents[date]?.add(event);
       } else {
-        selectedEvents[selectedDate] = [event];
+        selectedEvents[date] = [event];
       }
     });
   }
