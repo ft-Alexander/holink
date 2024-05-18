@@ -6,6 +6,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:holink/constants/global.color.dart';
 import 'package:holink/constants/sizes.dart';
 import 'package:holink/features/scheduling/view/scheduling.dart';
+import 'package:holink/features/service/view/service.dart';
 import 'package:http/http.dart' as http;
 
 class LoginForm extends StatefulWidget {
@@ -127,11 +128,24 @@ class _LoginFormState extends State<LoginForm> {
           ),
           ElevatedButton(
             onPressed: () {
-              login();
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => Scheduling()),
-              // );
+              // login();
+              // switch (dropDown) {
+              //   case "Parishioners":
+              //     loginParishioners();
+              //     break;
+              //   case "Parish Staff":
+              //     loginParish();
+              //     break;
+              //   case "Diocese Staff":
+              //     loginDiocese();
+              //     break;
+              //   default:
+              //     break;
+              // }
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Service()),
+              );
             },
             style: ButtonStyle(
               backgroundColor:
@@ -212,13 +226,21 @@ class _LoginFormState extends State<LoginForm> {
               ),
             ),
           ),
+          Text(
+            _msg,
+            style: TextStyle(
+              fontSize: 16.0,
+              color: HexColor(tbrown),
+              fontFamily: 'DM Sans', // Adjust the font family as needed
+            ),
+          )
         ],
       ),
     );
   }
 
-  void login() async {
-    String url = "http://localhost/dashboard/myfolder/login.php";
+  void loginParish() async {
+    String url = "http://192.168.1.46/dashboard/myfolder/loginParish.php";
 
     String username = _usernameController.text;
     String password = _passwordConttroller.text;
@@ -227,7 +249,6 @@ class _LoginFormState extends State<LoginForm> {
       "username": username, // Pass username as string
       "password": password, // Pass password as string
     };
-
     try {
       http.Response response =
           await http.get(Uri.parse(url).replace(queryParameters: queryParams));
@@ -241,7 +262,71 @@ class _LoginFormState extends State<LoginForm> {
         } else {
           _msg = "Invalid Username Or Password";
         }
-        // print(response.body);
+        print(response.body);
+      } else {
+        print("Error: ${response.statusCode}");
+      }
+    } catch (error) {
+      _msg = "$error";
+    }
+  }
+
+  void loginDiocese() async {
+    String url = "http://192.168.1.46/dashboard/myfolder/loginDiocese.php";
+
+    String username = _usernameController.text;
+    String password = _passwordConttroller.text;
+
+    final Map<String, dynamic> queryParams = {
+      "username": username, // Pass username as string
+      "password": password, // Pass password as string
+    };
+    try {
+      http.Response response =
+          await http.get(Uri.parse(url).replace(queryParameters: queryParams));
+      if (response.statusCode == 200) {
+        var user = jsonDecode(response.body); // return type listmap
+        if (user.isNotEmpty) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Scheduling()),
+          );
+        } else {
+          _msg = "Invalid Username Or Password";
+        }
+        print(response.body);
+      } else {
+        print("Error: ${response.statusCode}");
+      }
+    } catch (error) {
+      _msg = "$error";
+    }
+  }
+
+  void loginParishioners() async {
+    String url = "http://192.168.1.46/dashboard/myfolder/loginParishioners.php";
+
+    String username = _usernameController.text;
+    String password = _passwordConttroller.text;
+
+    final Map<String, dynamic> queryParams = {
+      "username": username, // Pass username as string
+      "password": password, // Pass password as string
+    };
+    try {
+      http.Response response =
+          await http.get(Uri.parse(url).replace(queryParameters: queryParams));
+      if (response.statusCode == 200) {
+        var user = jsonDecode(response.body); // return type listmap
+        if (user.isNotEmpty) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Service()),
+          );
+        } else {
+          _msg = "Invalid Username Or Password";
+        }
+        print(response.body);
       } else {
         print("Error: ${response.statusCode}");
       }

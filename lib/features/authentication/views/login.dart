@@ -22,7 +22,6 @@ class _LoginState extends State<Login> {
               children: [
                 LoginWelcome(),
                 LoginForm(),
-                // LoginButtons(),
               ],
             ),
           ),
