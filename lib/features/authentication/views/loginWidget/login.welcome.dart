@@ -7,7 +7,7 @@ import 'package:holink/constants/sizes.dart';
 import 'package:holink/constants/text.dart';
 
 class LoginWelcome extends StatelessWidget {
-  const LoginWelcome({Key? key}) : super(key: key);
+  const LoginWelcome({super.key});
 
   @override
   Widget build(BuildContext context) {
