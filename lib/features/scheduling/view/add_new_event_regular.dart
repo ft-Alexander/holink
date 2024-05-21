@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:holink/dbConnection/localhost.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 class AddEventScreen extends StatefulWidget {
   final DateTime selectedDate;
-  final Function(DateTime, String, String, String, String, String, String)
-      onSave;
+  final Function(DateTime, String, String, String, String, String, String,
+      String, String) onSave;
 
   const AddEventScreen(
       {required this.selectedDate, required this.onSave, Key? key})
@@ -25,7 +26,11 @@ class _AddEventScreenState extends State<AddEventScreen> {
   final TextEditingController _detailsController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
 
+  localhost localhostInstance = localhost();
   TimeOfDay? _selectedTime;
+
+  String selectedSacrament = 'Mass';
+  final String event_type = "Regular";
 
   @override
   void initState() {
@@ -75,7 +80,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
       try {
         final response = await http.post(
-          Uri.parse('http://192.168.1.46/dashboard/myfolder/events.php'),
+          Uri.parse(
+              'http://${localhostInstance.ipServer}/dashboard/myfolder/events.php'),
           headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: {
             'event_datetime': eventDateTime.toIso8601String(),
@@ -85,6 +91,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
             'sacristan': _sacristanController.text,
             'address': _addressController.text,
             'details': _detailsController.text,
+            'sacraments': selectedSacrament,
+            'event_type': event_type
           },
         );
 
@@ -92,14 +100,15 @@ class _AddEventScreenState extends State<AddEventScreen> {
           final responseData = json.decode(response.body);
           if (responseData['message'] == 'New record created successfully') {
             widget.onSave(
-              eventDateTime,
-              _eventController.text,
-              _priestController.text,
-              _lectorsController.text,
-              _sacristanController.text,
-              _addressController.text,
-              _detailsController.text,
-            );
+                eventDateTime,
+                _eventController.text,
+                _priestController.text,
+                _lectorsController.text,
+                _sacristanController.text,
+                _addressController.text,
+                _detailsController.text,
+                selectedSacrament,
+                event_type);
             Navigator.pop(context);
           } else {
             _showErrorDialog(context, responseData['message']);
@@ -180,6 +189,34 @@ class _AddEventScreenState extends State<AddEventScreen> {
             ),
             SizedBox(height: 16),
             _buildTextField(_eventController, 'Event Name'),
+            SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              isExpanded: true,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
+              ),
+              hint: Text("Select Sacrament"),
+              value: selectedSacrament,
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedSacrament = newValue!;
+                });
+              },
+              items: const ['Mass', 'Baptism', 'Confession', 'Wedding']
+                  .map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 63, 63, 63),
+                      fontFamily: 'DM Sans',
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
             SizedBox(height: 16),
             _buildTextField(_priestController, 'Select Priest'),
             SizedBox(height: 16),
