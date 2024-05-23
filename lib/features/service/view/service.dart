@@ -3,6 +3,7 @@ import 'package:holink/features/service/view/serviceWidget/service_information.d
 import 'package:holink/features/scheduling/view/scheduling.dart'; // Import the Scheduling widget
 import 'package:holink/features/service/controllers/userAgreement.dart'; // Import the User Agreement widget
 import 'package:holink/features/service/view/view_edit_service/ViewEditInformation.dart'; // Import the ViewEditInformation widget
+import 'package:holink/features/service/view/cancel_service/Cancel_Availed_Service.dart'; // Import the CancelAvailedService widget
 
 class Service extends StatefulWidget {
   const Service({super.key});
@@ -63,14 +64,13 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
           body: TabBarView(
             controller: _tabController,
             children: [
-              // SERVICE AVAILMENT tab content
+              
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     
-                    // Dropdown for Church Selection
                     DropdownButton<String>(
                       value: selectedChurch,
                       onChanged: (String? newValue) {
@@ -178,7 +178,13 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
                           SizedBox(height: 8),
                           Center(
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                // Navigate to the CancelAvailedService page
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const CancelAvailedService()),
+                                );
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                                 fixedSize: Size(400, 60), // Adjust the width and height as needed

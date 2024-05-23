@@ -101,7 +101,19 @@ class ReviewInformation extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const RequirementsPayment(),
+                      builder: (context) => RequirementsPayment(
+                        serviceDetails: {
+                          "title": service,
+                          "availedDate": DateTime.now().toString(), // Current date as availed date
+                          "scheduledDate": date,
+                          "time": time,
+                          "fullName": fullName,
+                          "skkNumber": skkNumber,
+                          "address": address,
+                          "landmark": landmark,
+                          "contactNumber": contactNumber,
+                        },
+                      ),
                     ),
                   );
                 },
@@ -182,3 +194,4 @@ class ReviewInformation extends StatelessWidget {
     );
   }
 }
+
