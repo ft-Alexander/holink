@@ -8,6 +8,7 @@ import 'package:holink/constants/sizes.dart';
 import 'package:holink/features/scheduling/view/scheduling.dart';
 import 'package:holink/features/service/view/service.dart';
 import 'package:http/http.dart' as http;
+import 'package:holink/dbConnection/localhost.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -20,6 +21,7 @@ class _LoginFormState extends State<LoginForm> {
   String _msg = "";
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordConttroller = TextEditingController();
+  localhost localhostInstance = localhost();
 
   String dropDown = 'Parishioners';
 
@@ -144,7 +146,7 @@ class _LoginFormState extends State<LoginForm> {
               // }
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Service()),
+                MaterialPageRoute(builder: (context) => Scheduling()),
               );
             },
             style: ButtonStyle(
@@ -240,7 +242,8 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void loginParish() async {
-    String url = "http://192.168.1.46/dashboard/myfolder/loginParish.php";
+    String url =
+        "http://${localhostInstance.ipServer}/dashboard/myfolder/loginParish.php";
 
     String username = _usernameController.text;
     String password = _passwordConttroller.text;
@@ -272,7 +275,8 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void loginDiocese() async {
-    String url = "http://192.168.1.46/dashboard/myfolder/loginDiocese.php";
+    String url =
+        "http://${localhostInstance.ipServer}/dashboard/myfolder/loginDiocese.php";
 
     String username = _usernameController.text;
     String password = _passwordConttroller.text;
@@ -304,7 +308,8 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void loginParishioners() async {
-    String url = "http://192.168.1.46/dashboard/myfolder/loginParishioners.php";
+    String url =
+        "http://${localhostInstance.ipServer}/dashboard/myfolder/loginParishioners.php";
 
     String username = _usernameController.text;
     String password = _passwordConttroller.text;
