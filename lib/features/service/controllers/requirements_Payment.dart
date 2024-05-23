@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'requestsubmitted.dart'; // Import the RequestSubmitted file
+import 'package:holink/features/service/view/global_state.dart'; // Import the global state
 
 class RequirementsPayment extends StatefulWidget {
-  const RequirementsPayment({super.key});
+  final Map<String, String> serviceDetails;
+
+  const RequirementsPayment({super.key, required this.serviceDetails});
 
   @override
   _RequirementsPaymentState createState() => _RequirementsPaymentState();
@@ -28,6 +31,17 @@ class _RequirementsPaymentState extends State<RequirementsPayment> {
     setState(() {
       uploadedFile = 'IMG_27381218_8273987.png';
     });
+  }
+
+  void _submitService() {
+    final service = widget.serviceDetails;
+    globalState.availedServices.add(service);
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const RequestSubmitted()),
+      (Route<dynamic> route) => false,
+    );
   }
 
   @override
@@ -142,14 +156,7 @@ class _RequirementsPaymentState extends State<RequirementsPayment> {
             Align(
               alignment: Alignment.bottomRight,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RequestSubmitted(),
-                    ),
-                  );
-                },
+                onPressed: _submitService,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   minimumSize: const Size(150, 50),
