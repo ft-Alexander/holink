@@ -3,39 +3,56 @@ import 'package:flutter/material.dart';
 import 'package:holink/dbConnection/localhost.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:holink/features/scheduling/model/getEvent.dart'; // Replace with the correct path to your Event model
 
-class AddEventScreen extends StatefulWidget {
-  final DateTime selectedDate;
-  final Function(DateTime, String, String, String, String, String, String,
-      String, String) onSave;
+class EditScheduleScreen extends StatefulWidget {
+  final getEvent event;
 
-  const AddEventScreen(
-      {required this.selectedDate, required this.onSave, Key? key})
-      : super(key: key);
+  const EditScheduleScreen({super.key, required this.event});
 
   @override
-  _AddEventScreenState createState() => _AddEventScreenState();
+  State<EditScheduleScreen> createState() => _EditScheduleScreenState();
 }
 
-class _AddEventScreenState extends State<AddEventScreen> {
-  final TextEditingController _eventController = TextEditingController();
-  final TextEditingController _priestController = TextEditingController();
-  final TextEditingController _sacristanController = TextEditingController();
-  final TextEditingController _lectorsController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _detailsController = TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
+class _EditScheduleScreenState extends State<EditScheduleScreen> {
+  late TextEditingController _eventController;
+  late TextEditingController _priestController;
+  late TextEditingController _sacristanController;
+  late TextEditingController _lectorsController;
+  late TextEditingController _addressController;
+  late TextEditingController _detailsController;
+  late TextEditingController _dateController;
 
   localhost localhostInstance = localhost();
   TimeOfDay? _selectedTime;
-
-  String selectedSacrament = 'Mass';
-  final String event_type = "Regular";
+  late String event_type;
+  late String selectedSacrament;
 
   @override
   void initState() {
     super.initState();
-    _dateController.text = DateFormat('yyyy-MM-dd').format(widget.selectedDate);
+    _eventController = TextEditingController(text: widget.event.title);
+    _priestController = TextEditingController(text: widget.event.priest);
+    _sacristanController = TextEditingController(text: widget.event.sacristan);
+    _lectorsController = TextEditingController(text: widget.event.lectors);
+    _addressController = TextEditingController(text: widget.event.address);
+    _detailsController = TextEditingController(text: widget.event.details);
+    _dateController = TextEditingController(
+        text: DateFormat('yyyy-MM-dd').format(widget.event.date));
+    _selectedTime = TimeOfDay.fromDateTime(widget.event.date);
+    event_type = widget.event.event_type;
+    selectedSacrament = widget.event.sacraments;
+
+    _validateSelectedSacrament(); // Ensure selectedSacrament is valid initially
+  }
+
+  void _validateSelectedSacrament() {
+    final validSacraments = (event_type == 'Public'
+        ? ['Wedding', 'Baptism', 'Blessing']
+        : ['Chapel Mass', 'Parish Mass', 'Barangay Mass']);
+    if (!validSacraments.contains(selectedSacrament)) {
+      selectedSacrament = validSacraments.first;
+    }
   }
 
   @override
@@ -53,7 +70,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: _selectedTime ?? TimeOfDay.now(),
     );
     if (picked != null) {
       setState(() {
@@ -62,7 +79,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
     }
   }
 
-  void _saveEvent() async {
+  void _updateEvent() async {
     if (_eventController.text.isNotEmpty &&
         _priestController.text.isNotEmpty &&
         _lectorsController.text.isNotEmpty &&
@@ -71,19 +88,34 @@ class _AddEventScreenState extends State<AddEventScreen> {
         _detailsController.text.isNotEmpty &&
         _selectedTime != null) {
       final DateTime eventDateTime = DateTime(
-        widget.selectedDate.year,
-        widget.selectedDate.month,
-        widget.selectedDate.day,
+        widget.event.date.year,
+        widget.event.date.month,
+        widget.event.date.day,
         _selectedTime!.hour,
         _selectedTime!.minute,
       );
 
+      print('Event DateTime: $eventDateTime');
+      print('Event Data: ${{
+        's_id': widget.event.s_id.toString(),
+        'event_datetime': eventDateTime.toIso8601String(),
+        'event_name': _eventController.text,
+        'priest': _priestController.text,
+        'lectors': _lectorsController.text,
+        'sacristan': _sacristanController.text,
+        'address': _addressController.text,
+        'details': _detailsController.text,
+        'sacraments': selectedSacrament,
+        'event_type': event_type,
+      }}');
+
       try {
         final response = await http.post(
           Uri.parse(
-              'http://${localhostInstance.ipServer}/dashboard/myfolder/events.php'),
+              'http://${localhostInstance.ipServer}/dashboard/myfolder/updateEvent.php'), // Ensure the correct endpoint
           headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: {
+            's_id': widget.event.s_id.toString(),
             'event_datetime': eventDateTime.toIso8601String(),
             'event_name': _eventController.text,
             'priest': _priestController.text,
@@ -92,35 +124,31 @@ class _AddEventScreenState extends State<AddEventScreen> {
             'address': _addressController.text,
             'details': _detailsController.text,
             'sacraments': selectedSacrament,
-            'event_type': event_type
+            'event_type': event_type,
           },
         );
 
+        print('Response Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+
         if (response.statusCode == 200) {
           final responseData = json.decode(response.body);
-          if (responseData['message'] == 'New record created successfully') {
-            widget.onSave(
-                eventDateTime,
-                _eventController.text,
-                _priestController.text,
-                _lectorsController.text,
-                _sacristanController.text,
-                _addressController.text,
-                _detailsController.text,
-                selectedSacrament,
-                event_type);
-            Navigator.pop(context);
+          if (responseData['message'] == 'Event updated successfully') {
+            Navigator.pop(context, true); // Pass true to indicate success
           } else {
+            print('Error Response Data: $responseData');
             _showErrorDialog(context, responseData['message']);
           }
         } else {
           _showErrorDialog(
-              context, 'Failed to save event: ${response.statusCode}');
+              context, 'Failed to update event: ${response.statusCode}');
         }
       } catch (e) {
+        print('Exception: $e');
         _showErrorDialog(context, 'An error occurred: $e');
       }
     } else {
+      print('Validation Error: Please fill in all fields and select a time.');
       _showErrorDialog(context, 'Please fill in all fields and select a time.');
     }
   }
@@ -145,12 +173,19 @@ class _AddEventScreenState extends State<AddEventScreen> {
     );
   }
 
+  void _updateSacramentDropdown(String newEventType) {
+    setState(() {
+      event_type = newEventType;
+      _validateSelectedSacrament(); // Ensure selectedSacrament is valid after updating event_type
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Add Event'),
+        title: Text('Edit Event'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -196,6 +231,33 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
               ),
+              hint: Text("Select Event Type"),
+              value: event_type,
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  _updateSacramentDropdown(newValue);
+                }
+              },
+              items: const ['Regular', 'Public'].map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 63, 63, 63),
+                      fontFamily: 'DM Sans',
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              isExpanded: true,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
+              ),
               hint: Text("Select Sacrament"),
               value: selectedSacrament,
               onChanged: (String? newValue) {
@@ -203,7 +265,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   selectedSacrament = newValue!;
                 });
               },
-              items: const ['Mass', 'Baptism', 'Confession', 'Wedding']
+              items: (event_type == 'Public'
+                      ? ['Wedding', 'Baptism', 'Blessing', 'Seminar']
+                      : [
+                          'Chapel Mass',
+                          'Parish Mass',
+                          'Barangay Mass',
+                          'Confession'
+                        ])
                   .map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -244,12 +313,12 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 ),
                 SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: _saveEvent,
+                  onPressed: _updateEvent,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
                   ),
-                  child: Text("Save"),
+                  child: Text("Update"),
                 ),
               ],
             ),
