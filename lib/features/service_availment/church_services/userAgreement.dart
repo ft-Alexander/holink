@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holink/features/service/controllers/churchServices.dart';
+import 'package:holink/features/service_availment/church_services/churchServices.dart';
 
 class UserAgreement extends StatelessWidget {
   const UserAgreement({super.key});

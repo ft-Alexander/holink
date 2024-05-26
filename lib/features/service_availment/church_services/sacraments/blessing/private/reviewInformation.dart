@@ -1,29 +1,24 @@
 import 'package:flutter/material.dart';
 import 'requirements_Payment.dart'; // Import the RequirementsPayment file
+import '../../../../model/service_model.dart'; // Import the ServiceInformation model
 
 class ReviewInformation extends StatelessWidget {
-  final String service;
-  final String serviceType;
-  final String fullName;
-  final String skkNumber;
-  final String address;
-  final String landmark;
-  final String contactNumber;
-  final String date;
-  final String time;
+  final ServiceInformation serviceInformation;
 
   const ReviewInformation({
-    required this.service,
-    required this.serviceType,
-    required this.fullName,
-    required this.skkNumber,
-    required this.address,
-    required this.landmark,
-    required this.contactNumber,
-    required this.date,
-    required this.time,
+    required this.serviceInformation,
     Key? key,
   }) : super(key: key);
+
+  String _formatDate(DateTime date) {
+    return "${date.month}/${date.day}/${date.year}";
+  }
+
+  String _formatTime(DateTime date) {
+    final hour = date.hour % 12 == 0 ? 12 : date.hour % 12;
+    final period = date.hour >= 12 ? 'PM' : 'AM';
+    return "${hour}:${date.minute.toString().padLeft(2, '0')} $period";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +49,9 @@ class ReviewInformation extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-            _buildReviewRow('Church Service:', service),
+            _buildReviewRow('Church Service:', serviceInformation.service),
             const SizedBox(height: 16),
-            _buildReviewRow('Service Type:', serviceType),
+            _buildReviewRow('Service Type:', serviceInformation.serviceType),
             const SizedBox(height: 16),
             const Text(
               'Parishioner Detail\'s:',
@@ -72,11 +67,12 @@ class ReviewInformation extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildInfoText('Full Name: $fullName'),
-                  _buildInfoText('SKK NO: $skkNumber'),
-                  _buildInfoText('Address: $address'),
-                  _buildInfoText('Nearby Landmark: $landmark'),
-                  _buildInfoText('Contact Number: $contactNumber'),
+                  _buildInfoText('Selected Type: ${serviceInformation.selectedType}'),
+                  _buildInfoText('Full Name: ${serviceInformation.fullName}'),
+                  _buildInfoText('SKK NO: ${serviceInformation.skkNumber}'),
+                  _buildInfoText('Address: ${serviceInformation.address}'),
+                  _buildInfoText('Nearby Landmark: ${serviceInformation.landmark}'),
+                  _buildInfoText('Contact Number: ${serviceInformation.contactNumber}'),
                 ],
               ),
             ),
@@ -89,8 +85,8 @@ class ReviewInformation extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildScheduleInfo('Month/Day/Year', date),
-                _buildScheduleInfo('Time', time),
+                _buildScheduleInfo('Month/Day/Year', _formatDate(serviceInformation.scheduled_date)),
+                _buildScheduleInfo('Time', _formatTime(serviceInformation.scheduled_date)),
               ],
             ),
             const Spacer(),
@@ -103,15 +99,17 @@ class ReviewInformation extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => RequirementsPayment(
                         serviceDetails: {
-                          "title": service,
-                          "availedDate": DateTime.now().toString(), // Current date as availed date
-                          "scheduledDate": date,
-                          "time": time,
-                          "fullName": fullName,
-                          "skkNumber": skkNumber,
-                          "address": address,
-                          "landmark": landmark,
-                          "contactNumber": contactNumber,
+                          "title": serviceInformation.service,
+                          "availedDate": serviceInformation.date_availed.toString(),
+                          "scheduledDate": serviceInformation.scheduled_date.toString(),
+                          "time": _formatTime(serviceInformation.scheduled_date),
+                          "Service type": serviceInformation.serviceType,
+                          "fullName": serviceInformation.fullName,
+                          "skkNumber": serviceInformation.skkNumber,
+                          "address": serviceInformation.address,
+                          "landmark": serviceInformation.landmark,
+                          "contactNumber": serviceInformation.contactNumber,
+                          "selectedType": serviceInformation.selectedType,
                         },
                       ),
                     ),
@@ -194,4 +192,3 @@ class ReviewInformation extends StatelessWidget {
     );
   }
 }
-

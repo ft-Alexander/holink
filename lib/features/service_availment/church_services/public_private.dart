@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'blessingform.dart'; // Import the BlessingForm file
+import 'package:holink/features/service_availment/church_services/sacraments/blessing/private/blessingform.dart';
 
 class PublicPrivate extends StatelessWidget {
   final String service;
