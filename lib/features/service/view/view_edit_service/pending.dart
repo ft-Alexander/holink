@@ -1,34 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:holink/features/service/view/global_state.dart'; // Import the global state
+import 'popup_information.dart'; // Import the PopupInformation widget
 
-class Pending extends StatelessWidget {
-  const Pending({super.key});
+class PendingServices extends StatelessWidget {
+  const PendingServices({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    // Placeholder data for pending services
-    List<Map<String, String>> pendingServices = [
-      {
-        "title": "Wedding",
-        "availedDate": "February 14, 2024, 10:00 AM",
-        "scheduledDate": "February 14, 2024",
-      },
-      {
-        "title": "Blessing",
-        "availedDate": "February 14, 2024, 10:00 AM",
-        "scheduledDate": "February 25, 2024",
-      },
-    ];
+  Widget _buildServiceList(BuildContext context) {
+    List<Map<String, String>> pendingServices = globalState.availedServices.where((service) {
+      return service["status"] == "pending";
+    }).toList();
 
-    return _buildServiceList(pendingServices);
-  }
+    if (pendingServices.isEmpty) {
+      return Center(child: Text("No pending services available"));
+    }
 
-  Widget _buildServiceList(List<Map<String, String>> services) {
     return ListView.builder(
-      itemCount: services.length,
+      itemCount: pendingServices.length,
       itemBuilder: (context, index) {
-        var service = services[index];
+        var service = pendingServices[index];
+
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Card(
             child: ListTile(
               title: Text(service["title"]!),
@@ -41,14 +33,33 @@ class Pending extends StatelessWidget {
               ),
               trailing: ElevatedButton(
                 onPressed: () {
-                  // Handle view/edit details
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return PopupInformation(
+                        serviceDetails: service,
+                        serviceIndex: index,
+                      );
+                    },
+                  );
                 },
-                child: Text("View/Edit Details"),
+                child: const Text("View/Edit"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                ),
               ),
             ),
           ),
         );
       },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: _buildServiceList(context),
     );
   }
 }

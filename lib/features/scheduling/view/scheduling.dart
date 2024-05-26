@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:holink/features/scheduling/model/events.dart';
-import 'package:holink/features/scheduling/view/add_new_event_regular.dart';
+import 'package:holink/dbConnection/localhost.dart';
+import 'package:holink/features/scheduling/model/getEvent.dart';
+import 'package:holink/features/scheduling/services/add_new_event.dart';
+import 'package:holink/features/scheduling/services/edit_schedule.dart';
+import 'package:holink/features/scheduling/services/viewEvent.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -14,10 +17,11 @@ class Scheduling extends StatefulWidget {
 }
 
 class _SchedulingState extends State<Scheduling> {
-  late Map<DateTime, List<Event>> selectedEvents;
+  late Map<DateTime, List<getEvent>> selectedEvents;
   DateTime focusedDate = DateTime.now();
   DateTime selectedDate = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
+  localhost localhostInstance = localhost();
 
   @override
   void initState() {
@@ -26,22 +30,28 @@ class _SchedulingState extends State<Scheduling> {
     fetchAndSetEvents();
   }
 
-  Future<List<Event>> fetchEvents() async {
-    final response = await http
-        .get(Uri.parse('http://192.168.1.13/dashboard/myfolder/getEvents.php'));
-
+  Future<List<getEvent>> fetchEvents() async {
+    print('Fetching events...');
+    final response = await http.get(Uri.parse(
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/getEvents.php'));
+    print('Response body: ${response.body}');
     if (response.statusCode == 200) {
+      print('Events fetched successfully');
       final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => Event.fromJson(json)).toList();
+      return data.map((json) => getEvent.fromJson(json)).toList();
     } else {
+      print('Failed to fetch events. Status code: ${response.statusCode}');
       throw Exception('Failed to load events');
     }
   }
 
   Future<void> fetchAndSetEvents() async {
+    print('Fetching and setting events...');
     try {
       final events = await fetchEvents();
+      print('Fetched events: $events');
       setState(() {
+        print('Setting state with fetched events');
         selectedEvents = {};
         for (var event in events) {
           final date =
@@ -58,11 +68,11 @@ class _SchedulingState extends State<Scheduling> {
     }
   }
 
-  List<Event> _getEventsFromDay(DateTime date) {
+  List<getEvent> _getEventsFromDay(DateTime date) {
     return selectedEvents[DateTime(date.year, date.month, date.day)] ?? [];
   }
 
-  List<Color> _getEventDotColors(List<Event> events) {
+  List<Color> _getEventDotColors(List<getEvent> events) {
     final eventTypes = events.map((e) => e.event_type).toSet();
     List<Color> colors = [];
 
@@ -90,7 +100,7 @@ class _SchedulingState extends State<Scheduling> {
               const SizedBox(height: 16.0),
               _buildLegend(),
               const SizedBox(height: 16.0),
-              _buildAddEventButton(context),
+              _buildAddEventButtons(context),
               ..._buildEventList(),
             ],
           ),
@@ -168,7 +178,7 @@ class _SchedulingState extends State<Scheduling> {
                 markerBuilder: (context, date, events) {
                   if (events.isEmpty) return const SizedBox.shrink();
                   List<Color> colors =
-                      _getEventDotColors(events as List<Event>);
+                      _getEventDotColors(events as List<getEvent>);
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: colors.map((color) {
@@ -227,31 +237,39 @@ class _SchedulingState extends State<Scheduling> {
     );
   }
 
-  Widget _buildAddEventButton(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AddEventScreen(
-              selectedDate: selectedDate,
-              onSave: _onSaveEvent,
+  Widget _buildAddEventButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Expanded(
+          child: Container(
+            margin:
+                EdgeInsets.only(right: 8.0), // Adds space between the buttons
+            child: ElevatedButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddEventScreen(
+                    selectedDate: selectedDate,
+                    onSave: _onSaveEvent,
+                  ),
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(3.0),
+                ),
+                backgroundColor: Color(0xFF57CA63),
+                padding: EdgeInsets.symmetric(vertical: 8.0),
+              ),
+              child: Text(
+                'Add Event',
+                style: TextStyle(fontSize: 16.0, color: Colors.white),
+              ),
             ),
           ),
         ),
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(3.0),
-          ),
-          backgroundColor: Color(0xFF57CA63),
-          padding: EdgeInsets.symmetric(vertical: 8.0),
-        ),
-        child: Text(
-          'Add Event',
-          style: TextStyle(fontSize: 16.0, color: Colors.white),
-        ),
-      ),
+      ],
     );
   }
 
@@ -265,7 +283,8 @@ class _SchedulingState extends State<Scheduling> {
       String details,
       String sacraments,
       String event_type) {
-    final event = Event(
+    final event = getEvent(
+      s_id: 0, // Use a temporary ID, will be replaced by actual ID from DB
       title: title,
       date: eventDateTime,
       priest: priest,
@@ -290,66 +309,93 @@ class _SchedulingState extends State<Scheduling> {
 
   List<Widget> _buildEventList() {
     // Get the events for the selected day
-    List<Event> events = _getEventsFromDay(selectedDate);
+    List<getEvent> events = _getEventsFromDay(selectedDate);
     // Sort the events by time
     events.sort((a, b) => a.date.compareTo(b.date));
 
-    return events.map((Event event) {
+    print('Events count: ${events.length}');
+
+    return events.map((getEvent event) {
       final formattedDate = DateFormat('MMMM d, y').format(event.date);
       final formattedTime = DateFormat('h:mm a').format(event.date);
-      return Container(
-        margin: EdgeInsets.symmetric(vertical: 5.0),
-        padding: EdgeInsets.all(10.0),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.brown.shade200),
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      return GestureDetector(
+        onTap: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ViewEventScreen(event: event),
+            ),
+          );
+          if (result == true) {
+            // Refresh events if the update was successful
+            fetchAndSetEvents();
+          }
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 5.0),
+          padding: EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.brown.shade200),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      event.title,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    SizedBox(height: 5),
+                    Text(formattedDate),
+                    Text(formattedTime),
+                    SizedBox(height: 5),
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                      decoration: BoxDecoration(
+                        color: _getEventTypeColor(event.event_type),
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: Text(
+                        event.event_type,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
                 children: [
-                  Text(
-                    event.title,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  IconButton(
+                    icon: Icon(Icons.edit, color: Colors.green),
+                    onPressed: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              EditScheduleScreen(event: event),
+                        ),
+                      );
+                      if (result == true) {
+                        // Refresh events if the update was successful
+                        fetchAndSetEvents();
+                      }
+                    },
                   ),
-                  SizedBox(height: 5),
-                  Text(formattedDate),
-                  Text(formattedTime),
-                  SizedBox(height: 5),
-                  Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                    decoration: BoxDecoration(
-                      color: _getEventTypeColor(event.event_type),
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: Text(
-                      event.event_type,
-                      style: TextStyle(color: Colors.white),
-                    ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      // Delete event action
+                    },
                   ),
                 ],
               ),
-            ),
-            Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.edit, color: Colors.green),
-                  onPressed: () {
-                    // Edit event action
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
-                  onPressed: () {
-                    // Delete event action
-                  },
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }).toList();
