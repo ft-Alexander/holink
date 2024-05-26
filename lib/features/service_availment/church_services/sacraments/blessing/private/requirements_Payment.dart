@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'requestsubmitted.dart'; // Import the RequestSubmitted file
-import 'package:holink/features/service/view/global_state.dart'; // Import the global state
+import 'package:holink/features/service_availment/view/global_state.dart'; // Import the global state
 
 class RequirementsPayment extends StatefulWidget {
   final Map<String, String> serviceDetails;
