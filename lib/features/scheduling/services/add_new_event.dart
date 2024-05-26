@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class AddEventScreen extends StatefulWidget {
   final DateTime selectedDate;
   final Function(DateTime, String, String, String, String, String, String,
-      String, String) onSave;
+      String, String, String) onSave;
 
   const AddEventScreen(
       {required this.selectedDate, required this.onSave, Key? key})
@@ -31,6 +31,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   String event_type = 'Public'; // Default value
   String selectedSacrament = 'Wedding'; // Default value
+  String archive_status = 'display'; // Default value
 
   @override
   void initState() {
@@ -92,7 +93,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
             'address': _addressController.text,
             'details': _detailsController.text,
             'sacraments': selectedSacrament,
-            'event_type': event_type
+            'event_type': event_type,
+            'archive_status': archive_status
           },
         );
 
@@ -108,7 +110,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 _addressController.text,
                 _detailsController.text,
                 selectedSacrament,
-                event_type);
+                event_type,
+                archive_status);
             Navigator.pop(context);
           } else {
             _showErrorDialog(context, responseData['message']);
