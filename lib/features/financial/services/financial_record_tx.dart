@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
+import 'package:holink/dbConnection/localhost.dart';
 import 'package:holink/features/financial/view/financial_transactions.dart';
-
-import 'package:holink/features/financial/controller/transaction_state.dart';
-import 'package:holink/features/financial/controller/transaction.dart';
+import 'package:holink/features/financial/model/transaction.dart';
 
 class RecordFinancialTransactionPage extends StatefulWidget {
   const RecordFinancialTransactionPage({super.key});
@@ -27,10 +28,12 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
   String? _selectedSpecialEventType;
   bool _isFormModified = false;
 
+  localhost localhostInstance = localhost();
+
   @override
   void initState() {
     super.initState();
-    _transactionIdController.addListener(_onFormChange);
+    _fetchNextTransactionId();
     _employeeIdController.addListener(_onFormChange);
     _amountController.addListener(_onFormChange);
     _titleController.addListener(_onFormChange);
@@ -39,9 +42,32 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
     _purposeController.addListener(_onFormChange);
   }
 
+  Future<void> _fetchNextTransactionId() async {
+    final url = 'http://${localhostInstance.ipServer}/dashboard/myfolder/getCurrentTransactionId.php'; // Replace with your server URL
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final responseBody = json.decode(response.body);
+      if (responseBody['success']) {
+        setState(() {
+          _transactionIdController.text = responseBody['next_transaction_id'].toString();
+        });
+      } else {
+        // Handle failure
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to fetch transaction ID: ${responseBody['message']}')),
+        );
+      }
+    } else {
+      // Handle server error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Server error: ${response.reasonPhrase}')),
+      );
+    }
+  }
+
   @override
   void dispose() {
-    _transactionIdController.removeListener(_onFormChange);
     _employeeIdController.removeListener(_onFormChange);
     _amountController.removeListener(_onFormChange);
     _titleController.removeListener(_onFormChange);
@@ -74,7 +100,7 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
     );
     if (pickedDate != null) {
       setState(() {
-        _dateController.text = "${pickedDate.toLocal()}".split(' ')[0];
+        _dateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
         _isFormModified = true;
       });
     }
@@ -124,6 +150,55 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
     return _selectedTransactionType == 'Fund Raising' ||
            _selectedTransactionType == 'Donation' ||
            _selectedTransactionType == 'Expense';
+  }
+
+  Future<void> _recordTransaction() async {
+    final transaction = Transaction(
+      par_id: int.parse(_employeeIdController.text),
+      type: _selectedTransactionType!,
+      date: DateTime.parse(_dateController.text),
+      amount: _amountController.text,
+      title: _titleController.text,
+      description: _descriptionController.text,
+      sacramental_type: _selectedSacramentalType,
+      special_event_type: _selectedSpecialEventType,
+      purpose: _purposeController.text,
+    );
+
+    final url = 'http://${localhostInstance.ipServer}/dashboard/myfolder/saveTransaction.php'; // Replace with your server URL
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(transaction.toJson()),
+      );
+
+      if (response.statusCode == 200) {
+        final responseBody = json.decode(response.body);
+
+        if (responseBody['success']) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const TransactionsPage()),
+          );
+        } else {
+          // Handle failure
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to record transaction: ${responseBody['message']}')),
+          );
+        }
+      } else {
+        // Handle server error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Server error: ${response.reasonPhrase}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      );
+    }
   }
 
   @override
@@ -180,12 +255,7 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
               borderSide: BorderSide(color: Color(0xffB37840)),
             ),
           ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter a Transaction ID';
-            }
-            return null;
-          },
+          enabled: false,
         ),
         const SizedBox(height: 10.0),
         TextFormField(
@@ -200,12 +270,6 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
               borderSide: BorderSide(color: Color(0xffB37840)),
             ),
           ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter an Employee ID';
-            }
-            return null;
-          },
         ),
         const SizedBox(height: 10.0),
         DropdownButtonFormField<String>(
@@ -265,10 +329,11 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
             ),
             items: <String>[
               'Baptism',
+              'Blessing',
               'Confirmation',
-              'Eucharist',
-              'Marriage',
-              'Anointing of the Sick'
+              'First Holy Communion',
+              'Mass for the Dead',
+              'Wedding'
             ].map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
@@ -302,10 +367,12 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
               ),
             ),
             items: <String>[
-              'Anniversary',
-              'Funeral',
-              'Wedding',
-              'Charity Event'
+              'Baptism',
+              'Blessing',
+              'Confirmation',
+              'First Holy Communion',
+              'Mass for the Dead',
+              'Wedding'
             ].map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
@@ -484,23 +551,7 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
         ElevatedButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              Transaction newTransaction = Transaction(
-                title: _titleController.text,
-                transactionId: _transactionIdController.text,
-                employeeId: _employeeIdController.text,
-                type: _selectedTransactionType!,
-                date: _dateController.text,
-                amount: _amountController.text,
-                description: _descriptionController.text,
-                sacramentalType: _selectedSacramentalType,
-                specialEventType: _selectedSpecialEventType,
-                purpose: _purposeController.text,
-              );
-              Provider.of<TransactionState>(context, listen: false).addTransaction(newTransaction);
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const TransactionsPage()),
-              );
+              _recordTransaction();
             }
           },
           style: ElevatedButton.styleFrom(
