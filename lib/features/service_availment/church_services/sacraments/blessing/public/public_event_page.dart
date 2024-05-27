@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:holink/dbConnection/localhost.dart';
-import 'package:holink/features/scheduling/model/getEvent.dart';
+import 'package:holink/features/scheduling/model/getEvent_pub_pri.dart';
 import 'package:holink/features/scheduling/services/viewEvent.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -37,7 +37,7 @@ class _PublicEventsPageState extends State<PublicEventsPage> {
 
   Future<List<getEvent>> fetchEvents() async {
     final response = await http.get(Uri.parse(
-        'http://${localhostInstance.ipServer}/dashboard/myfolder/getEvents.php'));
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/getEvents.php'));
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       print('Events data retrieved successfully: $data');

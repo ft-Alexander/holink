@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:holink/dbConnection/localhost.dart';
-import 'package:holink/features/scheduling/model/getEvent.dart';
+
+import 'package:holink/features/scheduling/model/getEvent_pub_pri.dart';
 import 'package:holink/features/scheduling/services/add_new_event.dart';
 import 'package:holink/features/scheduling/services/edit_schedule.dart';
 import 'package:holink/features/scheduling/services/viewEvent.dart';
@@ -33,7 +34,7 @@ class _SchedulingState extends State<Scheduling> {
   Future<List<getEvent>> fetchEvents() async {
     print('Fetching events...');
     final response = await http.get(Uri.parse(
-        'http://${localhostInstance.ipServer}/dashboard/myfolder/getEvents.php'));
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/getEvents.php'));
     print('Response body: ${response.body}');
     if (response.statusCode == 200) {
       print('Events fetched successfully');

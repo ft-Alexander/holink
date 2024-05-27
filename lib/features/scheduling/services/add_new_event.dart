@@ -82,7 +82,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
       try {
         final response = await http.post(
           Uri.parse(
-              'http://${localhostInstance.ipServer}/dashboard/myfolder/events.php'),
+              'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/events.php'),
           headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: {
             'event_datetime': eventDateTime.toIso8601String(),

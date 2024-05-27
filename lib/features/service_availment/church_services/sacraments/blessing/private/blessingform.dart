@@ -112,7 +112,7 @@ class _BlessingFormState extends State<BlessingForm> {
         date_availed: DateTime.now(),
         scheduled_date: eventDateTime,
         service: 'BLESSING',
-        serviceType: 'SPECIAL (Private)',
+        serviceType: 'Private',
         fullName: nameController.text,
         skkNumber: skkController.text,
         address: addressController.text,
@@ -122,7 +122,7 @@ class _BlessingFormState extends State<BlessingForm> {
       );
 
       final url = Uri.parse(
-          'http://${localhostInstance.ipServer}/dashboard/myfolder/savePrivateEvent.php');
+          'http://${localhostInstance.ipServer}/dashboard/myfolder/service/savePrivateEvent.php');
       print('Saving to database: $url'); // Debug print statement
       try {
         final response = await http.post(
