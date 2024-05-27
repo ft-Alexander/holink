@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'sacraments/blessing/blessing.dart'; // Import the PublicPrivate file
+import 'public_private.dart'; // Import the PublicPrivate file
 
 class SelectChurchService extends StatelessWidget {
   const SelectChurchService({super.key});
@@ -34,32 +34,35 @@ class SelectChurchService extends StatelessWidget {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFd1a65b), // Button background color
-                minimumSize: const Size.fromHeight(50), // Set height
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      const Color(0xFFd1a65b), // Button background color
+                  minimumSize: const Size.fromHeight(50), // Set height
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                child: const Text(
+                  'SELECT CHURCH SERVICE',
+                  style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
-              child: const Text(
-                'SELECT CHURCH SERVICE',
-                style: TextStyle(fontSize: 16, color: Colors.white),
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildServiceButton(context, 'WEDDING'),
-            _buildServiceButton(context, 'BAPTISM'),
-            _buildServiceButton(context, 'CONFIRMATION'),
-            _buildServiceButton(context, 'MASS FOR THE DEAD'),
-            _buildServiceButton(context, 'BLESSING'), // Blessing button
-            _buildServiceButton(context, 'FIRST HOLY COMMUNION'),
-          ],
+              const SizedBox(height: 16),
+              _buildServiceButton(context, 'WEDDING'),
+              _buildServiceButton(context, 'BAPTISM'),
+              _buildServiceButton(context, 'CONFIRMATION'),
+              _buildServiceButton(context, 'MASS FOR THE DEAD'),
+              _buildServiceButton(context, 'BLESSING'), // Blessing button
+              _buildServiceButton(context, 'FIRST HOLY COMMUNION'),
+            ],
+          ),
         ),
       ),
     );
@@ -74,7 +77,9 @@ class SelectChurchService extends StatelessWidget {
             // Navigate to the PublicPrivate page only for Blessing
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const PublicPrivate(service: 'BLESSING')),
+              MaterialPageRoute(
+                  builder: (context) =>
+                      const PublicPrivate(service: 'BLESSING')),
             );
           } else {
             // Handle other services if needed
