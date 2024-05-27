@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'blessingform.dart'; // Import the BlessingForm file
+import 'package:holink/features/service_availment/church_services/sacraments/blessing/private/blessingform.dart';
+import 'package:holink/features/service_availment/church_services/sacraments/blessing/public/public_event_page.dart';
 
 class PublicPrivate extends StatelessWidget {
   final String service;
@@ -29,43 +30,54 @@ class PublicPrivate extends StatelessWidget {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            _buildServiceTypeButton(
-              context,
-              'REGULAR (Public)',
-              isAvailable: false,
-            ),
-            const SizedBox(height: 16),
-            _buildServiceTypeButton(
-              context,
-              'SPECIAL (Private)',
-              isAvailable: true,
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 16),
+              _buildServiceTypeButton(
+                context,
+                'REGULAR (Public)',
+                isAvailable: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PublicEventsPage(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              _buildServiceTypeButton(
+                context,
+                'SPECIAL (Private)',
+                isAvailable: true,
+                onTap: () {
+                  if (service == 'BLESSING') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BlessingForm(),
+                      ),
+                    );
+                  } else {
+                    // Handle other services if needed
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildServiceTypeButton(BuildContext context, String title,
-      {required bool isAvailable}) {
+      {required bool isAvailable, required Function onTap}) {
     return ElevatedButton(
-      onPressed: isAvailable
-          ? () {
-              if (service == 'BLESSING') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const BlessingForm()),
-                );
-              } else {
-                // Handle other services if needed
-              }
-            }
-          : null,
+      onPressed: isAvailable ? () => onTap() : null,
       style: ElevatedButton.styleFrom(
         backgroundColor: isAvailable ? Colors.green : Colors.grey,
         foregroundColor: Colors.white,

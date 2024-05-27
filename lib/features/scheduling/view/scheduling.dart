@@ -282,19 +282,20 @@ class _SchedulingState extends State<Scheduling> {
       String address,
       String details,
       String sacraments,
-      String event_type) {
+      String event_type,
+      String archive_status) {
     final event = getEvent(
-      s_id: 0, // Use a temporary ID, will be replaced by actual ID from DB
-      title: title,
-      date: eventDateTime,
-      priest: priest,
-      lectors: lectors,
-      sacristan: sacristan,
-      address: address,
-      details: details,
-      sacraments: sacraments,
-      event_type: event_type,
-    );
+        s_id: 0, // Use a temporary ID, will be replaced by actual ID from DB
+        title: title,
+        date: eventDateTime,
+        priest: priest,
+        lectors: lectors,
+        sacristan: sacristan,
+        address: address,
+        details: details,
+        sacraments: sacraments,
+        event_type: event_type,
+        archive_status: archive_status);
 
     setState(() {
       final date =
@@ -310,12 +311,15 @@ class _SchedulingState extends State<Scheduling> {
   List<Widget> _buildEventList() {
     // Get the events for the selected day
     List<getEvent> events = _getEventsFromDay(selectedDate);
+    // Filter out events with archive_status as "archive"
+    List<getEvent> filteredEvents =
+        events.where((event) => event.archive_status != "archive").toList();
     // Sort the events by time
-    events.sort((a, b) => a.date.compareTo(b.date));
+    filteredEvents.sort((a, b) => a.date.compareTo(b.date));
 
-    print('Events count: ${events.length}');
+    print('Events count: ${filteredEvents.length}');
 
-    return events.map((getEvent event) {
+    return filteredEvents.map((getEvent event) {
       final formattedDate = DateFormat('MMMM d, y').format(event.date);
       final formattedTime = DateFormat('h:mm a').format(event.date);
       return GestureDetector(
@@ -388,8 +392,12 @@ class _SchedulingState extends State<Scheduling> {
                   ),
                   IconButton(
                     icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      // Delete event action
+                    onPressed: () async {
+                      // Update the event's archive_status to "archive" and save it to the database
+                      event.archive_status = "archive";
+                      await _archiveEvent(event);
+                      // Refresh events after updating
+                      fetchAndSetEvents();
                     },
                   ),
                 ],
@@ -399,6 +407,29 @@ class _SchedulingState extends State<Scheduling> {
         ),
       );
     }).toList();
+  }
+
+  Future<void> _archiveEvent(getEvent event) async {
+    // Print the event details
+    print('Archiving event: ${json.encode(event.toMap())}');
+
+    try {
+      final response = await http.post(
+        Uri.parse(
+            'http://${localhostInstance.ipServer}/dashboard/myfolder/archiveStatus.php'),
+        body: json.encode(event.toMap()),
+      );
+
+      if (response.statusCode == 200) {
+        print('Event updated successfully');
+      } else {
+        print('Failed to update event. Status code: ${response.statusCode}');
+        throw Exception('Failed to update event');
+      }
+    } catch (error) {
+      print('Error updating event: $error');
+      throw error;
+    }
   }
 
   Color _getEventTypeColor(String eventType) {

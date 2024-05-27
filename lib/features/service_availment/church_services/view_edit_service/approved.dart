@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holink/features/service/view/global_state.dart'; // Import the global state
+import 'package:holink/features/service_availment/view/global_state.dart'; // Import the global state
 import 'popup_information.dart'; // Import the PopupInformation widget
 
 class ApprovedServices extends StatefulWidget {

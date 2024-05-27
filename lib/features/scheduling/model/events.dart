@@ -8,6 +8,7 @@ class Event {
   final String details;
   final String sacraments;
   final String event_type;
+  String archive_status;
 
   Event(
       {required this.title,
@@ -18,7 +19,8 @@ class Event {
       required this.address,
       required this.details,
       required this.sacraments,
-      required this.event_type});
+      required this.event_type,
+      required this.archive_status});
 
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
@@ -30,7 +32,8 @@ class Event {
         address: json['address'] as String,
         details: json['details'] as String,
         sacraments: json['sacraments'] as String,
-        event_type: json['event_type'] as String);
+        event_type: json['event_type'] as String,
+        archive_status: json['archive_status'] as String);
   }
 
   Map<String, dynamic> toJson() {
@@ -43,7 +46,8 @@ class Event {
       'address': address,
       'details': details,
       'sacraments': sacraments,
-      'eventType': event_type
+      'eventType': event_type,
+      'archive_status': archive_status
     };
   }
 }
