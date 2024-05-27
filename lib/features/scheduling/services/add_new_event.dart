@@ -36,7 +36,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
   @override
   void initState() {
     super.initState();
-    _dateController.text = DateFormat('yyyy-MM-dd').format(widget.selectedDate);
+    _dateController.text =
+        DateFormat('MMMM d, yyyy').format(widget.selectedDate);
   }
 
   @override
@@ -197,6 +198,11 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     ),
                     readOnly: true,
                     onTap: () => _selectTime(context),
+                    controller: TextEditingController(
+                      text: _selectedTime == null
+                          ? ''
+                          : _selectedTime!.format(context),
+                    ),
                   ),
                 ),
               ],
