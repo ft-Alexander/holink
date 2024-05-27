@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:holink/dbConnection/localhost.dart';
-
-import 'package:holink/features/scheduling/model/getEvent_pub_pri.dart';
+import 'package:holink/features/scheduling/model/getEvent_pri.dart';
+import 'package:holink/features/scheduling/model/getEvent_pub_reg.dart';
 import 'package:holink/features/scheduling/services/add_new_event.dart';
 import 'package:holink/features/scheduling/services/edit_schedule.dart';
 import 'package:holink/features/scheduling/services/viewEvent.dart';
+import 'package:holink/features/scheduling/services/viewPrivateEvent.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -32,12 +33,9 @@ class _SchedulingState extends State<Scheduling> {
   }
 
   Future<List<getEvent>> fetchEvents() async {
-    print('Fetching events...');
     final response = await http.get(Uri.parse(
         'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/getEvents.php'));
-    print('Response body: ${response.body}');
     if (response.statusCode == 200) {
-      print('Events fetched successfully');
       final List<dynamic> data = json.decode(response.body);
       return data.map((json) => getEvent.fromJson(json)).toList();
     } else {
@@ -47,12 +45,9 @@ class _SchedulingState extends State<Scheduling> {
   }
 
   Future<void> fetchAndSetEvents() async {
-    print('Fetching and setting events...');
     try {
       final events = await fetchEvents();
-      print('Fetched events: $events');
       setState(() {
-        print('Setting state with fetched events');
         selectedEvents = {};
         for (var event in events) {
           final date =
@@ -74,7 +69,11 @@ class _SchedulingState extends State<Scheduling> {
   }
 
   List<Color> _getEventDotColors(List<getEvent> events) {
-    final eventTypes = events.map((e) => e.event_type).toSet();
+    final filteredEvents = events.where((event) {
+      return event.archive_status != "archive";
+    }).toList();
+
+    final eventTypes = filteredEvents.map((e) => e.event_type).toSet();
     List<Color> colors = [];
 
     if (eventTypes.contains('Regular')) {
@@ -86,6 +85,7 @@ class _SchedulingState extends State<Scheduling> {
     if (eventTypes.contains('Private')) {
       colors.add(Colors.orange);
     }
+
     return colors;
   }
 
@@ -310,30 +310,42 @@ class _SchedulingState extends State<Scheduling> {
   }
 
   List<Widget> _buildEventList() {
-    // Get the events for the selected day
     List<getEvent> events = _getEventsFromDay(selectedDate);
-    // Filter out events with archive_status as "archive"
     List<getEvent> filteredEvents =
         events.where((event) => event.archive_status != "archive").toList();
-    // Sort the events by time
     filteredEvents.sort((a, b) => a.date.compareTo(b.date));
-
-    print('Events count: ${filteredEvents.length}');
 
     return filteredEvents.map((getEvent event) {
       final formattedDate = DateFormat('MMMM d, y').format(event.date);
       final formattedTime = DateFormat('h:mm a').format(event.date);
+      String displayTitle = event.event_type == 'Private'
+          ? 'Private: ${event.sacraments}'
+          : event.title;
+
       return GestureDetector(
         onTap: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ViewEventScreen(event: event),
-            ),
-          );
-          if (result == true) {
-            // Refresh events if the update was successful
-            fetchAndSetEvents();
+          if (event.event_type == 'Private') {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return ViewPrivateScreen(event: event);
+              },
+            ).then((result) {
+              if (result == true) {
+                fetchAndSetEvents();
+              }
+            });
+          } else {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return ViewEventScreen(event: event);
+              },
+            ).then((result) {
+              if (result == true) {
+                fetchAndSetEvents();
+              }
+            });
           }
         },
         child: Container(
@@ -350,7 +362,7 @@ class _SchedulingState extends State<Scheduling> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      event.title,
+                      displayTitle,
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
@@ -375,29 +387,30 @@ class _SchedulingState extends State<Scheduling> {
               ),
               Row(
                 children: [
-                  IconButton(
-                    icon: Icon(Icons.edit, color: Colors.green),
-                    onPressed: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              EditScheduleScreen(event: event),
-                        ),
-                      );
-                      if (result == true) {
-                        // Refresh events if the update was successful
-                        fetchAndSetEvents();
-                      }
-                    },
-                  ),
+                  if (event.event_type != 'Private')
+                    IconButton(
+                      icon: Icon(Icons.edit, color: Colors.green),
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                EditScheduleScreen(event: event),
+                          ),
+                        );
+                        if (result == true) {
+                          fetchAndSetEvents();
+                        }
+                      },
+                    ),
                   IconButton(
                     icon: Icon(Icons.delete, color: Colors.red),
                     onPressed: () async {
-                      // Update the event's archive_status to "archive" and save it to the database
-                      event.archive_status = "archive";
-                      await _archiveEvent(event);
-                      // Refresh events after updating
+                      if (event.event_type == 'Private') {
+                        await _archivePrivate(event);
+                      } else {
+                        await _archiveEvent(event);
+                      }
                       fetchAndSetEvents();
                     },
                   ),
@@ -411,13 +424,10 @@ class _SchedulingState extends State<Scheduling> {
   }
 
   Future<void> _archiveEvent(getEvent event) async {
-    // Print the event details
-    print('Archiving event: ${json.encode(event.toMap())}');
-
     try {
       final response = await http.post(
         Uri.parse(
-            'http://${localhostInstance.ipServer}/dashboard/myfolder/archiveStatus.php'),
+            'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/archiveStatus.php'),
         body: json.encode(event.toMap()),
       );
 
@@ -429,6 +439,27 @@ class _SchedulingState extends State<Scheduling> {
       }
     } catch (error) {
       print('Error updating event: $error');
+      throw error;
+    }
+  }
+
+  Future<void> _archivePrivate(getEvent event) async {
+    try {
+      final response = await http.post(
+        Uri.parse(
+            'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/privateEvents.php'),
+        body: json.encode(event.toMap()),
+      );
+
+      if (response.statusCode == 200) {
+        print('Private event archived successfully');
+      } else {
+        print(
+            'Failed to archive private event. Status code: ${response.statusCode}');
+        throw Exception('Failed to archive private event');
+      }
+    } catch (error) {
+      print('Error archiving private event: $error');
       throw error;
     }
   }

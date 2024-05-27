@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:holink/dbConnection/localhost.dart';
-import 'package:holink/features/scheduling/model/getEvent_pub_pri.dart';
+import 'package:holink/features/scheduling/model/getEvent_pub_reg.dart';
 import 'package:intl/intl.dart';
-import 'package:http/http.dart'
-    as http; // Replace with the correct path to your Event model
+import 'package:http/http.dart' as http;
 
 class EditScheduleScreen extends StatefulWidget {
   final getEvent event;
@@ -39,7 +38,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
     _addressController = TextEditingController(text: widget.event.address);
     _detailsController = TextEditingController(text: widget.event.details);
     _dateController = TextEditingController(
-        text: DateFormat('yyyy-MM-dd').format(widget.event.date));
+        text: DateFormat('MMMM d, yyyy').format(widget.event.date));
     _selectedTime = TimeOfDay.fromDateTime(widget.event.date);
     event_type = widget.event.event_type;
     selectedSacrament = widget.event.sacraments;
@@ -49,8 +48,8 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
 
   void _validateSelectedSacrament() {
     final validSacraments = (event_type == 'Public'
-        ? ['Wedding', 'Baptism', 'Blessing']
-        : ['Chapel Mass', 'Parish Mass', 'Barangay Mass']);
+        ? ['Wedding', 'Baptism', 'Blessing', 'Seminar']
+        : ['Chapel Mass', 'Parish Mass', 'Barangay Mass', 'Confession']);
     if (!validSacraments.contains(selectedSacrament)) {
       selectedSacrament = validSacraments.first;
     }
@@ -96,24 +95,10 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
         _selectedTime!.minute,
       );
 
-      print('Event DateTime: $eventDateTime');
-      print('Event Data: ${{
-        's_id': widget.event.s_id.toString(),
-        'event_datetime': eventDateTime.toIso8601String(),
-        'event_name': _eventController.text,
-        'priest': _priestController.text,
-        'lectors': _lectorsController.text,
-        'sacristan': _sacristanController.text,
-        'address': _addressController.text,
-        'details': _detailsController.text,
-        'sacraments': selectedSacrament,
-        'event_type': event_type,
-      }}');
-
       try {
         final response = await http.post(
           Uri.parse(
-              'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/updateEvent.php'), // Ensure the correct endpoint
+              'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/updateEvent.php'),
           headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: {
             's_id': widget.event.s_id.toString(),
@@ -129,15 +114,11 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
           },
         );
 
-        print('Response Status Code: ${response.statusCode}');
-        print('Response Body: ${response.body}');
-
         if (response.statusCode == 200) {
           final responseData = json.decode(response.body);
           if (responseData['message'] == 'Event updated successfully') {
             Navigator.pop(context, true); // Pass true to indicate success
           } else {
-            print('Error Response Data: $responseData');
             _showErrorDialog(context, responseData['message']);
           }
         } else {
@@ -145,11 +126,9 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
               context, 'Failed to update event: ${response.statusCode}');
         }
       } catch (e) {
-        print('Exception: $e');
         _showErrorDialog(context, 'An error occurred: $e');
       }
     } else {
-      print('Validation Error: Please fill in all fields and select a time.');
       _showErrorDialog(context, 'Please fill in all fields and select a time.');
     }
   }
@@ -219,6 +198,11 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                     ),
                     readOnly: true,
                     onTap: () => _selectTime(context),
+                    controller: TextEditingController(
+                      text: _selectedTime == null
+                          ? ''
+                          : _selectedTime!.format(context),
+                    ),
                   ),
                 ),
               ],

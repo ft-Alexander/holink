@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:holink/dbConnection/localhost.dart';
-import 'package:holink/features/scheduling/model/getEvent_pub_pri.dart';
-import 'package:holink/features/scheduling/services/viewEvent.dart';
+import 'package:holink/features/scheduling/model/getEvent_pub_reg.dart';
+import 'package:holink/features/service_availment/church_services/sacraments/blessing/public/join_event.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -27,8 +27,13 @@ class _PublicEventsPageState extends State<PublicEventsPage> {
     try {
       final events = await fetchEvents();
       setState(() {
-        publicEvents =
-            events.where((event) => event.event_type == "Public").toList();
+        publicEvents = events.where((event) {
+          final now = DateTime.now();
+          return event.event_type == "Public" &&
+              event.sacraments == "Blessing" &&
+              event.archive_status != "archive" &&
+              event.date.isAfter(now);
+        }).toList();
       });
     } catch (error) {
       print('Error fetching events: $error');
@@ -54,8 +59,18 @@ class _PublicEventsPageState extends State<PublicEventsPage> {
         title: const Text('Public Events'),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: _buildEventList(),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: publicEvents.isEmpty
+              ? Center(
+                  child: Text(
+                    'No available services.',
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
+                )
+              : Column(
+                  children: _buildEventList(),
+                ),
         ),
       ),
     );
@@ -64,64 +79,77 @@ class _PublicEventsPageState extends State<PublicEventsPage> {
   List<Widget> _buildEventList() {
     // Sort the events by time
     publicEvents.sort((a, b) => a.date.compareTo(b.date));
-
-    print('All public events count: ${publicEvents.length}');
-
     return publicEvents.map((getEvent event) {
       final formattedDate = DateFormat('MMMM d, y').format(event.date);
       final formattedTime = DateFormat('h:mm a').format(event.date);
-      return GestureDetector(
-        onTap: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ViewEventScreen(event: event),
+      return Container(
+        margin: EdgeInsets.symmetric(
+            vertical: 10.0), // Add vertical margin between cards
+        padding: EdgeInsets.all(15.0), // Add padding inside each card
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.brown.shade200),
+          borderRadius: BorderRadius.circular(10.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 5.0,
+              offset: Offset(0, 3),
             ),
-          );
-          if (result == true) {
-            // Refresh events if the update was successful
-            fetchAndSetEvents();
-          }
-        },
-        child: Container(
-          margin: EdgeInsets.symmetric(vertical: 5.0),
-          padding: EdgeInsets.all(10.0),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.brown.shade200),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      event.title,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    event.title,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  SizedBox(height: 8),
+                  Text(formattedDate),
+                  Text(formattedTime),
+                  SizedBox(height: 8),
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                    decoration: BoxDecoration(
+                      color: _getEventTypeColor(event.event_type),
+                      borderRadius: BorderRadius.circular(20.0),
                     ),
-                    SizedBox(height: 5),
-                    Text(formattedDate),
-                    Text(formattedTime),
-                    SizedBox(height: 5),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                      decoration: BoxDecoration(
-                        color: _getEventTypeColor(event.event_type),
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      child: Text(
-                        event.event_type,
-                        style: TextStyle(color: Colors.white),
-                      ),
+                    child: Text(
+                      event.event_type,
+                      style: TextStyle(color: Colors.white),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => JoinEventScreen(),
+                      ),
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.green, // Button background color
+                    foregroundColor:
+                        Colors.white, // Button text (foreground) color
+                  ),
+                  child: Text('Join'),
+                ),
+              ],
+            ),
+          ],
         ),
       );
     }).toList();
