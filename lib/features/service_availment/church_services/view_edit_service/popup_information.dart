@@ -1,12 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:holink/features/service_availment/church_services/view_edit_service/Reschedule_Availed_Service.dart';
-import 'Edit_Availed_Service_information.dart'; // Import the EditAvailedServiceInformation widget
+import 'package:intl/intl.dart'; // Import the intl package
+import 'edit_availed_service_information.dart'; // Import the EditAvailedServiceInformation widget
+import 'reschedule_availed_service.dart'; // Import the RescheduleAvailedService widget
 
 class PopupInformation extends StatelessWidget {
   final Map<String, String> serviceDetails;
   final int serviceIndex;
 
   const PopupInformation({super.key, required this.serviceDetails, required this.serviceIndex});
+
+  String formatDateTime(String dateTime) {
+    // if (dateTime == null) return 'N/A';
+    try {
+      final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+      final DateFormat desiredFormat = DateFormat('yyyy-MM-dd hh:mm a');
+      final DateTime date = originalFormat.parse(dateTime);
+      return desiredFormat.format(date);
+    } catch (e) {
+      return 'N/A';
+    }
+  }
+  
+  String formatTime(String dateTime) {
+   // if (dateTime == null) return 'N/A';
+    try {
+      final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+      final DateFormat timeFormat = DateFormat('hh:mm a');
+      final DateTime date = originalFormat.parse(dateTime);
+      return timeFormat.format(date);
+    } catch (e) {
+      return 'N/A';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,16 +48,16 @@ class PopupInformation extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Event Name: ${serviceDetails['title'] ?? 'N/A'}',
+              'Event Name: ${serviceDetails['service'] ?? 'N/A'}',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              'Scheduled Date: ${serviceDetails['scheduledDate'] ?? 'N/A'}',
+              'Scheduled Date: ${formatDateTime(serviceDetails['scheduled_date']?? 'N/A')}',
               style: const TextStyle(fontSize: 16),
             ),
             Text(
-              'Time: ${serviceDetails['time'] ?? 'N/A'}',
+              'Time: ${formatTime(serviceDetails['scheduled_date']?? 'N/A')}',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
@@ -41,7 +66,7 @@ class PopupInformation extends StatelessWidget {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Text(
-              'Selected Type: ${serviceDetails['selectedType'] ?? 'N/A'}',
+              'Selected Type: ${serviceDetails['selected_type'] ?? 'N/A'}',
               style: const TextStyle(fontSize: 16),
             ),
             Text(
@@ -49,7 +74,7 @@ class PopupInformation extends StatelessWidget {
               style: const TextStyle(fontSize: 16),
             ),
             Text(
-              'SKK NO: ${serviceDetails['skkNumber'] ?? 'N/A'}',
+              'SKK NO: ${serviceDetails['skk_number'] ?? 'N/A'}',
               style: const TextStyle(fontSize: 16),
             ),
             Text(
@@ -61,7 +86,7 @@ class PopupInformation extends StatelessWidget {
               style: const TextStyle(fontSize: 16),
             ),
             Text(
-              'Contact Number: ${serviceDetails['contactNumber'] ?? 'N/A'}',
+              'Contact Number: ${serviceDetails['contact_number'] ?? 'N/A'}',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
@@ -70,13 +95,16 @@ class PopupInformation extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => EditAvailedServiceInformation(serviceIndex: serviceIndex),
                         ),
                       );
+                      if (result == 'updated') {
+                        Navigator.pop(context, 'updated');
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
@@ -88,13 +116,16 @@ class PopupInformation extends StatelessWidget {
                     child: const Text('Edit Information', style: TextStyle(fontSize: 14)),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => RescheduleAvailedService(serviceIndex: serviceIndex),
                         ),
                       );
+                      if (result == 'updated') {
+                        Navigator.pop(context, 'updated');
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,

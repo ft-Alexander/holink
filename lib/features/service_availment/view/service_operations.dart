@@ -25,7 +25,7 @@ class BottomButtons extends StatelessWidget {
                 fixedSize: const Size(400, 60), // Adjust the width and height as needed
                 alignment: Alignment.centerLeft, // Align text to the left
                 padding: const EdgeInsets.symmetric(horizontal: 16.0), // Add padding
-                side: const BorderSide(width: 1.0, color: Colors.black), // Border
+                side: const BorderSide(width: 1.0, color:Color(0xFFB37840)), // Border
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
@@ -38,12 +38,15 @@ class BottomButtons extends StatelessWidget {
                     "AVAIL CHURCH SERVICE",
                     style: TextStyle(
                       color: Color.fromARGB(255, 0, 0, 0),
+                      fontSize: 12,
+                      fontFamily: "DM Sans",
+                      fontWeight: FontWeight.bold,
                     ), // Change font color here
                   ),
                   Icon(
-                    Icons.arrow_right,
-                    color: Colors.black,
-                    size: 40,
+                    Icons.arrow_forward_ios,
+                    color:  Color(0xFFB37840),
+                    size: 15,
                   ),
                 ],
               ),
@@ -63,25 +66,46 @@ class BottomButtons extends StatelessWidget {
                 fixedSize: const Size(400, 60), // Adjust the width and height as needed
                 alignment: Alignment.centerLeft, // Align text to the left
                 padding: const EdgeInsets.symmetric(horizontal: 16.0), // Add padding
-                side: const BorderSide(width: 1.0, color: Colors.black), // Border
+                side: const BorderSide(width: 1.0, color: Color(0xFFB37840)), // Border
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    "VIEW/EDIT AVAILED SERVICE INFORMATION",
-                    style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "VIEW/EDIT AVAILED SERVICE\n",
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 0, 0, 0),
+                          fontFamily: "DM Sans",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "INFORMATION",
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 0, 0, 0),
+                          fontFamily: "DM Sans",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
-                  Icon(
-                    Icons.arrow_right,
-                    color: Colors.black,
-                    size: 40,
-                  ),
-                ],
-              ),
+                ),
+                const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Color(0xFFB37840),
+                  size: 15,
+                ),
+              ],
+            ),
+
             ),
           ),
           const SizedBox(height: 8),
@@ -99,7 +123,7 @@ class BottomButtons extends StatelessWidget {
                 fixedSize: const Size(400, 60), // Adjust the width and height as needed
                 alignment: Alignment.centerLeft, // Align text to the left
                 padding: const EdgeInsets.symmetric(horizontal: 16.0), // Add padding
-                side: const BorderSide(width: 1.0, color: Colors.black), // Border
+                side: const BorderSide(width: 1.0, color:Color(0xFFB37840)), // Border
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
@@ -109,12 +133,17 @@ class BottomButtons extends StatelessWidget {
                 children: const [
                   Text(
                     "CANCEL SERVICE",
-                    style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                    style: TextStyle(color: Color.fromARGB(255, 0, 0, 0),
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "DM Sans",
+                    fontSize: 12,
+                    ),
+                    
                   ),
                   Icon(
-                    Icons.arrow_right,
-                    color: Colors.black,
-                    size: 40,
+                    Icons.arrow_forward_ios,
+                    color:  Color(0xFFB37840),
+                    size: 15,
                   ),
                 ],
               ),
