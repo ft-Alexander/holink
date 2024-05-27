@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:holink/dbConnection/localhost.dart';
+import 'package:holink/features/scheduling/model/getEvent_pub_pri.dart';
 import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
-import 'package:holink/features/scheduling/model/getEvent.dart'; // Replace with the correct path to your Event model
+import 'package:http/http.dart'
+    as http; // Replace with the correct path to your Event model
 
 class EditScheduleScreen extends StatefulWidget {
   final getEvent event;
@@ -112,7 +113,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
       try {
         final response = await http.post(
           Uri.parse(
-              'http://${localhostInstance.ipServer}/dashboard/myfolder/updateEvent.php'), // Ensure the correct endpoint
+              'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/updateEvent.php'), // Ensure the correct endpoint
           headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: {
             's_id': widget.event.s_id.toString(),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holink/features/scheduling/model/getEvent.dart';
+import 'package:holink/features/scheduling/model/getEvent_pub_pri.dart';
 import 'package:intl/intl.dart'; // Replace with the correct path to your Event model
 
 class ViewEventScreen extends StatelessWidget {
