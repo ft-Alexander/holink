@@ -1,7 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:holink/dbConnection/localhost.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:intl/intl.dart';
 import 'reviewInformation.dart'; // Import the ReviewInformation file
 import '../../../../model/service_model.dart'; // Import the ServiceInformation model
 
@@ -14,7 +15,7 @@ class BlessingForm extends StatefulWidget {
 
 class _BlessingFormState extends State<BlessingForm> {
   final _formKey = GlobalKey<FormState>();
-  localhost localhostInstance = new localhost();
+  localhost localhostInstance = localhost();
 
   // Form fields
   bool houseSelected = false;
@@ -30,6 +31,12 @@ class _BlessingFormState extends State<BlessingForm> {
   TextEditingController timeController = TextEditingController();
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
+
+  @override
+  void initState() {
+    super.initState();
+    dateController.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  }
 
   @override
   void dispose() {
@@ -51,7 +58,9 @@ class _BlessingFormState extends State<BlessingForm> {
         contactController.text.isNotEmpty &&
         selectedDate != null &&
         selectedTime != null &&
-        (houseSelected || storeSelected || (othersSelected && othersController.text.isNotEmpty));
+        (houseSelected ||
+            storeSelected ||
+            (othersSelected && othersController.text.isNotEmpty));
   }
 
   String _getSelectedType() {
@@ -71,7 +80,7 @@ class _BlessingFormState extends State<BlessingForm> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        dateController.text = "${picked.month}/${picked.day}/${picked.year}";
+        dateController.text = DateFormat('yyyy-MM-dd').format(picked);
       });
     }
   }
@@ -89,48 +98,84 @@ class _BlessingFormState extends State<BlessingForm> {
     }
   }
 
- Future<void> _saveToDatabase(ServiceInformation serviceInformation) async {
-  final url = Uri.parse('https://${localhostInstance.ipServer}/dashboard/myfolder/savePrivateEvent.php');
-  try {
-    final response = await http.post(
-      url,
-      body: {
-        'date_availed': serviceInformation.date_availed.toIso8601String(),
-        'scheduled_date': serviceInformation.scheduled_date.toIso8601String(),
-        'service': serviceInformation.service,
-        'serviceType': serviceInformation.serviceType,
-        'fullName': serviceInformation.fullName,
-        'skkNumber': serviceInformation.skkNumber,
-        'address': serviceInformation.address,
-        'landmark': serviceInformation.landmark,
-        'contactNumber': serviceInformation.contactNumber,
-        'selectedType': serviceInformation.selectedType,
-      },
-    );
+  void _saveEvent() async {
+    if (_allFieldsFilled()) {
+      final DateTime eventDateTime = DateTime(
+        selectedDate!.year,
+        selectedDate!.month,
+        selectedDate!.day,
+        selectedTime!.hour,
+        selectedTime!.minute,
+      );
 
-    if (response.statusCode == 200) {
-      final responseBody = json.decode(response.body);
-      if (responseBody['success']) {
-        // Navigate to the next screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ReviewInformation(
-              serviceInformation: serviceInformation,
-            ),
-          ),
+      ServiceInformation serviceInformation = ServiceInformation(
+        date_availed: DateTime.now(),
+        scheduled_date: eventDateTime,
+        service: 'BLESSING',
+        serviceType: 'SPECIAL (Private)',
+        fullName: nameController.text,
+        skkNumber: skkController.text,
+        address: addressController.text,
+        landmark: landmarkController.text,
+        contactNumber: contactController.text,
+        selectedType: _getSelectedType(),
+      );
+
+      final url = Uri.parse(
+          'http://${localhostInstance.ipServer}/dashboard/myfolder/savePrivateEvent.php');
+      print('Saving to database: $url'); // Debug print statement
+      try {
+        final response = await http.post(
+          url,
+          // headers: {"Content-Type": "application/x-www-form-urlencoded"},
+          body: {
+            'date_availed': serviceInformation.date_availed.toIso8601String(),
+            'scheduled_date':
+                serviceInformation.scheduled_date.toIso8601String(),
+            'service': serviceInformation.service,
+            'serviceType': serviceInformation.serviceType,
+            'fullName': serviceInformation.fullName,
+            'skkNumber': serviceInformation.skkNumber,
+            'address': serviceInformation.address,
+            'landmark': serviceInformation.landmark,
+            'contactNumber': serviceInformation.contactNumber,
+            'selectedType': serviceInformation.selectedType,
+          },
         );
-      } else {
-        print('Failed to save data: ${responseBody['message']}');
+
+        print(
+            'Response status: ${response.statusCode}'); // Debug print statement
+        print('Response body: ${response.body}'); // Debug print statement
+
+        if (response.statusCode == 200) {
+          final responseBody = json.decode(response.body);
+          if (responseBody['success']) {
+            // Navigate to the next screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ReviewInformation(
+                  serviceInformation: serviceInformation,
+                ),
+              ),
+            );
+          } else {
+            print('Failed to save data: ${responseBody['message']}');
+            _showErrorMessage(
+                'Failed to save data: ${responseBody['message']}');
+          }
+        } else {
+          print('Failed to save data: ${response.statusCode}');
+          _showErrorMessage('Failed to save data: ${response.statusCode}');
+        }
+      } catch (error) {
+        print('An error occurred: $error');
+        _showErrorMessage('An error occurred: $error');
       }
     } else {
-      print('Failed to save data: ${response.statusCode}');
+      _showErrorMessage('Please fill in all fields and select a time.');
     }
-  } catch (error) {
-    print('An error occurred: $error');
   }
-}
-
 
   void _showErrorMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -183,7 +228,7 @@ class _BlessingFormState extends State<BlessingForm> {
                 });
               },
             ),
-            const Text('Others(Please Specify):'),
+            const Text('Others (Please Specify):'),
             if (othersSelected)
               Expanded(
                 child: TextFormField(
@@ -285,7 +330,8 @@ class _BlessingFormState extends State<BlessingForm> {
         child: Form(
           key: _formKey,
           onChanged: () {
-            setState(() {}); // Rebuild form on field changes to update button state
+            setState(
+                () {}); // Rebuild form on field changes to update button state
           },
           child: SingleChildScrollView(
             child: Column(
@@ -295,7 +341,8 @@ class _BlessingFormState extends State<BlessingForm> {
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFd1a65b), // Button background color
+                      backgroundColor:
+                          const Color(0xFFd1a65b), // Button background color
                       minimumSize: const Size.fromHeight(50), // Set height
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -369,34 +416,10 @@ class _BlessingFormState extends State<BlessingForm> {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: ElevatedButton(
-                    onPressed: _allFieldsFilled()
-                        ? () {
-                            if (_formKey.currentState!.validate()) {
-                              ServiceInformation serviceInformation = ServiceInformation(
-                                date_availed: DateTime.now(),
-                                scheduled_date: DateTime(
-                                  selectedDate!.year,
-                                  selectedDate!.month,
-                                  selectedDate!.day,
-                                  selectedTime!.hour,
-                                  selectedTime!.minute,
-                                ),
-                                service: 'BLESSING',
-                                serviceType: 'SPECIAL (Private)',
-                                fullName: nameController.text,
-                                skkNumber: skkController.text,
-                                address: addressController.text,
-                                landmark: landmarkController.text,
-                                contactNumber: contactController.text,
-                                selectedType: _getSelectedType(),
-                              );
-
-                              _saveToDatabase(serviceInformation);
-                            }
-                          }
-                        : null,
+                    onPressed: _allFieldsFilled() ? _saveEvent : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _allFieldsFilled() ? Colors.green : Colors.grey,
+                      backgroundColor:
+                          _allFieldsFilled() ? Colors.green : Colors.grey,
                       minimumSize: const Size(150, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
