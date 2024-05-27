@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holink/features/service/view/global_state.dart'; // Import the global state
+import 'package:holink/features/service_availment/view/global_state.dart'; // Import the global state
 
 class EditAvailedServiceInformation extends StatefulWidget {
   final int serviceIndex;
@@ -17,6 +17,10 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
   late TextEditingController _addressController;
   late TextEditingController _landmarkController;
   late TextEditingController _contactNumberController;
+  late TextEditingController _othersController;
+  bool houseSelected = false;
+  bool storeSelected = false;
+  bool othersSelected = false;
 
   @override
   void initState() {
@@ -27,6 +31,11 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
     _addressController = TextEditingController(text: service["address"] ?? '');
     _landmarkController = TextEditingController(text: service["landmark"] ?? '');
     _contactNumberController = TextEditingController(text: service["contactNumber"] ?? '');
+    String selectedType = service["selectedType"] ?? '';
+    houseSelected = selectedType == 'House';
+    storeSelected = selectedType == 'Store';
+    othersSelected = selectedType.isNotEmpty && selectedType != 'House' && selectedType != 'Store';
+    _othersController = TextEditingController(text: othersSelected ? selectedType : '');
   }
 
   @override
@@ -36,11 +45,19 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
     _addressController.dispose();
     _landmarkController.dispose();
     _contactNumberController.dispose();
+    _othersController.dispose();
     super.dispose();
   }
 
   void _submitEdit() {
     if (_formKey.currentState!.validate()) {
+      String selectedType = houseSelected
+          ? 'House'
+          : storeSelected
+              ? 'Store'
+              : othersSelected
+                  ? _othersController.text
+                  : '';
       setState(() {
         globalState.availedServices[widget.serviceIndex] = {
           "title": globalState.availedServices[widget.serviceIndex]["title"] ?? '',
@@ -52,11 +69,12 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
           "address": _addressController.text,
           "landmark": _landmarkController.text,
           "contactNumber": _contactNumberController.text,
+          "selectedType": selectedType,
         };
       });
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Service information updated successfully.')),
+        SnackBar(content: Text('Service information updated successfully. Selected Type: $selectedType')),
       );
     }
   }
@@ -92,6 +110,61 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 16),
+                const Text(
+                  'Select Type:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: houseSelected,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          houseSelected = value!;
+                          storeSelected = false;
+                          othersSelected = false;
+                          _othersController.clear();
+                        });
+                      },
+                    ),
+                    const Text('House'),
+                    Checkbox(
+                      value: storeSelected,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          storeSelected = value!;
+                          houseSelected = false;
+                          othersSelected = false;
+                          _othersController.clear();
+                        });
+                      },
+                    ),
+                    const Text('Store'),
+                    Checkbox(
+                      value: othersSelected,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          othersSelected = value!;
+                          houseSelected = false;
+                          storeSelected = false;
+                        });
+                      },
+                    ),
+                    const Text('Others(Please Specify):'),
+                    if (othersSelected)
+                      Expanded(
+                        child: TextFormField(
+                          controller: _othersController,
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _fullNameController,

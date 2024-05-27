@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'public_private.dart'; // Import the PublicPrivate file
+import 'sacraments/blessing/blessing.dart'; // Import the PublicPrivate file
 
 class SelectChurchService extends StatelessWidget {
   const SelectChurchService({super.key});

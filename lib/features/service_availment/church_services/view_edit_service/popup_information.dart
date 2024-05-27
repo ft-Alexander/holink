@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:holink/features/service_availment/church_services/view_edit_service/Reschedule_Availed_Service.dart';
 import 'Edit_Availed_Service_information.dart'; // Import the EditAvailedServiceInformation widget
-import 'reschedule_availed_service.dart'; // Import the RescheduleAvailedService widget
 
 class PopupInformation extends StatelessWidget {
   final Map<String, String> serviceDetails;
@@ -39,6 +39,10 @@ class PopupInformation extends StatelessWidget {
             const Text(
               "Parishioner's Details:",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              'Selected Type: ${serviceDetails['selectedType'] ?? 'N/A'}',
+              style: const TextStyle(fontSize: 16),
             ),
             Text(
               'Full Name: ${serviceDetails['fullName'] ?? 'N/A'}',

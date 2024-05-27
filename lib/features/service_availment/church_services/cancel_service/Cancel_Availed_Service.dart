@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:holink/features/service/view/global_state.dart'; // Import the global state
-import 'cancellation_information.dart'; // Import the CancellationInformation widget
+import 'package:holink/features/service_availment/view/global_state.dart'; // Import the global state
+import 'Cancellation_information.dart'; // Import the CancellationInformation widget
 
 class CancelAvailedService extends StatefulWidget {
   const CancelAvailedService({super.key});
