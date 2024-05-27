@@ -35,7 +35,7 @@ class _BlessingFormState extends State<BlessingForm> {
   @override
   void initState() {
     super.initState();
-    dateController.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    dateController.text = DateFormat('MM/dd/yyyy').format(DateTime.now());
   }
 
   @override
@@ -80,7 +80,7 @@ class _BlessingFormState extends State<BlessingForm> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+        dateController.text = DateFormat('MM/dd/yyyy').format(picked);
       });
     }
   }
@@ -100,38 +100,39 @@ class _BlessingFormState extends State<BlessingForm> {
 
   void _saveEvent() async {
     if (_allFieldsFilled()) {
-      final DateTime eventDateTime = DateTime(
-        selectedDate!.year,
-        selectedDate!.month,
-        selectedDate!.day,
-        selectedTime!.hour,
-        selectedTime!.minute,
-      );
-
-      ServiceInformation serviceInformation = ServiceInformation(
-        date_availed: DateTime.now(),
-        scheduled_date: eventDateTime,
-        service: 'BLESSING',
-        serviceType: 'Private',
-        fullName: nameController.text,
-        skkNumber: skkController.text,
-        address: addressController.text,
-        landmark: landmarkController.text,
-        contactNumber: contactController.text,
-        selectedType: _getSelectedType(),
-      );
-
-      final url = Uri.parse(
-          'http://${localhostInstance.ipServer}/dashboard/myfolder/service/savePrivateEvent.php');
-      print('Saving to database: $url'); // Debug print statement
       try {
+        final inputDate = dateController.text;
+        final inputTime = timeController.text;
+
+        // Combine date and time into a DateTime object
+        final DateFormat dateFormat = DateFormat('MM/dd/yyyy hh:mm a');
+        final DateTime eventDateTime = dateFormat.parse('$inputDate $inputTime');
+
+        // Convert DateTime object to a string format suitable for the database
+        final DateFormat outputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+        final String formattedDateTime = outputFormat.format(eventDateTime);
+
+        ServiceInformation serviceInformation = ServiceInformation(
+          date_availed: DateTime.now(),
+          scheduled_date: eventDateTime,
+          service: 'Blessing',
+          serviceType: 'Private',
+          fullName: nameController.text,
+          skkNumber: skkController.text,
+          address: addressController.text,
+          landmark: landmarkController.text,
+          contactNumber: contactController.text,
+          selectedType: _getSelectedType(),
+        );
+
+        final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/savePrivateEvent.php');
+        print('Saving to database: $url'); // Debug print statement
+
         final response = await http.post(
           url,
-          // headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: {
             'date_availed': serviceInformation.date_availed.toIso8601String(),
-            'scheduled_date':
-                serviceInformation.scheduled_date.toIso8601String(),
+            'scheduled_date': formattedDateTime,
             'service': serviceInformation.service,
             'serviceType': serviceInformation.serviceType,
             'fullName': serviceInformation.fullName,
@@ -142,10 +143,10 @@ class _BlessingFormState extends State<BlessingForm> {
             'selectedType': serviceInformation.selectedType,
           },
         );
+        print(formattedDateTime);
 
-        print(
-            'Response status: ${response.statusCode}'); // Debug print statement
-        print('Response body: ${response.body}'); // Debug print statement
+        // print('Response status: ${response.statusCode}'); // Debug print statement
+        // print('Response body: ${response.body}'); // Debug print statement
 
         if (response.statusCode == 200) {
           final responseBody = json.decode(response.body);
@@ -161,8 +162,7 @@ class _BlessingFormState extends State<BlessingForm> {
             );
           } else {
             print('Failed to save data: ${responseBody['message']}');
-            _showErrorMessage(
-                'Failed to save data: ${responseBody['message']}');
+            _showErrorMessage('Failed to save data: ${responseBody['message']}');
           }
         } else {
           print('Failed to save data: ${response.statusCode}');
@@ -330,8 +330,7 @@ class _BlessingFormState extends State<BlessingForm> {
         child: Form(
           key: _formKey,
           onChanged: () {
-            setState(
-                () {}); // Rebuild form on field changes to update button state
+            setState(() {}); // Rebuild form on field changes to update button state
           },
           child: SingleChildScrollView(
             child: Column(
