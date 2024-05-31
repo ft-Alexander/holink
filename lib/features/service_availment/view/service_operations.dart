@@ -22,7 +22,7 @@ class BottomButtons extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                fixedSize: const Size(400, 60), // Adjust the width and height as needed
+                fixedSize: const Size(280, 60), // Adjust the width and height as needed
                 alignment: Alignment.centerLeft, // Align text to the left
                 padding: const EdgeInsets.symmetric(horizontal: 16.0), // Add padding
                 side: const BorderSide(width: 1.0, color:Color(0xFFB37840)), // Border
@@ -63,7 +63,7 @@ class BottomButtons extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                fixedSize: const Size(400, 60), // Adjust the width and height as needed
+                fixedSize: const Size(280, 60), // Adjust the width and height as needed
                 alignment: Alignment.centerLeft, // Align text to the left
                 padding: const EdgeInsets.symmetric(horizontal: 16.0), // Add padding
                 side: const BorderSide(width: 1.0, color: Color(0xFFB37840)), // Border
@@ -120,7 +120,7 @@ class BottomButtons extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                fixedSize: const Size(400, 60), // Adjust the width and height as needed
+                fixedSize: const Size(280, 60), // Adjust the width and height as needed
                 alignment: Alignment.centerLeft, // Align text to the left
                 padding: const EdgeInsets.symmetric(horizontal: 16.0), // Add padding
                 side: const BorderSide(width: 1.0, color:Color(0xFFB37840)), // Border

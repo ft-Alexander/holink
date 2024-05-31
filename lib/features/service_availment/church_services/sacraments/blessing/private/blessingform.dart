@@ -1,7 +1,6 @@
-import 'dart:convert';
+//import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:holink/dbConnection/localhost.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'reviewInformation.dart'; // Import the ReviewInformation file
 import '../../../../model/service_model.dart'; // Import the ServiceInformation model
@@ -98,88 +97,159 @@ class _BlessingFormState extends State<BlessingForm> {
     }
   }
 
-  void _saveEvent() async {
-    if (_allFieldsFilled()) {
-      try {
-        final inputDate = dateController.text;
-        final inputTime = timeController.text;
-
-        // Combine date and time into a DateTime object
-        final DateFormat dateFormat = DateFormat('MM/dd/yyyy hh:mm a');
-        final DateTime eventDateTime = dateFormat.parse('$inputDate $inputTime');
-
-        // Convert DateTime object to a string format suitable for the database
-        final DateFormat outputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
-        final String formattedDateTime = outputFormat.format(eventDateTime);
-
-        ServiceInformation serviceInformation = ServiceInformation(
-          date_availed: DateTime.now(),
-          scheduled_date: eventDateTime,
-          service: 'Blessing',
-          serviceType: 'Private',
-          fullName: nameController.text,
-          skkNumber: skkController.text,
-          address: addressController.text,
-          landmark: landmarkController.text,
-          contactNumber: contactController.text,
-          selectedType: _getSelectedType(),
-        );
-
-        final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/savePrivateEvent.php');
-        print('Saving to database: $url'); // Debug print statement
-
-        final response = await http.post(
-          url,
-          body: {
-            'date_availed': serviceInformation.date_availed.toIso8601String(),
-            'scheduled_date': formattedDateTime,
-            'service': serviceInformation.service,
-            'serviceType': serviceInformation.serviceType,
-            'fullName': serviceInformation.fullName,
-            'skkNumber': serviceInformation.skkNumber,
-            'address': serviceInformation.address,
-            'landmark': serviceInformation.landmark,
-            'contactNumber': serviceInformation.contactNumber,
-            'selectedType': serviceInformation.selectedType,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.black),
+        centerTitle: true,
+        title: const Text(
+          'ADD INFORMATION',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(2.0),
+          child: Container(
+            height: 2.0,
+            color: Colors.green,
+          ),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          onChanged: () {
+            setState(() {}); // Rebuild form on field changes to update button state
           },
-        );
-        print(formattedDateTime);
-
-        // print('Response status: ${response.statusCode}'); // Debug print statement
-        // print('Response body: ${response.body}'); // Debug print statement
-
-        if (response.statusCode == 200) {
-          final responseBody = json.decode(response.body);
-          if (responseBody['success']) {
-            // Navigate to the next screen
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ReviewInformation(
-                  serviceInformation: serviceInformation,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          const Color(0xFFd1a65b), // Button background color
+                      minimumSize: const Size.fromHeight(50), // Set height
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: const Text(
+                      'BLESSING',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
                 ),
-              ),
-            );
-          } else {
-            print('Failed to save data: ${responseBody['message']}');
-            _showErrorMessage('Failed to save data: ${responseBody['message']}');
-          }
-        } else {
-          print('Failed to save data: ${response.statusCode}');
-          _showErrorMessage('Failed to save data: ${response.statusCode}');
-        }
-      } catch (error) {
-        print('An error occurred: $error');
-        _showErrorMessage('An error occurred: $error');
-      }
-    } else {
-      _showErrorMessage('Please fill in all fields and select a time.');
-    }
-  }
+                const SizedBox(height: 16),
+                const Text(
+                  'Please enter necessary information below.',
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 16),
+                _buildTypeSelection(),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: nameController,
+                  labelText: 'Full Name (First Name, Middle Name, Surname)',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your full name';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: skkController,
+                  labelText: 'SKK NO:',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your SKK number';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: addressController,
+                  labelText: 'Address:',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your address';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: landmarkController,
+                  labelText: 'Nearby Landmark:',
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: contactController,
+                  labelText: 'Contact Number:',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your contact number';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildScheduleDateAndTime(),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: ElevatedButton(
+                    onPressed: _allFieldsFilled()
+                        ? () {
+                            ServiceInformation serviceInformation = ServiceInformation(
+                              date_availed: DateTime.now(),
+                              scheduled_date: DateFormat('MM/dd/yyyy hh:mm a').parse('${dateController.text} ${timeController.text}'),
+                              service: 'Blessing',
+                              serviceType: 'Private',
+                              fullName: nameController.text,
+                              skkNumber: skkController.text,
+                              address: addressController.text,
+                              landmark: landmarkController.text,
+                              contactNumber: contactController.text,
+                              selectedType: _getSelectedType(),
+                            );
 
-  void _showErrorMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ReviewInformation(
+                                  serviceInformation: serviceInformation,
+                                ),
+                              ),
+                            );
+                          }
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _allFieldsFilled() ? Colors.green : Colors.grey,
+                      minimumSize: const Size(150, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: const Text('Next', style: TextStyle(fontSize: 18)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -299,139 +369,6 @@ class _BlessingFormState extends State<BlessingForm> {
           },
         ),
       ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        centerTitle: true,
-        title: const Text(
-          'ADD INFORMATION',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(2.0),
-          child: Container(
-            height: 2.0,
-            color: Colors.green,
-          ),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          onChanged: () {
-            setState(() {}); // Rebuild form on field changes to update button state
-          },
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          const Color(0xFFd1a65b), // Button background color
-                      minimumSize: const Size.fromHeight(50), // Set height
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'BLESSING',
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Please enter necessary information below.',
-                  style: TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 16),
-                _buildTypeSelection(),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  controller: nameController,
-                  labelText: 'Full Name (First Name, Middle Name, Surname)',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your full name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  controller: skkController,
-                  labelText: 'SKK NO:',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your SKK number';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  controller: addressController,
-                  labelText: 'Address:',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your address';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  controller: landmarkController,
-                  labelText: 'Nearby Landmark:',
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  controller: contactController,
-                  labelText: 'Contact Number:',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your contact number';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildScheduleDateAndTime(),
-                const SizedBox(height: 16),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: ElevatedButton(
-                    onPressed: _allFieldsFilled() ? _saveEvent : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          _allFieldsFilled() ? Colors.green : Colors.grey,
-                      minimumSize: const Size(150, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
-                    child: const Text('Next', style: TextStyle(fontSize: 18)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

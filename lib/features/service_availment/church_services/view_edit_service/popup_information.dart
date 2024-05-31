@@ -13,7 +13,7 @@ class PopupInformation extends StatelessWidget {
     // if (dateTime == null) return 'N/A';
     try {
       final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
-      final DateFormat desiredFormat = DateFormat('yyyy-MM-dd hh:mm a');
+      final DateFormat desiredFormat = DateFormat('yyyy-MM-dd');
       final DateTime date = originalFormat.parse(dateTime);
       return desiredFormat.format(date);
     } catch (e) {
@@ -58,8 +58,8 @@ class PopupInformation extends StatelessWidget {
             ),
             Text(
               'Time: ${formatTime(serviceDetails['scheduled_date']?? 'N/A')}',
-              style: const TextStyle(fontSize: 16),
-            ),
+              style: const TextStyle(fontSize: 16), 
+            ), 
             const SizedBox(height: 16),
             const Text(
               "Parishioner's Details:",

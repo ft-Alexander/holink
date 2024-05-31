@@ -1,3 +1,3 @@
 class localhost {
-  final String ipServer = "192.168.68.102";
+  final String ipServer = "25.39.3.13";
 }

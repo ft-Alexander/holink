@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:holink/dbConnection/localhost.dart';
 
 class RescheduleAvailedService extends StatefulWidget {
   final int serviceIndex;
@@ -19,6 +20,7 @@ class _RescheduleAvailedServiceState extends State<RescheduleAvailedService> {
   bool isLoading = true;
   int id = 0;
   int s_id = 0;
+  localhost localhostInstance = new localhost(); // Add this line
 
   @override
   void initState() {
@@ -29,7 +31,7 @@ class _RescheduleAvailedServiceState extends State<RescheduleAvailedService> {
   }
 
   Future<void> fetchServiceDetails() async {
-    final url = Uri.parse('http://192.168.68.102/dashboard/myfolder/service/getAllAvailedService.php');
+    final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/getAllAvailedService.php'); // Use localhost instance
     try {
       final response = await http.get(url);
       print('Response status: ${response.statusCode}');
@@ -69,60 +71,60 @@ class _RescheduleAvailedServiceState extends State<RescheduleAvailedService> {
   }
 
   Future<void> _submitReschedule() async {
-  if (_formKey.currentState!.validate()) {
-    try {
-      final inputDate = _dateController.text;
-      final inputTime = _timeController.text;
+    if (_formKey.currentState!.validate()) {
+      try {
+        final inputDate = _dateController.text;
+        final inputTime = _timeController.text;
 
-      // Combine date and time into a DateTime object
-      final DateFormat dateFormat = DateFormat('MM/dd/yyyy hh:mm a');
-      final DateTime eventDateTime = dateFormat.parse('$inputDate $inputTime');
+        // Combine date and time into a DateTime object
+        final DateFormat dateFormat = DateFormat('MM/dd/yyyy hh:mm a');
+        final DateTime eventDateTime = dateFormat.parse('$inputDate $inputTime');
 
-      // Convert DateTime object to a string format suitable for the database
-      final DateFormat outputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
-      final String formattedDateTime = outputFormat.format(eventDateTime);
+        // Convert DateTime object to a string format suitable for the database
+        final DateFormat outputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+        final String formattedDateTime = outputFormat.format(eventDateTime);
 
-      final url = Uri.parse('http://192.168.68.102/dashboard/myfolder/service/rescheduleAvailedService.php');
-      final body = {
-        's_id': s_id.toString(),
-        'id': id.toString(),
-        'event_datetime': formattedDateTime,
-      };
+        final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/rescheduleAvailedService.php'); // Use localhost instance
+        final body = {
+          's_id': s_id.toString(),
+          'id': id.toString(),
+          'event_datetime': formattedDateTime,
+        };
 
-      print('Sending request to $url with body: $body');
-      final response = await http.post(url, body: body);
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-      final data = json.decode(response.body);
-      print('Parsed data: $data');
-      if (data['success']) {
-        Navigator.pop(context, 'updated');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Service rescheduled successfully.')),
-        );
-      } else {
-        showError('Failed to reschedule service: ${data['message']}');
+        print('Sending request to $url with body: $body');
+        final response = await http.post(url, body: body);
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        final data = json.decode(response.body);
+        print('Parsed data: $data');
+        if (data['success']) {
+          Navigator.pop(context, 'updated');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Service rescheduled successfully.')),
+          );
+        } else {
+          showError('Failed to reschedule service: ${data['message']}');
+        }
+      } catch (error) {
+        print('Error rescheduling service: $error');
+        showError('An error occurred while rescheduling service: $error');
       }
-    } catch (error) {
-      print('Error rescheduling service: $error');
-      showError('An error occurred while rescheduling service: $error');
     }
   }
-}
 
-Future<void> _selectDate(BuildContext context) async {
-  final DateTime? picked = await showDatePicker(
-    context: context,
-    initialDate: DateTime.now(),
-    firstDate: DateTime(2000),
-    lastDate: DateTime(2101),
-  );
-  if (picked != null) {
-    setState(() {
-      _dateController.text = "${picked.month}/${picked.day}/${picked.year}";
-    });
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        _dateController.text = "${picked.month}/${picked.day}/${picked.year}";
+      });
+    }
   }
-}
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
