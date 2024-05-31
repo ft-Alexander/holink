@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'popup_information.dart'; // Import the PopupInformation widget
 import 'package:intl/intl.dart';
 
-
 class ViewEditInformation extends StatefulWidget {
   const ViewEditInformation({super.key});
 
@@ -97,7 +96,8 @@ class _ViewEditInformationState extends State<ViewEditInformation> with SingleTi
               },
               child: const Text("View/Edit"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
               ),
             ),
           ),
@@ -128,7 +128,7 @@ class _ViewEditInformationState extends State<ViewEditInformation> with SingleTi
           labelColor: Colors.green,
           unselectedLabelColor: const Color.fromARGB(255, 3, 3, 3),
           tabs: const [
-            Tab(text: 'All Services'),
+            Tab(text: 'Availed Service'),
             Tab(text: 'Pending'),
             Tab(text: 'Approved'),
           ],
