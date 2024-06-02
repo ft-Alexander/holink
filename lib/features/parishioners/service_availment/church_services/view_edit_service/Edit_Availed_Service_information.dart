@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:holink/dbConnection/localhost.dart';
 import 'package:http/http.dart' as http;
 
 class EditAvailedServiceInformation extends StatefulWidget {
@@ -23,8 +24,9 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
   bool storeSelected = false;
   bool othersSelected = false;
   bool isLoading = true;
-  int id=0;
-  int s_id=0;
+  int id = 0;
+  int s_id = 0;
+  localhost localhostInstance = new localhost(); // Add this line
 
   @override
   void initState() {
@@ -38,45 +40,42 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
     fetchServiceDetails();
   }
 
-
   Future<void> fetchServiceDetails() async {
-  final url = Uri.parse('http://192.168.68.102/dashboard/myfolder/service/getAllAvailedService.php');
-  try {
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['success']) {
-        var service = data['services'][widget.serviceIndex];
-        setState(() {
-          _fullNameController.text = service["fullName"] ?? '';
-          _skkNumberController.text = service["skk_number"] ?? '';
-          _addressController.text = service["address"] ?? '';
-          _landmarkController.text = service["landmark"] ?? '';
-          _contactNumberController.text = service["contact_number"] ?? '';
-          String selectedType = service["selected_type"] ?? '';
-          houseSelected = selectedType == 'House';
-          storeSelected = selectedType == 'Store';
-          othersSelected = selectedType.isNotEmpty && selectedType != 'House' && selectedType != 'Store';
-          _othersController.text = othersSelected ? selectedType : '';
-          id = int.parse(service["id"]);
-          s_id = int.parse(service["s_id"]);
-          isLoading = false;
-          print('id: $id'); // Print id
-          print('s_id: $s_id'); // Print s_id
-        });
+    final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/getAllAvailedService.php'); // Use localhost instance
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success']) {
+          var service = data['services'][widget.serviceIndex];
+          setState(() {
+            _fullNameController.text = service["fullName"] ?? '';
+            _skkNumberController.text = service["skk_number"] ?? '';
+            _addressController.text = service["address"] ?? '';
+            _landmarkController.text = service["landmark"] ?? '';
+            _contactNumberController.text = service["contact_number"] ?? '';
+            String selectedType = service["selected_type"] ?? '';
+            houseSelected = selectedType == 'House';
+            storeSelected = selectedType == 'Store';
+            othersSelected = selectedType.isNotEmpty && selectedType != 'House' && selectedType != 'Store';
+            _othersController.text = othersSelected ? selectedType : '';
+            id = int.parse(service["id"]);
+            s_id = int.parse(service["s_id"]);
+            isLoading = false;
+            print('id: $id'); // Print id
+            print('s_id: $s_id'); // Print s_id
+          });
+        } else {
+          showError('Failed to fetch service details: ${data['message']}');
+        }
       } else {
-        showError('Failed to fetch service details: ${data['message']}');
-      } 
-    } else {
-      showError('Failed to fetch service details: ${response.statusCode}');
+        showError('Failed to fetch service details: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error fetching service details: $error'); // Print detailed error
+      showError('An error occurred while fetching service details: $error');
     }
-  } catch (error) {
-    print('Error fetching service details: $error'); // Print detailed error
-    showError('An error occurred while fetching service details: $error');
   }
-}
-
-
 
   void showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -97,10 +96,10 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
                   ? _othersController.text
                   : '';
 
-      final url = Uri.parse('http://192.168.68.102/dashboard/myfolder/service/updateAvailedService.php');
+      final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/updateAvailedService.php'); // Use localhost instance
       final body = {
-        's_id':s_id.toString(),
-        'id':id.toString(),
+        's_id': s_id.toString(),
+        'id': id.toString(),
         'serviceIndex': widget.serviceIndex.toString(),
         'fullName': _fullNameController.text,
         'skkNumber': _skkNumberController.text,
@@ -313,4 +312,3 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
     );
   }
 }
-

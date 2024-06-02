@@ -14,7 +14,7 @@ class PopupInformation extends StatelessWidget {
     // if (dateTime == null) return 'N/A';
     try {
       final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
-      final DateFormat desiredFormat = DateFormat('yyyy-MM-dd hh:mm a');
+      final DateFormat desiredFormat = DateFormat('yyyy-MM-dd');
       final DateTime date = originalFormat.parse(dateTime);
       return desiredFormat.format(date);
     } catch (e) {
