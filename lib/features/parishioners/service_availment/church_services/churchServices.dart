@@ -18,8 +18,8 @@ class SelectChurchService extends StatelessWidget {
                   child: Text(
                     'AVAIL CHURCH SERVICE',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      fontWeight: FontWeight.normal,
                       color: Color.fromARGB(255, 118, 164, 38),
                     ),
                   ),
@@ -54,7 +54,7 @@ class SelectChurchService extends StatelessWidget {
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               _buildServiceButton(context, 'WEDDING'),
               _buildServiceButton(context, 'BAPTISM'),
               _buildServiceButton(context, 'CONFIRMATION'),
@@ -90,28 +90,34 @@ class SelectChurchService extends StatelessWidget {
           minimumSize: const Size.fromHeight(70), // Set height
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
-            side: const BorderSide(color: Colors.black),
+            side: const BorderSide(color: Colors.green),
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Stack(
           children: [
-            Text(
-              service,
-              style: const TextStyle(fontSize: 16, color: Colors.black),
+            Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                service,
+                style: const TextStyle(fontSize: 16, color: Colors.black),
+              ),
             ),
-            Row(
-              children: const [
-                Text(
-                  'Avail Service',
-                  style: TextStyle(fontSize: 16, color: Color(0xFFd1a65b)),
-                ),
-                Icon(
-                  Icons.arrow_right,
-                  color: Color(0xFFd1a65b),
-                  size: 24,
-                ),
-              ],
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Text(
+                    'Avail Service',
+                    style: TextStyle(fontSize: 16, color: Color(0xFFd1a65b)),
+                  ),
+                  Icon(
+                    Icons.keyboard_arrow_right_outlined,
+                    color: Color(0xFFd1a65b),
+                    size: 24,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
