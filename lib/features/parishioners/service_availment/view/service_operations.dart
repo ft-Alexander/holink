@@ -24,7 +24,7 @@ class BottomButtons extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 fixedSize: const Size(
-                    400, 60), // Adjust the width and height as needed
+                    250, 50), // Adjust the width and height as needed
                 alignment: Alignment.centerLeft, // Align text to the left
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16.0), // Add padding
@@ -43,7 +43,7 @@ class BottomButtons extends StatelessWidget {
                     "AVAIL CHURCH SERVICE",
                     style: TextStyle(
                       color: Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 12,
+                      fontSize: 10,
                       fontFamily: "DM Sans",
                       fontWeight: FontWeight.bold,
                     ), // Change font color here
@@ -70,7 +70,7 @@ class BottomButtons extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 fixedSize: const Size(
-                    400, 60), // Adjust the width and height as needed
+                    250, 50), // Adjust the width and height as needed
                 alignment: Alignment.centerLeft, // Align text to the left
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16.0), // Add padding
@@ -92,7 +92,7 @@ class BottomButtons extends StatelessWidget {
                             color: Color.fromARGB(255, 0, 0, 0),
                             fontFamily: "DM Sans",
                             fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                            fontSize: 10,
                           ),
                         ),
                         TextSpan(
@@ -101,7 +101,7 @@ class BottomButtons extends StatelessWidget {
                             color: Color.fromARGB(255, 0, 0, 0),
                             fontFamily: "DM Sans",
                             fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                            fontSize: 10,
                           ),
                         ),
                       ],
@@ -130,7 +130,7 @@ class BottomButtons extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                 fixedSize: const Size(
-                    400, 60), // Adjust the width and height as needed
+                    250, 50), // Adjust the width and height as needed
                 alignment: Alignment.centerLeft, // Align text to the left
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16.0), // Add padding
@@ -149,7 +149,7 @@ class BottomButtons extends StatelessWidget {
                       color: Color.fromARGB(255, 0, 0, 0),
                       fontWeight: FontWeight.bold,
                       fontFamily: "DM Sans",
-                      fontSize: 12,
+                      fontSize: 10,
                     ),
                   ),
                   Icon(
