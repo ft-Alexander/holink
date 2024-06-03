@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holink/constants/img.path.dart';
 import 'package:holink/features/parishioners/service_availment/church_services/churchServices.dart';
 
 class UserAgreement extends StatefulWidget {
@@ -25,12 +26,13 @@ class _UserAgreementState extends State<UserAgreement> {
           height: kToolbarHeight,
           child: Center(
             child: Padding(
-              padding: const EdgeInsets.only(top: 20.0), // Adjust the top padding as needed
+              padding: const EdgeInsets.only(
+                  top: 20.0), // Adjust the top padding as needed
               child: Image.asset(
-                'holinkLogo.png', // make sure to place the holinkLogo.png file in the assets folder and update pubspec.yaml accordingly
+                holinkWelcome, // make sure to place the holinkLogo.png file in the assets folder and update pubspec.yaml accordingly
                 fit: BoxFit.contain,
                 height: 532, // Adjust the height as needed
-                width: 532,  // Adjust the width as needed
+                width: 532, // Adjust the width as needed
               ),
             ),
           ),
@@ -69,7 +71,7 @@ class _UserAgreementState extends State<UserAgreement> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(10.0),
                 child: Image.asset(
-                  'transparent_logo.png', // make sure to place the transparent_logo.png file in the assets folder and update pubspec.yaml accordingly
+                  transparentlogo, // make sure to place the transparent_logo.png file in the assets folder and update pubspec.yaml accordingly
                   fit: BoxFit.cover,
                   width: double.infinity,
                   height: double.infinity,
@@ -78,7 +80,8 @@ class _UserAgreementState extends State<UserAgreement> {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
-                  color: Colors.white.withOpacity(0.8), // Adding a white overlay for text readability
+                  color: Colors.white.withOpacity(
+                      0.8), // Adding a white overlay for text readability
                 ),
                 padding: const EdgeInsets.all(16.0),
                 child: SingleChildScrollView(
@@ -98,7 +101,10 @@ class _UserAgreementState extends State<UserAgreement> {
                       const SizedBox(height: 16),
                       const Text(
                         'HOLINK: Integrated Management for Parishes and Diocese',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black), // Font color added
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black), // Font color added
                       ),
                       const SizedBox(height: 16),
                       const Text(
@@ -108,7 +114,10 @@ class _UserAgreementState extends State<UserAgreement> {
                       const SizedBox(height: 16),
                       const Text(
                         '1. Use of the Service',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
                       ),
                       const SizedBox(height: 8),
                       const Text(
@@ -136,7 +145,10 @@ class _UserAgreementState extends State<UserAgreement> {
                       const SizedBox(height: 16),
                       const Text(
                         '2. User Data and Privacy',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
                       ),
                       const SizedBox(height: 8),
                       const Text(
@@ -151,7 +163,10 @@ class _UserAgreementState extends State<UserAgreement> {
                       const SizedBox(height: 16),
                       const Text(
                         '3. Intellectual Property Rights',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
                       ),
                       const SizedBox(height: 8),
                       const Text(
@@ -166,7 +181,10 @@ class _UserAgreementState extends State<UserAgreement> {
                       const SizedBox(height: 16),
                       const Text(
                         '4. Limitation of Liability',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
                       ),
                       const SizedBox(height: 8),
                       const Text(
@@ -181,7 +199,10 @@ class _UserAgreementState extends State<UserAgreement> {
                       const SizedBox(height: 16),
                       const Text(
                         '5. Governing Law',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
                       ),
                       const SizedBox(height: 8),
                       const Text(
@@ -201,7 +222,9 @@ class _UserAgreementState extends State<UserAgreement> {
                           ),
                           const Text(
                             'I agree to the terms and conditions',
-                            style: TextStyle(fontSize: 16, color: Colors.black), // Font color added
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black), // Font color added
                           ),
                         ],
                       ),
@@ -213,32 +236,44 @@ class _UserAgreementState extends State<UserAgreement> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => const SelectChurchService()),
+                                        builder: (context) =>
+                                            const SelectChurchService()),
                                   );
                                 }
                               : null,
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.resolveWith<Color?>(
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color?>(
                               (Set<MaterialState> states) {
                                 if (states.contains(MaterialState.hovered)) {
-                                  return _isChecked ? Colors.green : Colors.grey; // Background color when hovered
+                                  return _isChecked
+                                      ? Colors.green
+                                      : Colors
+                                          .grey; // Background color when hovered
                                 }
-                                return _isChecked ? Colors.green : Colors.grey; // Default background color
+                                return _isChecked
+                                    ? Colors.green
+                                    : Colors.grey; // Default background color
                               },
                             ),
-                            foregroundColor: MaterialStateProperty.resolveWith<Color?>(
+                            foregroundColor:
+                                MaterialStateProperty.resolveWith<Color?>(
                               (Set<MaterialState> states) {
                                 if (states.contains(MaterialState.hovered)) {
-                                  return Colors.white; // Text color when hovered
+                                  return Colors
+                                      .white; // Text color when hovered
                                 }
                                 return Colors.black; // Default text color
                               },
                             ),
                             fixedSize: MaterialStateProperty.all<Size>(
-                              const Size(220, 50), // Adjust the width to prevent text wrapping
+                              const Size(220,
+                                  50), // Adjust the width to prevent text wrapping
                             ),
-                            alignment: Alignment.center, // Ensure text is centered
-                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                            alignment:
+                                Alignment.center, // Ensure text is centered
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10.0),
                               ),
@@ -246,7 +281,9 @@ class _UserAgreementState extends State<UserAgreement> {
                           ),
                           child: const Text(
                             'Agree and Proceed',
-                            style: TextStyle(fontSize: 18, color: Colors.white), // Text color added
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white), // Text color added
                           ),
                         ),
                       ),

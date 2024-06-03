@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:holink/features/parishioners/service_availment/view/serviceWidget/service_information.dart'; // Service information
-import 'package:holink/features/parish/scheduling/view/scheduling.dart'; // Import the Scheduling widget
-import 'package:holink/features/parishioners/profile/view/parishioners_profile.dart'; // Import the ParishionersProfileScreen
-import 'package:holink/constants/bottom_nav_parishioners.dart'; // Import the BottomNavBarParishioners
-import 'service_operations.dart'; // Import the BottomButtons widget
+import 'package:holink/features/parishioners/service_availment/view/serviceWidget/service_information.dart';
+import 'package:holink/features/parishioners/profile/view/parishioners_profile.dart';
+import 'package:holink/constants/bottom_nav_parishioners.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'service_operations.dart';
 
 class Service extends StatefulWidget {
   const Service({super.key});
@@ -17,17 +17,12 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
   DateTime selectedDate = DateTime.now();
   late TabController _tabController;
   int _selectedIndex = 1; // Set default index to 1 for Service tab
+  CalendarFormat _calendarFormat = CalendarFormat.month;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-  }
-
-  void _onDaySelected(DateTime day, DateTime focusedDay) {
-    setState(() {
-      selectedDate = day;
-    });
   }
 
   void _onItemTapped(int index, BuildContext context) {
@@ -41,16 +36,87 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
   }
 
   final Map<int, Widget> bottomNavBarRoutes = {
-    0: Scaffold(body: Center(child: Text("Dashboard"))), // Blank screen for Dashboard
-    1: Service(), // Service screen
-    2: Scaffold(body: Center(child: Text("Finance"))), // Blank screen for Finance
-    3: ParishionersProfileScreen(), // Profile screen
+    0: Scaffold(
+        body: Center(child: Text("Dashboard"))), // Blank screen for Dashboard
+    1: const Service(), // Service screen
+    2: Scaffold(
+        body: Center(child: Text("Finance"))), // Blank screen for Finance
+    3: const ParishionersProfileScreen(), // Profile screen
   };
+
+  Widget _buildCalendar() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(
+          color: const Color.fromRGBO(179, 120, 64, 1.0),
+          width: 1.0,
+        ),
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(1.0), // Add padding inside the container
+        child: TableCalendar(
+          focusedDay: selectedDate,
+          firstDay: DateTime(1990),
+          lastDay: DateTime(2050),
+          calendarFormat: _calendarFormat,
+          onFormatChanged: (format) {
+            setState(() {
+              _calendarFormat = format;
+            });
+          },
+          daysOfWeekVisible: true,
+          selectedDayPredicate: (date) {
+            return isSameDay(selectedDate, date);
+          },
+          calendarStyle: const CalendarStyle(
+            isTodayHighlighted: true,
+            selectedDecoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [Color(0xFFCDA782), Color(0xFFEFDBC7)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            todayDecoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [Color(0xFFE8DACE), Color(0xFFD0CDC9)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            markersMaxCount: 1,
+            markerSizeScale: 0.4,
+            cellMargin: EdgeInsets.all(4.0),
+            markersAlignment: Alignment.bottomCenter,
+          ),
+          headerStyle: HeaderStyle(
+            formatButtonVisible: true,
+            titleCentered: false,
+            formatButtonShowsNext: false,
+            formatButtonDecoration: BoxDecoration(
+              color: const Color.fromRGBO(179, 120, 64, 1.0),
+              border:
+                  Border.all(color: const Color.fromRGBO(179, 120, 64, 1.0)),
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            formatButtonTextStyle: const TextStyle(color: Colors.white),
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _getSelectedWidget() {
     switch (_selectedIndex) {
       case 0:
-        return const Scheduling();
+        return const Scaffold(
+          body: Center(child: Text("Dashboard")),
+        );
       case 1:
         return Scaffold(
           appBar: AppBar(
@@ -62,17 +128,18 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
               ),
             ],
             bottom: PreferredSize(
-              preferredSize: Size.fromHeight(30.0), // Adjust the height as needed
+              preferredSize:
+                  const Size.fromHeight(30.0), // Adjust the height as needed
               child: TabBar(
                 controller: _tabController,
                 indicatorColor: Colors.green,
                 labelColor: Colors.green,
                 unselectedLabelColor: const Color.fromARGB(255, 3, 3, 3),
-                labelStyle: TextStyle(
+                labelStyle: const TextStyle(
                   fontSize: 14.0, // Adjust font size
                   fontWeight: FontWeight.normal, // Adjust font weight
                 ),
-                unselectedLabelStyle: TextStyle(
+                unselectedLabelStyle: const TextStyle(
                   fontSize: 14.0, // Adjust font size
                   fontWeight: FontWeight.normal, // Adjust font weight
                 ),
@@ -86,101 +153,45 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
           body: TabBarView(
             controller: _tabController,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Stack(
-                        clipBehavior: Clip.none, // Ensure overflow is visible
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 40.0), // Adjust the position of the image
-                            child: Image.asset(
-                              'PCalendar.png', // Use the correct path to your placeholder image
-                              height: 298,
-                              width: 331,
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildCalendar(),
+                      const SizedBox(height: 8.0),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Implement your navigation logic here
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromRGBO(179, 120, 64, 1.0),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
                             ),
                           ),
-                          Positioned(
-                            top: 13, // Adjust the vertical position
-                            left: 10, // Adjust the horizontal position
-                            child: SizedBox(
-                              height: 38, // Adjust this value to control the height
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 13.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.green[600],
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  border: Border.all(color: Colors.grey),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<String>(
-                                    value: selectedChurch,
-                                    icon: const Icon(Icons.keyboard_arrow_down_outlined, color: Colors.white), // Adjust icon color
-                                    iconSize: 20,
-                                    elevation: 16,
-                                    style: const TextStyle(color: Color.fromARGB(255, 249, 248, 248), fontSize: 10),
-                                    dropdownColor: Colors.green[600], // Color of the dropdown menu
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        selectedChurch = newValue!;
-                                      });
-                                    },
-                                    items: <String>[
-                                      'St. John the Baptist (San Fernando)',
-                                      'St. Peter\'s Church',
-                                      'St. Mary\'s Cathedral'
-                                    ].map<DropdownMenuItem<String>>((String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(value),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                              ),
+                          child: const Text(
+                            "View Activities",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14.0, // Adjust font size
+                              fontWeight: FontWeight.normal,
                             ),
                           ),
-                          Positioned(
-                            bottom: -25, // Adjust the vertical position to ensure visibility
-                            left: 40, // Adjust the horizontal position
-                            right: 40, // Adjust the horizontal position
-                            child: Center(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => const Scheduling()),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green[600], // Background color
-                                  padding: EdgeInsets.symmetric(horizontal: 17, vertical: 10), // Button padding
-                                  textStyle: TextStyle(fontSize: 10), // Font size
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0), // Border radius
-                                    side: BorderSide(color: Colors.grey), // Border color
-                                  ),
-                                ),
-                                child: const Text(
-                                  "View Schedules",
-                                  style: TextStyle(color: Colors.white), // Font color
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8.0),
-                    const Spacer(), // Push the buttons to the bottom
-                    const BottomButtons(), // Call the BottomButtons widget here
-                  ],
+                      const SizedBox(height: 8.0),
+                      const BottomButtons(), // Use BottomButtons here
+                    ],
+                  ),
                 ),
               ),
-              // Call the ServiceInformation widget here
               const ServiceInformation(),
             ],
           ),
