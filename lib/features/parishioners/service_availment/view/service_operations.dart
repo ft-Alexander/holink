@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:holink/features/parishioners/service_availment/church_services/userAgreement.dart'; // Import the User Agreement widget
-import 'package:holink/features/parishioners/service_availment/church_services/view_edit_service/ViewEditInformation.dart'; // Import the ViewEditInformation widget
-import 'package:holink/features/parishioners/service_availment/church_services/cancel_service/Cancel_Availed_Service.dart'; // Import the CancelAvailedService widget
+import 'package:holink/features/parishioners/service_availment/church_services/userAgreement.dart';
+import 'package:holink/features/parishioners/service_availment/church_services/view_edit_service/ViewEditInformation.dart';
+import 'package:holink/features/parishioners/service_availment/church_services/cancel_service/Cancel_Availed_Service.dart';
 
 class BottomButtons extends StatelessWidget {
   const BottomButtons({Key? key}) : super(key: key);
@@ -15,21 +15,18 @@ class BottomButtons extends StatelessWidget {
           Center(
             child: ElevatedButton(
               onPressed: () {
-                // Navigate to the UserAgreement page
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const UserAgreement()),
+                    builder: (context) => const UserAgreement(),
+                  ),
                 );
               },
               style: ElevatedButton.styleFrom(
-                fixedSize: const Size(
-                    250, 50), // Adjust the width and height as needed
-                alignment: Alignment.centerLeft, // Align text to the left
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0), // Add padding
-                side: const BorderSide(
-                    width: 1.0, color: Color(0xFFB37840)), // Border
+                fixedSize: const Size(250, 50),
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                side: const BorderSide(width: 1.0, color: Color(0xFFB37840)),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
@@ -46,7 +43,7 @@ class BottomButtons extends StatelessWidget {
                       fontSize: 10,
                       fontFamily: "DM Sans",
                       fontWeight: FontWeight.bold,
-                    ), // Change font color here
+                    ),
                   ),
                   Icon(
                     Icons.arrow_forward_ios,
@@ -61,21 +58,18 @@ class BottomButtons extends StatelessWidget {
           Center(
             child: ElevatedButton(
               onPressed: () {
-                // Navigate to the ViewEditInformation page
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const ViewEditInformation()),
+                    builder: (context) => const ViewEditInformation(),
+                  ),
                 );
               },
               style: ElevatedButton.styleFrom(
-                fixedSize: const Size(
-                    250, 50), // Adjust the width and height as needed
-                alignment: Alignment.centerLeft, // Align text to the left
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0), // Add padding
-                side: const BorderSide(
-                    width: 1.0, color: Color(0xFFB37840)), // Border
+                fixedSize: const Size(250, 50),
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                side: const BorderSide(width: 1.0, color: Color(0xFFB37840)),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
@@ -120,22 +114,19 @@ class BottomButtons extends StatelessWidget {
           Center(
             child: ElevatedButton(
               onPressed: () {
-                // Navigate to the CancelAvailedService page
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const CancelAvailedService()),
+                    builder: (context) => const CancelAvailedService(),
+                  ),
                 );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                fixedSize: const Size(
-                    250, 50), // Adjust the width and height as needed
-                alignment: Alignment.centerLeft, // Align text to the left
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0), // Add padding
-                side: const BorderSide(
-                    width: 1.0, color: Color(0xFFB37840)), // Border
+                fixedSize: const Size(250, 50),
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                side: const BorderSide(width: 1.0, color: Color(0xFFB37840)),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),

@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:holink/features/authentication/views/login.dart';
-import 'package:holink/features/parish/dashboard/view/dashboard.dart';
-import 'package:holink/features/parish/financial/view/financial_transactions.dart';
-import 'package:holink/features/parish/scheduling/view/scheduling.dart';
 import 'package:holink/features/parishioners/service_availment/view/service.dart'; // Import your service screen
 
 class ParishionersProfileScreen extends StatefulWidget {
   const ParishionersProfileScreen({super.key});
 
   @override
-  State<ParishionersProfileScreen> createState() => _ParishionersProfileScreenState();
+  State<ParishionersProfileScreen> createState() =>
+      _ParishionersProfileScreenState();
 }
 
 class _ParishionersProfileScreenState extends State<ParishionersProfileScreen> {
   int _selectedIndexBotNav = 3;
 
   final Map<int, Widget> bottomNavBarRoutes = {
-    0: Scaffold(body: Center(child: Text("Dashboard"))), // Blank screen for Dashboard
+    0: Scaffold(
+        body: Center(child: Text("Dashboard"))), // Blank screen for Dashboard
     1: Service(), // Service screen
-    2: Scaffold(body: Center(child: Text("Finance"))), // Blank screen for Finance
+    2: Scaffold(
+        body: Center(child: Text("Finance"))), // Blank screen for Finance
     3: ParishionersProfileScreen(), // Profile screen
   };
 
