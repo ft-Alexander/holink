@@ -116,11 +116,7 @@ class _ViewEditInformationState extends State<ViewEditInformation> with SingleTi
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {},
-          ),
+        actions: [        
         ],
         bottom: TabBar(
           controller: _tabController,
@@ -134,8 +130,8 @@ class _ViewEditInformationState extends State<ViewEditInformation> with SingleTi
           ],
         ),
         title: const Text(
-          'View/Edit Availed Service Information',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          'View/Edit Availed Service',
+          style: TextStyle(fontSize: 15,color: Colors.green, fontWeight: FontWeight.normal),
         ),
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),

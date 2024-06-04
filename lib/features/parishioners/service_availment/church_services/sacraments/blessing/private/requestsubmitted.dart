@@ -17,14 +17,15 @@ class RequestSubmitted extends StatelessWidget {
               'Avail Church Service',
               style: TextStyle(
                 fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.normal,
+                color: Colors.green,
               ),
             ),
             const SizedBox(height: 32),
             const Icon(
-              Icons.check_circle,
+              Icons.check_circle_outline,
               color: Colors.green,
-              size: 100,
+              size: 200,
             ),
             const SizedBox(height: 32),
             const Text(
@@ -39,7 +40,7 @@ class RequestSubmitted extends StatelessWidget {
             const Text(
               'This is to confirm that we have successfully received your request description for [Blessing]. Our team is currently reviewing your request, and we will get back to you shortly with further details.\n\nShould you have any questions or need immediate assistance, please do not hesitate to contact us at [+63XXXXXXXXXX].',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 13),
             ),
             const SizedBox(height: 32),
             ElevatedButton(
@@ -57,7 +58,7 @@ class RequestSubmitted extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-              child: const Text('Return', style: TextStyle(fontSize: 18)),
+              child: const Text('Return', style: TextStyle(fontSize: 18, color: Colors.white)),
             ),
           ],
         ),

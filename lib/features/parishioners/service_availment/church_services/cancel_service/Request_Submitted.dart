@@ -16,13 +16,13 @@ class RequestSubmitted extends StatelessWidget {
             const Icon(
               Icons.check_circle_outline,
               color: Colors.green,
-              size: 100,
+              size: 200,
             ),
             const SizedBox(height: 16),
             const Text(
               'Avail Church Service',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -30,7 +30,7 @@ class RequestSubmitted extends StatelessWidget {
             const Text(
               'Cancellation Request Submitted!',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 17,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -39,7 +39,7 @@ class RequestSubmitted extends StatelessWidget {
               'This is to confirm that we have successfully received your request description for [Cancellation]. Our team is currently reviewing your request, and we will get back to you shortly with further details.\n\nShould you have any questions or need immediate assistance, please do not hesitate to contact us at [+63XXXXXXXXXX].',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 13,
               ),
             ),
             const SizedBox(height: 32),
@@ -59,7 +59,7 @@ class RequestSubmitted extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-              child: const Text('Return', style: TextStyle(fontSize: 18)),
+              child: const Text('Return', style: TextStyle(fontSize: 18, color: Colors.white)),
             ),
           ],
         ),
