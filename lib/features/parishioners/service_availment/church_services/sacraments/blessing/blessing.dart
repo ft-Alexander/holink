@@ -112,8 +112,8 @@ class PublicPrivate extends StatelessWidget {
                   style: TextStyle(fontSize: 16, color: Color(0xFFd1a65b)),
                 ),
                 Icon(
-                  Icons.arrow_forward,
-                  size: 24,
+                  Icons.keyboard_arrow_right_outlined,
+                  size: 20,
                   color: Color(0xFFd1a65b),
                 ),
               ],

@@ -99,22 +99,29 @@ class ReviewInformation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        centerTitle: true,
-        title: const Text(
-          'REVIEW INFORMATION',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(2.0),
-          child: Container(
-            height: 2.0,
-            color: Colors.green,
+          preferredSize: const Size.fromHeight(50.0),
+          child: Column(
+            children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'REVIEW INFORMATION',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.normal,
+                      color: Color.fromARGB(255, 118, 164, 38),
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                height: 2.0,
+                color: Colors.green,
+                width: double.infinity,
+              ),
+            ],
           ),
         ),
       ),
@@ -178,7 +185,7 @@ class ReviewInformation extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
-                child: const Text('Next', style: TextStyle(fontSize: 18)),
+                child: const Text('Next', style: TextStyle(fontSize: 18, color: Colors.white)),
               ),
             ),
           ],

@@ -73,30 +73,31 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications),
-            onPressed: () {},
-          ),
-        ],
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(2.0),
-          child: Container(
-            height: 2.0,
-            color: Colors.green,
+          preferredSize: const Size.fromHeight(50.0),
+          child: Column(
+            children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'CANCEL SERVICE',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.normal,
+                      color: Color.fromARGB(255, 118, 164, 38),
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                height: 2.0,
+                color: Colors.green,
+                width: double.infinity,
+              ),
+            ],
           ),
         ),
-        title: const Text(
-          'Cancel Service',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        centerTitle: true,
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -155,9 +156,15 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
                                     ),
                                   );
                                 },
-                                child: const Text("Cancel"),
+                                child: const Text(
+                                  "Cancel",
+                                  style: TextStyle(
+                                    color: Colors.white, // Change this to the color you want
+                                  ),
+                                ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,
+                                  
                                 ),
                               ),
                             ),

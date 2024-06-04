@@ -116,7 +116,7 @@ class PopupInformation extends StatelessWidget {
                       ),
                     ),
                     child: const Text('Edit Information',
-                        style: TextStyle(fontSize: 14)),
+                        style: TextStyle(fontSize: 14, color: Colors.white)),
                   ),
                   ElevatedButton(
                     onPressed: () async {
@@ -139,7 +139,7 @@ class PopupInformation extends StatelessWidget {
                       ),
                     ),
                     child: const Text('Reschedule',
-                        style: TextStyle(fontSize: 14)),
+                        style: TextStyle(fontSize: 14, color: Colors.white)),
                   ),
                 ],
               ),

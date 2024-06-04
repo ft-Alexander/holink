@@ -149,24 +149,31 @@ class _RescheduleAvailedServiceState extends State<RescheduleAvailedService> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(2.0),
-          child: Container(
-            height: 2.0,
-            color: Colors.green,
+          preferredSize: const Size.fromHeight(50.0),
+          child: Column(
+            children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'RESCHEDULE SERVICE',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.normal,
+                      color: Color.fromARGB(255, 118, 164, 38),
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                height: 2.0,
+                color: Colors.green,
+                width: double.infinity,
+              ),
+            ],
           ),
         ),
-        title: const Text(
-          'Reschedule Service',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        centerTitle: true,
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

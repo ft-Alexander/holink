@@ -121,11 +121,7 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
         return Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.notifications),
-                onPressed: () {},
-              ),
+            actions: [             
             ],
             bottom: PreferredSize(
               preferredSize:
