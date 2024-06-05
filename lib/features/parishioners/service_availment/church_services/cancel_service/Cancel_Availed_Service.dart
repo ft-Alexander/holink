@@ -136,7 +136,8 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Card(
                             child: ListTile(
-                              title: Text(service["service"] ?? 'N/A'),
+                              title: Text(
+                                  '${service["service"] ?? 'N/A'} (ID#: ${service["id"] ?? 'N/A'})'),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -159,12 +160,12 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
                                 child: const Text(
                                   "Cancel",
                                   style: TextStyle(
-                                    color: Colors.white, // Change this to the color you want
+                                    color: Colors
+                                        .white, // Change this to the color you want
                                   ),
                                 ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,
-                                  
                                 ),
                               ),
                             ),
