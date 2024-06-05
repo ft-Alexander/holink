@@ -7,14 +7,16 @@ import 'package:holink/dbConnection/localhost.dart';
 import 'package:holink/features/parish/financial/view/financial_transactions.dart';
 import 'package:holink/features/parish/financial/model/transaction.dart';
 
-class RecordFinancialTransactionPage extends StatefulWidget {
-  const RecordFinancialTransactionPage({super.key});
+class EditFinancialTransactionPage extends StatefulWidget {
+  final Transaction transaction;
+
+  const EditFinancialTransactionPage({super.key, required this.transaction});
 
   @override
-  _RecordFinancialTransactionPageState createState() => _RecordFinancialTransactionPageState();
+  _EditFinancialTransactionPageState createState() => _EditFinancialTransactionPageState();
 }
 
-class _RecordFinancialTransactionPageState extends State<RecordFinancialTransactionPage> {
+class _EditFinancialTransactionPageState extends State<EditFinancialTransactionPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _transactionIdController = TextEditingController();
   final TextEditingController _employeeIdController = TextEditingController();
@@ -35,7 +37,7 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
   @override
   void initState() {
     super.initState();
-    _fetchNextTransactionId();
+    _initializeFields();
     _employeeIdController.addListener(_onFormChange);
     _amountController.addListener(_onFormChange);
     _titleController.addListener(_onFormChange);
@@ -43,28 +45,17 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
     _dateController.addListener(_onFormChange);
   }
 
-  Future<void> _fetchNextTransactionId() async {
-    final url = 'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/getCurrentTransactionId.php'; // Replace with your server URL
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      final responseBody = json.decode(response.body);
-      if (responseBody['success']) {
-        setState(() {
-          _transactionIdController.text = responseBody['next_transaction_id'].toString();
-        });
-      } else {
-        // Handle failure
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to fetch transaction ID: ${responseBody['message']}')),
-        );
-      }
-    } else {
-      // Handle server error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Server error: ${response.reasonPhrase}')),
-      );
-    }
+  void _initializeFields() {
+    _transactionIdController.text = widget.transaction.transaction_id.toString();
+    _employeeIdController.text = widget.transaction.par_id.toString();
+    _amountController.text = widget.transaction.amount;
+    _titleController.text = widget.transaction.title;
+    _descriptionController.text = widget.transaction.description;
+    _dateController.text = DateFormat('yyyy-MM-dd').format(widget.transaction.date);
+    _transactionType = widget.transaction.type;
+    _selectedTransactionCategory = widget.transaction.transaction_category;
+    _selectedSacramentalType = widget.transaction.sacramental_type;
+    _selectedSpecialEventType = widget.transaction.special_event_type;
   }
 
   @override
@@ -105,47 +96,7 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
     }
   }
 
-  void _showDiscardChangesDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Discard Changes?'),
-          content: const Text('You have unsaved changes. Do you really want to discard them?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const TransactionsPage()),
-                );
-              },
-              child: const Text('Discard'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  bool get _showSacramentalTypeDropdown {
-    return _selectedTransactionCategory == 'Sacramental Collection' ||
-           _selectedTransactionCategory == 'Sacramental Offering';
-  }
-
-  bool get _showSpecialEventTypeDropdown {
-    return _selectedTransactionCategory == 'Special Event Collection' ||
-           _selectedTransactionCategory == 'Special Event Offering';
-  }
-
-  Future<void> _recordTransaction() async {
+  Future<void> _editTransaction() async {
     final transaction = Transaction(
       transaction_id: int.parse(_transactionIdController.text),
       par_id: int.parse(_employeeIdController.text),
@@ -160,7 +111,7 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
       archive_status: archive_status,
     );
 
-    final url = 'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/saveTransaction.php'; // Replace with your server URL
+    final url = 'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/editTransactions.php'; // Replace with your server URL
 
     try {
       final response = await http.post(
@@ -178,13 +129,11 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
             MaterialPageRoute(builder: (context) => const TransactionsPage()),
           );
         } else {
-          // Handle failure
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to record transaction: ${responseBody['message']}')),
+            SnackBar(content: Text('Failed to edit transaction: ${responseBody['message']}')),
           );
         }
       } else {
-        // Handle server error
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Server error: ${response.reasonPhrase}')),
         );
@@ -196,12 +145,54 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
     }
   }
 
+  bool get _showSacramentalTypeDropdown {
+    return _selectedTransactionCategory == 'Sacramental Collection' ||
+           _selectedTransactionCategory == 'Sacramental Offering';
+  }
+
+  bool get _showSpecialEventTypeDropdown {
+    return _selectedTransactionCategory == 'Special Event Collection' ||
+           _selectedTransactionCategory == 'Special Event Offering';
+  }
+
+  List<String> _getTransactionCategories() {
+    if (_transactionType == 'Income') {
+      return [
+        'Mass Collection',
+        'Mass Offering',
+        'Sacramental Collection',
+        'Sacramental Offering',
+        'Special Event Collection',
+        'Special Event Offering',
+        'Fund Raising',
+        'Donation'
+      ];
+    } else if (_transactionType == 'Expense') {
+      return [
+        'Communication Expense',
+        'Electricity Bill',
+        'Water Bill',
+        'Office Supply',
+        'Transportation',
+        'Salary',
+        'SSS',
+        'PhilHealth',
+        'Social Service / Charity',
+        'Food',
+        'Decorso Sustento-PP / GP',
+        'Other Parish Expenses'
+      ];
+    } else {
+      return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: _buildTopNavBar(),
+        title: const Text('Edit Financial Transaction'),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -220,22 +211,6 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
     );
   }
 
-  Widget _buildTopNavBar() {
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.only(top: 20.0, bottom: 8.0),
-        child: Text(
-          'RECORD \n FINANCIAL TRANSACTION',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildForm() {
     return Column(
       children: [
@@ -244,12 +219,6 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
           decoration: const InputDecoration(
             labelText: 'Transaction ID',
             border: OutlineInputBorder(),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffB37840)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffB37840)),
-            ),
           ),
           enabled: false,
         ),
@@ -259,12 +228,6 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
           decoration: const InputDecoration(
             labelText: 'Employee ID',
             border: OutlineInputBorder(),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffB37840)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffB37840)),
-            ),
           ),
         ),
         const SizedBox(height: 10.0),
@@ -274,13 +237,8 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
           decoration: const InputDecoration(
             labelText: 'Select Transaction Category',
             border: OutlineInputBorder(),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffB37840)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffB37840)),
-            ),
           ),
+          value: _selectedTransactionCategory,
           items: _getTransactionCategories().map((String value) {
             return DropdownMenuItem<String>(
               value: value,
@@ -301,7 +259,6 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
             }
             return null;
           },
-          value: _selectedTransactionCategory,
         ),
         if (_showSacramentalTypeDropdown) const SizedBox(height: 10.0),
         if (_showSacramentalTypeDropdown)
@@ -309,12 +266,6 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
             decoration: const InputDecoration(
               labelText: 'Select Sacramental Type',
               border: OutlineInputBorder(),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Color(0xffB37840)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Color(0xffB37840)),
-              ),
             ),
             items: <String>[
               'Baptism',
@@ -349,12 +300,6 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
             decoration: const InputDecoration(
               labelText: 'Select Special Event Type',
               border: OutlineInputBorder(),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Color(0xffB37840)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Color(0xffB37840)),
-              ),
             ),
             items: <String>[
               'Baptism',
@@ -395,12 +340,6 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
                     decoration: const InputDecoration(
                       labelText: 'Select Date',
                       border: OutlineInputBorder(),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xffB37840)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xffB37840)),
-                      ),
                       suffixIcon: Icon(Icons.calendar_today),
                     ),
                     validator: (value) {
@@ -421,12 +360,6 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
                 decoration: const InputDecoration(
                   labelText: 'Enter Amount',
                   border: OutlineInputBorder(),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xffB37840)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xffB37840)),
-                  ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -448,12 +381,6 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
           decoration: const InputDecoration(
             labelText: 'Enter Title',
             border: OutlineInputBorder(),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffB37840)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffB37840)),
-            ),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -469,12 +396,6 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
           decoration: const InputDecoration(
             labelText: 'Enter Description',
             border: OutlineInputBorder(),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffB37840)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffB37840)),
-            ),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -485,38 +406,6 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
         ),
       ],
     );
-  }
-
-  List<String> _getTransactionCategories() {
-    if (_transactionType == 'Income') {
-      return [
-        'Mass Collection',
-        'Mass Offering',
-        'Sacramental Collection',
-        'Sacramental Offering',
-        'Special Event Collection',
-        'Special Event Offering',
-        'Fund Raising',
-        'Donation'
-      ];
-    } else if (_transactionType == 'Expense') {
-      return [
-        'Communication Expense',
-        'Electricity Bill',
-        'Water Bill',
-        'Office Supply',
-        'Transportation',
-        'Salary',
-        'SSS',
-        'PhilHealth',
-        'Social Service / Charity',
-        'Food',
-        'Decorso Sustento-PP / GP',
-        'Other Parish Expenses'
-      ];
-    } else {
-      return [];
-    }
   }
 
   Widget _buildTransactionTypeRadio() {
@@ -565,11 +454,11 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
         ElevatedButton(
           onPressed: () {
             if (_isFormModified) {
-              _showDiscardChangesDialog(context);
+              Navigator.pop(context);
             } else {
-              Navigator.pushReplacement(
-                context,
+              Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => const TransactionsPage()),
+                (Route<dynamic> route) => false,
               );
             }
           },
@@ -591,7 +480,7 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
         ElevatedButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              _recordTransaction();
+              _editTransaction();
             }
           },
           style: ElevatedButton.styleFrom(
@@ -602,7 +491,7 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
             ),
           ),
           child: const Text(
-            'Record',
+            'Save',
             style: TextStyle(
               color: Colors.white,
             ),
