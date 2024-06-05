@@ -4,10 +4,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:holink/dbConnection/localhost.dart';
-import 'package:holink/features/financial/view/financial_reports.dart';
-import 'package:holink/features/financial/services/financial_record_tx.dart';
-import 'package:holink/features/financial/services/financial_edit_record.dart';
-import 'package:holink/features/financial/model/transaction.dart';
+import 'package:holink/features/parish/financial/view/financial_reports.dart';
+import 'package:holink/features/parish/financial/services/financial_record_tx.dart';
+import 'package:holink/features/parish/financial/services/financial_edit_record.dart';
+import 'package:holink/features/parish/financial/model/transaction.dart';
 
 class TransactionsPage extends StatefulWidget {
   const TransactionsPage({super.key});

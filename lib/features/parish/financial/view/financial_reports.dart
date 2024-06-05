@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:holink/features/financial/services/financial_view_report.dart';
+import 'package:holink/features/parish/financial/services/financial_view_report.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:holink/dbConnection/localhost.dart';
-import 'package:holink/features/financial/view/financial_transactions.dart';
-import 'package:holink/features/financial/model/transaction.dart';
+import 'package:holink/features/parish/financial/view/financial_transactions.dart';
+import 'package:holink/features/parish/financial/model/transaction.dart';
 
 class ReportsPage extends StatefulWidget {
   const ReportsPage({super.key});

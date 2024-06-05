@@ -6,7 +6,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:holink/constants/global.color.dart';
 import 'package:holink/constants/sizes.dart';
 import 'package:holink/features/scheduling/view/scheduling.dart';
-import 'package:holink/features/financial/view/financial_transactions.dart';
+import 'package:holink/features/parish/financial/view/financial_transactions.dart';
 import 'package:holink/features/service_availment/view/service.dart';
 import 'package:http/http.dart' as http;
 import 'package:holink/dbConnection/localhost.dart';

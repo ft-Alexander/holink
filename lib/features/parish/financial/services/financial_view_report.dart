@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:holink/features/financial/view/financial_reports.dart';
+import 'package:holink/features/parish/financial/view/financial_reports.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
