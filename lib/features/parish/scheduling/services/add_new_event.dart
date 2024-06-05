@@ -299,12 +299,19 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 });
               },
               items: (event_type == 'Public'
-                      ? ['Wedding', 'Baptism', 'Blessing', 'Seminar']
+                      ? [
+                          'Wedding',
+                          'Baptism',
+                          'Blessing',
+                          'Seminar',
+                          "Confirmation"
+                        ]
                       : [
                           'Chapel Mass',
                           'Parish Mass',
                           'Barangay Mass',
-                          'Confession'
+                          'Confession',
+                          'Holy Order',
                         ])
                   .map((String value) {
                 return DropdownMenuItem<String>(
