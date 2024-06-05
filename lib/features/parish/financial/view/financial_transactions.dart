@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:holink/constants/bottom_nav_parish.dart';
+import 'package:holink/features/parish/dashboard/view/dashboard.dart';
+import 'package:holink/features/parish/profile/view/profile.dart';
+import 'package:holink/features/parish/scheduling/view/scheduling.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -24,6 +28,31 @@ class _TransactionsPageState extends State<TransactionsPage> {
   int? selectedDay;
   String? selectedTransactionType;
   String? selectedTransactionCategory;
+
+  int _selectedIndexBotNav = 2;
+
+  final Map<int, Widget> bottomNavBarRoutes = {
+    0: Dashboard(),
+    1: Scheduling(),
+    2: TransactionsPage(),
+    3: ProfileScreen(),
+  };
+
+  void _navigateTo(int index, BuildContext context, Map<int, Widget> routes) {
+    if (routes.containsKey(index)) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => routes[index]!),
+      );
+    }
+  }
+
+  void _onBotNavSelected(int index, BuildContext context) {
+    setState(() {
+      _selectedIndexBotNav = index;
+    });
+    _navigateTo(index, context, bottomNavBarRoutes);
+  }
 
   @override
   void initState() {
@@ -252,6 +281,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: _buildTopNavBar(),
       ),
       body: Column(
@@ -279,6 +309,10 @@ class _TransactionsPageState extends State<TransactionsPage> {
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: BottomNavBarParish(
+        selectedIndex: _selectedIndexBotNav,
+        onTabSelected: _onBotNavSelected,
       ),
     );
   }

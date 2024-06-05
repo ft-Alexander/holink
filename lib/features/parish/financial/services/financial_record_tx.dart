@@ -200,6 +200,7 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: _buildTopNavBar(),
         centerTitle: true,
         backgroundColor: Colors.white,

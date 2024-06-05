@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:holink/constants/bottom_nav_parish.dart';
+import 'package:holink/features/parish/dashboard/view/dashboard.dart';
 import 'package:holink/features/parish/financial/services/financial_view_report.dart';
+import 'package:holink/features/parish/profile/view/profile.dart';
+import 'package:holink/features/parish/scheduling/view/scheduling.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -21,6 +25,31 @@ class _ReportsPageState extends State<ReportsPage> {
   String? selectedMonth;
   String? selectedStatus;
   bool isLoading = false;
+
+  int _selectedIndexBotNav = 2;
+
+  final Map<int, Widget> bottomNavBarRoutes = {
+    0: Dashboard(),
+    1: Scheduling(),
+    2: TransactionsPage(),
+    3: ProfileScreen(),
+  };
+
+  void _navigateTo(int index, BuildContext context, Map<int, Widget> routes) {
+    if (routes.containsKey(index)) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => routes[index]!),
+      );
+    }
+  }
+
+  void _onBotNavSelected(int index, BuildContext context) {
+    setState(() {
+      _selectedIndexBotNav = index;
+    });
+    _navigateTo(index, context, bottomNavBarRoutes);
+  }
 
   @override
   void initState() {
@@ -82,6 +111,7 @@ class _ReportsPageState extends State<ReportsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: _buildTopNavBar(),
       ),
       body: Column(
@@ -89,6 +119,10 @@ class _ReportsPageState extends State<ReportsPage> {
           _buildGenerateAndFilterButtons(),
           Expanded(child: isLoading ? Center(child: CircularProgressIndicator()) : _buildReportList()),
         ],
+      ),
+      bottomNavigationBar: BottomNavBarParish(
+        selectedIndex: _selectedIndexBotNav,
+        onTabSelected: _onBotNavSelected,
       ),
     );
   }

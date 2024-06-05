@@ -191,6 +191,7 @@ class _EditFinancialTransactionPageState extends State<EditFinancialTransactionP
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Edit Financial Transaction'),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -237,6 +238,7 @@ class _EditFinancialTransactionPageState extends State<EditFinancialTransactionP
             labelText: 'Select Transaction Category',
             border: OutlineInputBorder(),
           ),
+          value: _selectedTransactionCategory,
           items: _getTransactionCategories().map((String value) {
             return DropdownMenuItem<String>(
               value: value,
@@ -257,7 +259,6 @@ class _EditFinancialTransactionPageState extends State<EditFinancialTransactionP
             }
             return null;
           },
-          value: _selectedTransactionCategory,
         ),
         if (_showSacramentalTypeDropdown) const SizedBox(height: 10.0),
         if (_showSacramentalTypeDropdown)
