@@ -1,13 +1,14 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:holink/constants/global.color.dart';
 import 'package:holink/constants/sizes.dart';
-import 'package:holink/features/scheduling/view/scheduling.dart';
+import 'package:holink/features/authentication/views/login.dart';
+import 'package:holink/features/parish/dashboard/view/dashboard.dart';
+import 'package:holink/features/parish/scheduling/view/scheduling.dart';
 import 'package:holink/features/parish/financial/view/financial_transactions.dart';
-import 'package:holink/features/service_availment/view/service.dart';
+import 'package:holink/features/parishioners/service_availment/view/service.dart';
 import 'package:http/http.dart' as http;
 import 'package:holink/dbConnection/localhost.dart';
 
@@ -121,34 +122,40 @@ class _LoginFormState extends State<LoginForm> {
             ),
             obscureText: true,
           ),
-          const SizedBox(height: 20.0),
-          Text(
-            _msg,
-            style: GoogleFonts.dmSans(
-              color: HexColor(tbrown),
-              fontSize: h6,
+          const SizedBox(height: 10.0),
+          if (_msg.isNotEmpty)
+            Center(
+              child: Text(
+                _msg,
+                style: GoogleFonts.dmSans(
+                  color: HexColor(tbrown),
+                  fontSize: h6,
+                ),
+              ),
             ),
-          ),
+          const SizedBox(height: 10.0),
           ElevatedButton(
             onPressed: () {
-              // login();
-              // switch (dropDown) {
-              //   case "Parishioners":
-              //     loginParishioners();
-              //     break;
-              //   case "Parish Staff":
-              //     loginParish();
-              //     break;
-              //   case "Diocese Staff":
-              //     loginDiocese();
-              //     break;
-              //   default:
-              //     break;
-              // }
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => TransactionsPage()),
-              );
+              if (_usernameController.text.isEmpty ||
+                  _passwordConttroller.text.isEmpty) {
+                setState(() {
+                  _msg = "Username and Password are required";
+                });
+                return;
+              }
+              switch (dropDown) {
+                case "Parishioners":
+                  loginParishioners();
+                  break;
+                case "Parish Staff":
+                  loginParish();
+                  break;
+                case "Diocese Staff":
+                  loginDiocese();
+                  break;
+                default:
+                  break;
+              }
             },
             style: ButtonStyle(
               backgroundColor:
@@ -229,14 +236,6 @@ class _LoginFormState extends State<LoginForm> {
               ),
             ),
           ),
-          Text(
-            _msg,
-            style: TextStyle(
-              fontSize: 16.0,
-              color: HexColor(tbrown),
-              fontFamily: 'DM Sans', // Adjust the font family as needed
-            ),
-          )
         ],
       ),
     );
@@ -261,17 +260,22 @@ class _LoginFormState extends State<LoginForm> {
         if (user.isNotEmpty) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const Scheduling()),
+            MaterialPageRoute(builder: (context) => const Dashboard()),
           );
         } else {
-          _msg = "Invalid Username Or Password";
+          setState(() {
+            _msg = "Invalid Username Or Password";
+          });
         }
-        print(response.body);
       } else {
-        print("Error: ${response.statusCode}");
+        setState(() {
+          _msg = "Error: ${response.statusCode}";
+        });
       }
     } catch (error) {
-      _msg = "$error";
+      setState(() {
+        _msg = "$error";
+      });
     }
   }
 
@@ -297,14 +301,19 @@ class _LoginFormState extends State<LoginForm> {
             MaterialPageRoute(builder: (context) => Scheduling()),
           );
         } else {
-          _msg = "Invalid Username Or Password";
+          setState(() {
+            _msg = "Invalid Username Or Password";
+          });
         }
-        print(response.body);
       } else {
-        print("Error: ${response.statusCode}");
+        setState(() {
+          _msg = "Error: ${response.statusCode}";
+        });
       }
     } catch (error) {
-      _msg = "$error";
+      setState(() {
+        _msg = "$error";
+      });
     }
   }
 
@@ -330,14 +339,19 @@ class _LoginFormState extends State<LoginForm> {
             MaterialPageRoute(builder: (context) => Service()),
           );
         } else {
-          _msg = "Invalid Username Or Password";
+          setState(() {
+            _msg = "Invalid Username Or Password";
+          });
         }
-        print(response.body);
       } else {
-        print("Error: ${response.statusCode}");
+        setState(() {
+          _msg = "Error: ${response.statusCode}";
+        });
       }
     } catch (error) {
-      _msg = "$error";
+      setState(() {
+        _msg = "$error";
+      });
     }
   }
 }
