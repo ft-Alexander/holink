@@ -20,7 +20,7 @@ class _RescheduleAvailedServiceState extends State<RescheduleAvailedService> {
   bool isLoading = true;
   int id = 0;
   int s_id = 0;
-  localhost localhostInstance = localhost(); // Add this line
+  localhost localhostInstance = new localhost(); // Add this line
 
   @override
   void initState() {
@@ -100,7 +100,7 @@ class _RescheduleAvailedServiceState extends State<RescheduleAvailedService> {
         if (data['success']) {
           Navigator.pop(context, 'updated');
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Service rescheduled successfully.')),
+            SnackBar(content: Text('Service rescheduled successfully.')),
           );
         } else {
           showError('Failed to reschedule service: ${data['message']}');
@@ -153,9 +153,9 @@ class _RescheduleAvailedServiceState extends State<RescheduleAvailedService> {
           preferredSize: const Size.fromHeight(50.0),
           child: Column(
             children: [
-              const Center(
+              Center(
                 child: Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Text(
                     'RESCHEDULE SERVICE',
                     style: TextStyle(

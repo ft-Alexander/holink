@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:holink/constants/bottom_nav_parish.dart';
 import 'package:holink/features/authentication/views/login.dart';
+import 'package:holink/features/parish/dashboard/view/dashboard.dart';
+import 'package:holink/features/parish/financial/view/financial_transactions.dart';
+import 'package:holink/features/parish/scheduling/view/scheduling.dart'; // Replace with your login screen import
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -10,6 +13,31 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  int _selectedIndexBotNav = 3;
+
+  final Map<int, Widget> bottomNavBarRoutes = {
+    0: Dashboard(),
+    1: Scheduling(),
+    2: TransactionsPage(),
+    3: ProfileScreen(),
+  };
+
+  void _navigateTo(int index, BuildContext context, Map<int, Widget> routes) {
+    if (routes.containsKey(index)) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => routes[index]!),
+      );
+    }
+  }
+
+  void _onBotNavSelected(int index, BuildContext context) {
+    setState(() {
+      _selectedIndexBotNav = index;
+    });
+    _navigateTo(index, context, bottomNavBarRoutes);
+  }
+
   void _logout(BuildContext context) {
     // Perform logout operations here (e.g., clear session data)
 
@@ -18,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context,
       MaterialPageRoute(
           builder: (context) =>
-              const Login()), // Replace with your login screen widget
+              Login()), // Replace with your login screen widget
       (Route<dynamic> route) => false,
     );
   }
@@ -31,50 +59,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 50,
               backgroundImage: AssetImage(
                   'assets/images/profile_picture.png'), // Replace with your image asset path
             ),
-            const SizedBox(height: 16),
-            const Text(
+            SizedBox(height: 16),
+            Text(
               'JaneDoe',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
-            const Text(
+            SizedBox(height: 8),
+            Text(
               'janedoe@unc.edu.ph',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey,
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: const Color(0xFFB37840), // Border color
+                  color: Color(0xFFB37840), // Border color
                 ),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
                 children: [
-                  const ListTile(
+                  ListTile(
                     title: Text('LOCATION'),
                     subtitle: Text('St. John Tha Baptist'),
                   ),
-                  const Divider(),
-                  const ListTile(
+                  Divider(),
+                  ListTile(
                     title: Text('CHANGE PASSWORD'),
                     subtitle: Text('********'),
                   ),
-                  const Divider(),
+                  Divider(),
                   ListTile(
-                    title: const Center(child: Text('LOGOUT')),
+                    title: Center(child: Text('LOGOUT')),
                     onTap: () => _logout(context), // Call the logout function
                   ),
                 ],
@@ -84,7 +112,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavBarParish(
-        selectedIndex: 3,
+        selectedIndex: _selectedIndexBotNav,
+        onTabSelected: _onBotNavSelected,
       ),
     );
   }

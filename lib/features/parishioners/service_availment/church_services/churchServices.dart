@@ -12,9 +12,9 @@ class SelectChurchService extends StatelessWidget {
           preferredSize: const Size.fromHeight(50.0),
           child: Column(
             children: [
-              const Center(
+              Center(
                 child: Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Text(
                     'AVAIL CHURCH SERVICE',
                     style: TextStyle(
@@ -102,11 +102,11 @@ class SelectChurchService extends StatelessWidget {
                 style: const TextStyle(fontSize: 16, color: Colors.black),
               ),
             ),
-            const Align(
+            Align(
               alignment: Alignment.bottomRight,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: [
+                children: const [
                   Text(
                     'Avail Service',
                     style: TextStyle(fontSize: 16, color: Color(0xFFd1a65b)),

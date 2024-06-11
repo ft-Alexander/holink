@@ -1,18 +1,21 @@
 // bottom_navbar_parishioners.dart
 import 'package:flutter/material.dart';
+import 'package:holink/features/parish/scheduling/view/scheduling.dart';
+import 'package:holink/features/parishioners/service_availment/view/service.dart';
+import 'package:holink/features/parishioners/profile/view/parishioners_profile.dart';
 
 class BottomNavBarParishioners extends StatelessWidget {
   final int selectedIndex;
   final Function(int, BuildContext) onTabSelected;
 
-  const BottomNavBarParishioners(
-      {super.key, required this.selectedIndex, required this.onTabSelected});
+  BottomNavBarParishioners(
+      {required this.selectedIndex, required this.onTabSelected});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 80.0, // Increase the height of the container
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
           top: BorderSide(
@@ -34,7 +37,7 @@ class BottomNavBarParishioners extends StatelessWidget {
         ],
       ),
       child: ClipRRect(
-        borderRadius: const BorderRadius.only(
+        borderRadius: BorderRadius.only(
           topLeft: Radius.circular(25.0),
           topRight: Radius.circular(25.0),
         ),
@@ -47,7 +50,7 @@ class BottomNavBarParishioners extends StatelessWidget {
                 Icons.home,
                 size: 30.0, // Increase the size of the icons
                 color: selectedIndex == 0
-                    ? const Color.fromRGBO(179, 120, 64, 1.0)
+                    ? Color.fromRGBO(179, 120, 64, 1.0)
                     : Colors.grey,
               ),
               label: '',
@@ -57,7 +60,7 @@ class BottomNavBarParishioners extends StatelessWidget {
                 Icons.calendar_today,
                 size: 30.0, // Increase the size of the icons
                 color: selectedIndex == 1
-                    ? const Color.fromRGBO(179, 120, 64, 1.0)
+                    ? Color.fromRGBO(179, 120, 64, 1.0)
                     : Colors.grey,
               ),
               label: '',
@@ -67,7 +70,7 @@ class BottomNavBarParishioners extends StatelessWidget {
                 Icons.book,
                 size: 30.0, // Increase the size of the icons
                 color: selectedIndex == 2
-                    ? const Color.fromRGBO(179, 120, 64, 1.0)
+                    ? Color.fromRGBO(179, 120, 64, 1.0)
                     : Colors.grey,
               ),
               label: '',
@@ -77,7 +80,7 @@ class BottomNavBarParishioners extends StatelessWidget {
                 Icons.person,
                 size: 30.0, // Increase the size of the icons
                 color: selectedIndex == 3
-                    ? const Color.fromRGBO(179, 120, 64, 1.0)
+                    ? Color.fromRGBO(179, 120, 64, 1.0)
                     : Colors.grey,
               ),
               label: '',
@@ -85,7 +88,7 @@ class BottomNavBarParishioners extends StatelessWidget {
           ],
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
-          selectedItemColor: const Color.fromRGBO(179, 120, 64, 1.0),
+          selectedItemColor: Color.fromRGBO(179, 120, 64, 1.0),
           unselectedItemColor: Colors.grey,
           showSelectedLabels: false,
           showUnselectedLabels: false,

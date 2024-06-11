@@ -4,8 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:holink/constants/global.color.dart';
 import 'package:holink/constants/sizes.dart';
+import 'package:holink/features/authentication/views/login.dart';
 import 'package:holink/features/parish/dashboard/view/dashboard.dart';
 import 'package:holink/features/parish/scheduling/view/scheduling.dart';
+import 'package:holink/features/parish/financial/view/financial_transactions.dart';
 import 'package:holink/features/parishioners/service_availment/view/service.dart';
 import 'package:http/http.dart' as http;
 import 'package:holink/dbConnection/localhost.dart';
@@ -296,7 +298,7 @@ class _LoginFormState extends State<LoginForm> {
         if (user.isNotEmpty) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const Scheduling()),
+            MaterialPageRoute(builder: (context) => Scheduling()),
           );
         } else {
           setState(() {
@@ -334,7 +336,7 @@ class _LoginFormState extends State<LoginForm> {
         if (user.isNotEmpty) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const Service()),
+            MaterialPageRoute(builder: (context) => Service()),
           );
         } else {
           setState(() {

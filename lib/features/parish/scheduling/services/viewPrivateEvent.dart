@@ -25,9 +25,9 @@ class _ViewPrivateScreenState extends State<ViewPrivateScreen> {
     privateEvent = fetchPrivateEvent(widget.event.s_id);
   }
 
-  Future<PrivateEvent> fetchPrivateEvent(int sId) async {
+  Future<PrivateEvent> fetchPrivateEvent(int s_id) async {
     final url =
-        'http://${localhostInstance.ipServer}/dashboard/myfolder/service/getAvailedService.php?s_id=$sId';
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/service/getAvailedService.php?s_id=$s_id';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -50,21 +50,21 @@ class _ViewPrivateScreenState extends State<ViewPrivateScreen> {
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
-        side: const BorderSide(color: Color(0xFFB37840), width: 2),
+        side: BorderSide(color: Color(0xFFB37840), width: 2),
       ),
       child: Container(
         width:
             MediaQuery.of(context).size.width * 0.8, // Adjust width as needed
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 25),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, 25),
         child: FutureBuilder<PrivateEvent>(
           future: privateEvent,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData) {
-              return const Center(child: Text('No data found'));
+              return Center(child: Text('No data found'));
             } else {
               final event = snapshot.data!;
               return SingleChildScrollView(
@@ -83,24 +83,24 @@ class _ViewPrivateScreenState extends State<ViewPrivateScreen> {
                         DateFormat.yMMMd().format(event.date_availed)),
                     _buildDetailRow('Scheduled Date:',
                         DateFormat.yMMMd().format(event.scheduled_date)),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                     Center(
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFB37840), // Button color
+                          backgroundColor: Color(0xFFB37840), // Button color
                           foregroundColor: Colors.white, // Text color
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                               horizontal: 32, vertical: 12),
                           textStyle:
-                              const TextStyle(fontSize: 18, fontFamily: 'DM Sans'),
+                              TextStyle(fontSize: 18, fontFamily: 'DM Sans'),
                         ),
-                        child: const Text('Close'),
+                        child: Text('Close'),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                   ],
                 ),
               );
@@ -119,7 +119,7 @@ class _ViewPrivateScreenState extends State<ViewPrivateScreen> {
         children: [
           Text(
             '$label ',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
@@ -129,7 +129,7 @@ class _ViewPrivateScreenState extends State<ViewPrivateScreen> {
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 color: Colors.black54,
                 fontStyle: FontStyle.italic,

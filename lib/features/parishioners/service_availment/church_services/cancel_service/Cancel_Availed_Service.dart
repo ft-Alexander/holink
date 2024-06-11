@@ -77,9 +77,9 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
           preferredSize: const Size.fromHeight(50.0),
           child: Column(
             children: [
-              const Center(
+              Center(
                 child: Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Text(
                     'CANCEL SERVICE',
                     style: TextStyle(
@@ -157,15 +157,15 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
                                     ),
                                   );
                                 },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                ),
                                 child: const Text(
                                   "Cancel",
                                   style: TextStyle(
                                     color: Colors
                                         .white, // Change this to the color you want
                                   ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
                                 ),
                               ),
                             ),
