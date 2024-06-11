@@ -17,7 +17,7 @@ class _ViewEditInformationState extends State<ViewEditInformation>
   late TabController _tabController;
   List<Map<String, String>> availedServices = [];
   bool isLoading = true;
-  localhost localhostInstance = new localhost();
+  localhost localhostInstance = localhost();
 
   @override
   void initState() {
@@ -99,11 +99,11 @@ class _ViewEditInformationState extends State<ViewEditInformation>
                     },
                   );
                 },
-                child: const Text("View/Edit"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
                 ),
+                child: const Text("View/Edit"),
               ),
             ),
           ),
@@ -120,7 +120,7 @@ class _ViewEditInformationState extends State<ViewEditInformation>
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        actions: [],
+        actions: const [],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.green,

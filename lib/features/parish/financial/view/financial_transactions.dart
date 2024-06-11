@@ -32,10 +32,10 @@ class _TransactionsPageState extends State<TransactionsPage> {
   int _selectedIndexBotNav = 2;
 
   final Map<int, Widget> bottomNavBarRoutes = {
-    0: Dashboard(),
-    1: Scheduling(),
-    2: TransactionsPage(),
-    3: ProfileScreen(),
+    0: const Dashboard(),
+    1: const Scheduling(),
+    2: const TransactionsPage(),
+    3: const ProfileScreen(),
   };
 
   void _navigateTo(int index, BuildContext context, Map<int, Widget> routes) {
@@ -62,7 +62,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
 
   Future<List<Transaction>> fetchTransactions() async {
     localhost localhostInstance = localhost();
-    final url = 'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/getTransactions.php';
+    final url =
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/getTransactions.php';
 
     final response = await http.get(Uri.parse(url));
 
@@ -100,23 +101,27 @@ class _TransactionsPageState extends State<TransactionsPage> {
 
         if (selectedTransactionType != null) {
           transactions = transactions
-              .where((transaction) => transaction.type == selectedTransactionType)
+              .where(
+                  (transaction) => transaction.type == selectedTransactionType)
               .toList();
         }
 
         if (selectedTransactionCategory != null) {
           transactions = transactions
               .where((transaction) =>
-                  transaction.transaction_category == selectedTransactionCategory)
+                  transaction.transaction_category ==
+                  selectedTransactionCategory)
               .toList();
         }
 
         // Sort transactions by transaction_id in descending order
-        transactions.sort((a, b) => (b.transaction_id ?? 0).compareTo(a.transaction_id ?? 0));
+        transactions.sort(
+            (a, b) => (b.transaction_id ?? 0).compareTo(a.transaction_id ?? 0));
 
         return transactions;
       } else {
-        throw Exception('Failed to load transactions: ${responseBody['message']}');
+        throw Exception(
+            'Failed to load transactions: ${responseBody['message']}');
       }
     } else {
       throw Exception('Failed to load transactions: ${response.reasonPhrase}');
@@ -166,7 +171,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     12,
                     (index) => DropdownMenuItem(
                       value: index + 1,
-                      child: Text(DateFormat.MMMM().format(DateTime(0, index + 1))),
+                      child: Text(
+                          DateFormat.MMMM().format(DateTime(0, index + 1))),
                     ),
                   ),
                   onChanged: (value) {
@@ -187,7 +193,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   },
                 ),
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Transaction Type'),
+                  decoration:
+                      const InputDecoration(labelText: 'Transaction Type'),
                   items: ['Income', 'Expense'].map((String category) {
                     return DropdownMenuItem<String>(
                       value: category,
@@ -199,7 +206,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   },
                 ),
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Transaction Category'),
+                  decoration:
+                      const InputDecoration(labelText: 'Transaction Category'),
                   items: [
                     'Mass Collection',
                     'Mass Offering',
@@ -301,7 +309,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   return ListView.builder(
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
-                      return TransactionCard(transaction: snapshot.data![index]);
+                      return TransactionCard(
+                          transaction: snapshot.data![index]);
                     },
                   );
                 }
@@ -311,8 +320,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
         ],
       ),
       bottomNavigationBar: BottomNavBarParish(
-        selectedIndex: _selectedIndexBotNav,
-        onTabSelected: _onBotNavSelected,
+        selectedIndex: 2,
       ),
     );
   }
@@ -352,7 +360,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const ReportsPage()),
+                    MaterialPageRoute(
+                        builder: (context) => const ReportsPage()),
                   );
                 },
                 child: const Text(
@@ -386,12 +395,15 @@ class _TransactionsPageState extends State<TransactionsPage> {
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const RecordFinancialTransactionPage()),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        const RecordFinancialTransactionPage()),
               );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
               textStyle: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
@@ -411,7 +423,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
             onPressed: _openFilterDialog,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
               textStyle: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
@@ -441,7 +454,7 @@ class TransactionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (transaction.archive_status != 'display') {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Container(
@@ -457,7 +470,8 @@ class TransactionCard extends StatelessWidget {
         elevation: 0,
         child: ListTile(
           leading: const Icon(Icons.receipt_long, color: Color(0xffB37840)),
-          title: Text(transaction.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(transaction.title,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -482,8 +496,11 @@ class TransactionCard extends StatelessWidget {
   }
 
   Widget _buildTransactionTag(Transaction transaction) {
-    Color tagColor = transaction.transaction_category == 'Income' ? Colors.green : Colors.red;
-    String tagText = transaction.transaction_category == 'Income' ? 'Income' : 'Expense';
+    Color tagColor = transaction.transaction_category == 'Income'
+        ? Colors.green
+        : Colors.red;
+    String tagText =
+        transaction.transaction_category == 'Income' ? 'Income' : 'Expense';
 
     return Container(
       margin: const EdgeInsets.only(top: 4.0),
@@ -503,7 +520,8 @@ class TransactionCard extends StatelessWidget {
     );
   }
 
-  Future<void> _archiveRecord(BuildContext context, Transaction transaction) async {
+  Future<void> _archiveRecord(
+      BuildContext context, Transaction transaction) async {
     bool confirm = await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -532,7 +550,8 @@ class TransactionCard extends StatelessWidget {
       localhost localhostInstance = localhost();
       try {
         final response = await http.post(
-          Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/finance/archiveStatus.php'),
+          Uri.parse(
+              'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/archiveStatus.php'),
           body: json.encode(transaction.toMap()),
         );
 
@@ -547,7 +566,9 @@ class TransactionCard extends StatelessWidget {
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to archive record: ${response.statusCode}')),
+            SnackBar(
+                content:
+                    Text('Failed to archive record: ${response.statusCode}')),
           );
           throw Exception('Failed to archive record');
         }
@@ -555,7 +576,7 @@ class TransactionCard extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error archiving record: $error')),
         );
-        throw error;
+        rethrow;
       }
     }
   }
@@ -595,15 +616,22 @@ class TransactionCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                _buildDetailRow('Transaction ID:', transaction.transaction_id.toString()),
+                _buildDetailRow(
+                    'Transaction ID:', transaction.transaction_id.toString()),
                 _buildDetailRow('Employee ID:', transaction.par_id.toString()),
-                _buildDetailRow('Transaction Category:', transaction.transaction_category),
+                _buildDetailRow(
+                    'Transaction Category:', transaction.transaction_category),
                 _buildDetailRow('Transaction Type:', transaction.type),
-                if (transaction.sacramental_type != null && transaction.sacramental_type!.isNotEmpty)
-                  _buildDetailRow('Sacramental Type:', transaction.sacramental_type!),
-                if (transaction.special_event_type != null && transaction.special_event_type!.isNotEmpty)
-                  _buildDetailRow('Special Event Type:', transaction.special_event_type!),
-                _buildDetailRow('Date:', DateFormat('MMMM dd, yyyy').format(transaction.date)),
+                if (transaction.sacramental_type != null &&
+                    transaction.sacramental_type!.isNotEmpty)
+                  _buildDetailRow(
+                      'Sacramental Type:', transaction.sacramental_type!),
+                if (transaction.special_event_type != null &&
+                    transaction.special_event_type!.isNotEmpty)
+                  _buildDetailRow(
+                      'Special Event Type:', transaction.special_event_type!),
+                _buildDetailRow('Date:',
+                    DateFormat('MMMM dd, yyyy').format(transaction.date)),
                 _buildDetailRow('Amount:', 'P ${transaction.amount}'),
                 _buildDetailRow('Details:', transaction.description),
                 Row(
@@ -615,7 +643,8 @@ class TransactionCard extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6.0),
                         ),
@@ -632,12 +661,16 @@ class TransactionCard extends StatelessWidget {
                       onPressed: () {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => EditFinancialTransactionPage(transaction: transaction)),
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  EditFinancialTransactionPage(
+                                      transaction: transaction)),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6.0),
                         ),

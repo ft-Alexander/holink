@@ -6,7 +6,7 @@ class ServiceInformation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8.0),
       children: [
         buildServiceTile(
           "Wedding",
@@ -60,11 +60,11 @@ class ServiceInformation extends StatelessWidget {
       child: ExpansionTile(
         title: Text(title),
         children: [
-          Container(
+          SizedBox(
             height: 220.0, // Adjust height as needed
             child: Column(
               children: [
-                TabBar(
+                const TabBar(
                   tabs: [
                     Tab(text: "Regular"),
                     Tab(text: "Special"),
@@ -78,7 +78,7 @@ class ServiceInformation extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(regularDescription),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Text(regularDocuments),
                           ],
                         ),
@@ -88,7 +88,7 @@ class ServiceInformation extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(specialDescription),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Text(specialDocuments),
                           ],
                         ),
@@ -105,4 +105,4 @@ class ServiceInformation extends StatelessWidget {
   }
 }
 
-void main() => runApp(MaterialApp(home: Scaffold(body: ServiceInformation())));
+void main() => runApp(const MaterialApp(home: Scaffold(body: ServiceInformation())));

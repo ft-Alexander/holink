@@ -15,7 +15,7 @@ class PublicEventsPage extends StatefulWidget {
 
 class _PublicEventsPageState extends State<PublicEventsPage> {
   List<getEvent> publicEvents = [];
-  localhost localhostInstance = new localhost();
+  localhost localhostInstance = localhost();
 
   @override
   void initState() {
@@ -62,7 +62,7 @@ class _PublicEventsPageState extends State<PublicEventsPage> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: publicEvents.isEmpty
-              ? Center(
+              ? const Center(
                   child: Text(
                     'No available services.',
                     style: TextStyle(fontSize: 18, color: Colors.grey),
@@ -83,14 +83,14 @@ class _PublicEventsPageState extends State<PublicEventsPage> {
       final formattedDate = DateFormat('MMMM d, y').format(event.date);
       final formattedTime = DateFormat('h:mm a').format(event.date);
       return Container(
-        margin: EdgeInsets.symmetric(
+        margin: const EdgeInsets.symmetric(
             vertical: 10.0), // Add vertical margin between cards
-        padding: EdgeInsets.all(15.0), // Add padding inside each card
+        padding: const EdgeInsets.all(15.0), // Add padding inside each card
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(color: Colors.brown.shade200),
           borderRadius: BorderRadius.circular(10.0),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black12,
               blurRadius: 5.0,
@@ -107,22 +107,22 @@ class _PublicEventsPageState extends State<PublicEventsPage> {
                 children: [
                   Text(
                     event.title,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(formattedDate),
                   Text(formattedTime),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Container(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                        const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
                     decoration: BoxDecoration(
                       color: _getEventTypeColor(event.event_type),
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     child: Text(
                       event.event_type,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
@@ -136,7 +136,7 @@ class _PublicEventsPageState extends State<PublicEventsPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => JoinEventScreen(),
+                        builder: (context) => const JoinEventScreen(),
                       ),
                     );
                   },
@@ -145,7 +145,7 @@ class _PublicEventsPageState extends State<PublicEventsPage> {
                     foregroundColor:
                         Colors.white, // Button text (foreground) color
                   ),
-                  child: Text('Join'),
+                  child: const Text('Join'),
                 ),
               ],
             ),
