@@ -29,10 +29,10 @@ class _ReportsPageState extends State<ReportsPage> {
   int _selectedIndexBotNav = 2;
 
   final Map<int, Widget> bottomNavBarRoutes = {
-    0: Dashboard(),
-    1: Scheduling(),
-    2: TransactionsPage(),
-    3: ProfileScreen(),
+    0: const Dashboard(),
+    1: const Scheduling(),
+    2: const TransactionsPage(),
+    3: const ProfileScreen(),
   };
 
   void _navigateTo(int index, BuildContext context, Map<int, Widget> routes) {
@@ -63,7 +63,8 @@ class _ReportsPageState extends State<ReportsPage> {
     });
 
     localhost localhostInstance = localhost();
-    final url = 'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/getReports.php';
+    final url =
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/getReports.php';
 
     final response = await http.get(Uri.parse(url));
 
@@ -78,20 +79,24 @@ class _ReportsPageState extends State<ReportsPage> {
           // Apply filters
           if (selectedYear != null) {
             reports = reports.where((report) {
-              final reportYear = DateFormat('MMMM yyyy').parse(report['date']).year;
+              final reportYear =
+                  DateFormat('MMMM yyyy').parse(report['date']).year;
               return reportYear == selectedYear;
             }).toList();
           }
 
           if (selectedMonth != null) {
             reports = reports.where((report) {
-              final reportMonth = DateFormat('MMMM').format(DateFormat('MMMM yyyy').parse(report['date']));
+              final reportMonth = DateFormat('MMMM')
+                  .format(DateFormat('MMMM yyyy').parse(report['date']));
               return reportMonth == selectedMonth;
             }).toList();
           }
 
           if (selectedStatus != null) {
-            reports = reports.where((report) => report['status'] == selectedStatus).toList();
+            reports = reports
+                .where((report) => report['status'] == selectedStatus)
+                .toList();
           }
 
           // Sort reports by report_id in descending order (latest first)
@@ -117,12 +122,14 @@ class _ReportsPageState extends State<ReportsPage> {
       body: Column(
         children: [
           _buildGenerateAndFilterButtons(),
-          Expanded(child: isLoading ? Center(child: CircularProgressIndicator()) : _buildReportList()),
+          Expanded(
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _buildReportList()),
         ],
       ),
       bottomNavigationBar: BottomNavBarParish(
-        selectedIndex: _selectedIndexBotNav,
-        onTabSelected: _onBotNavSelected,
+        selectedIndex: 2,
       ),
     );
   }
@@ -185,7 +192,8 @@ class _ReportsPageState extends State<ReportsPage> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
               textStyle: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
@@ -207,7 +215,8 @@ class _ReportsPageState extends State<ReportsPage> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
               textStyle: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
@@ -254,7 +263,8 @@ class _ReportsPageState extends State<ReportsPage> {
               const SizedBox(height: 10),
               DropdownButtonFormField<int>(
                 decoration: const InputDecoration(labelText: 'Select Year'),
-                items: List<int>.generate(50, (index) => 2024 - index).map((int year) {
+                items: List<int>.generate(50, (index) => 2024 - index)
+                    .map((int year) {
                   return DropdownMenuItem<int>(
                     value: year,
                     child: Text(year.toString()),
@@ -316,7 +326,8 @@ class _ReportsPageState extends State<ReportsPage> {
               const SizedBox(height: 10),
               DropdownButtonFormField<int>(
                 decoration: const InputDecoration(labelText: 'Select Year'),
-                items: List<int>.generate(50, (index) => 2024 - index).map((int year) {
+                items: List<int>.generate(50, (index) => 2024 - index)
+                    .map((int year) {
                   return DropdownMenuItem<int>(
                     value: year,
                     child: Text(year.toString()),
@@ -386,7 +397,8 @@ class _ReportsPageState extends State<ReportsPage> {
     });
 
     localhost localhostInstance = localhost();
-    final url = 'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/getTransactions.php';
+    final url =
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/getTransactions.php';
 
     final response = await http.get(Uri.parse(url));
 
@@ -407,7 +419,8 @@ class _ReportsPageState extends State<ReportsPage> {
           isLoading = false;
         });
       } else {
-        throw Exception('Failed to load transactions: ${responseBody['message']}');
+        throw Exception(
+            'Failed to load transactions: ${responseBody['message']}');
       }
     } else {
       throw Exception('Failed to load transactions: ${response.reasonPhrase}');
@@ -433,7 +446,8 @@ class _ReportsPageState extends State<ReportsPage> {
 
     for (var transaction in transactions) {
       final date = transaction.date;
-      if (DateFormat('MMMM').format(date) == selectedMonth && DateFormat('yyyy').format(date) == selectedYear.toString()) {
+      if (DateFormat('MMMM').format(date) == selectedMonth &&
+          DateFormat('yyyy').format(date) == selectedYear.toString()) {
         switch (transaction.type) {
           case 'Mass Collection':
           case 'Mass Offering':
@@ -487,10 +501,18 @@ class _ReportsPageState extends State<ReportsPage> {
       }
     }
 
-    double grossIncome = massesFunds + massCollections + stoleFees + otherReceipts;
-    double grossExpenses = communicationExpenses + electricityWaterBill + officeSupplies + transportation +
-                          salariesWages + sssHdmfPhilHealth + socialServicesCharities + food + decorsoSustentoPPGP +
-                          otherParishExpenses;
+    double grossIncome =
+        massesFunds + massCollections + stoleFees + otherReceipts;
+    double grossExpenses = communicationExpenses +
+        electricityWaterBill +
+        officeSupplies +
+        transportation +
+        salariesWages +
+        sssHdmfPhilHealth +
+        socialServicesCharities +
+        food +
+        decorsoSustentoPPGP +
+        otherParishExpenses;
     double netDeficit = grossIncome - grossExpenses;
 
     return {
@@ -523,7 +545,8 @@ class _ReportsPageState extends State<ReportsPage> {
 
   Future<void> _saveReport(Map<String, dynamic> reportData) async {
     localhost localhostInstance = localhost();
-    final url = 'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/saveReport.php';
+    final url =
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/saveReport.php';
 
     final response = await http.post(
       Uri.parse(url),
@@ -566,19 +589,22 @@ class ReportCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
       child: Card(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0), // Rounded corners to match container
+          borderRadius:
+              BorderRadius.circular(8.0), // Rounded corners to match container
         ),
         elevation: 0, // Remove the shadow
         child: ListTile(
           leading: const Icon(Icons.receipt_long, color: Color(0xffB37840)),
-          title: Text(report['parish_name'], style: const TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(report['parish_name'],
+              style: const TextStyle(fontWeight: FontWeight.bold)),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(report['date']),
               Container(
                 margin: const EdgeInsets.only(top: 4.0),
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                 decoration: BoxDecoration(
                   color: report['status'] == 'Pending'
                       ? Colors.orange
@@ -602,7 +628,8 @@ class ReportCard extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => DetailedReportView(report: report)),
+                MaterialPageRoute(
+                    builder: (context) => DetailedReportView(report: report)),
               );
             },
             child: const Text(

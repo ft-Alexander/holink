@@ -17,12 +17,12 @@ class _UserAgreementState extends State<UserAgreement> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Container(
+        title: SizedBox(
           height: kToolbarHeight,
           child: Center(
             child: Padding(
@@ -50,7 +50,7 @@ class _UserAgreementState extends State<UserAgreement> {
       ),
       body: Center(
         child: Container(
-          constraints: BoxConstraints(
+          constraints: const BoxConstraints(
             maxWidth: 1000.0, // Adjust the maxWidth as necessary
           ),
           margin: const EdgeInsets.all(16.0),
@@ -62,7 +62,7 @@ class _UserAgreementState extends State<UserAgreement> {
                 color: Colors.black.withOpacity(0.1),
                 spreadRadius: 5,
                 blurRadius: 7,
-                offset: Offset(0, 3), // changes position of shadow
+                offset: const Offset(0, 3), // changes position of shadow
               ),
             ],
           ),
@@ -88,7 +88,7 @@ class _UserAgreementState extends State<UserAgreement> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Center(
+                      const Center(
                         child: Text(
                           'USER AGREEMENT',
                           style: TextStyle(

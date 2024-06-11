@@ -12,8 +12,8 @@ class ReviewInformation extends StatelessWidget {
 
   ReviewInformation({
     required this.serviceInformation,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   String _formatDate(DateTime date) {
     return "${date.month}/${date.day}/${date.year}";
@@ -22,7 +22,7 @@ class ReviewInformation extends StatelessWidget {
   String _formatTime(DateTime date) {
     final hour = date.hour % 12 == 0 ? 12 : date.hour % 12;
     final period = date.hour >= 12 ? 'PM' : 'AM';
-    return "${hour}:${date.minute.toString().padLeft(2, '0')} $period";
+    return "$hour:${date.minute.toString().padLeft(2, '0')} $period";
   }
 
   Future<void> _saveEvent(BuildContext context) async {
@@ -103,9 +103,9 @@ class ReviewInformation extends StatelessWidget {
           preferredSize: const Size.fromHeight(50.0),
           child: Column(
             children: [
-              Center(
+              const Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0),
                   child: Text(
                     'REVIEW INFORMATION',
                     style: TextStyle(

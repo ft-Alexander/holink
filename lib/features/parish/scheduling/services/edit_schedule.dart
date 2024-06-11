@@ -138,11 +138,11 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Error'),
+          title: const Text('Error'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -165,7 +165,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Edit Event'),
+        title: const Text('Edit Event'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -177,7 +177,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                 Expanded(
                   child: TextFormField(
                     controller: _dateController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Select Date',
                       suffixIcon: Icon(Icons.calendar_today),
                       border: OutlineInputBorder(),
@@ -188,10 +188,10 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                     },
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: TextFormField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Select Time',
                       suffixIcon: Icon(Icons.access_time),
                       border: OutlineInputBorder(),
@@ -207,16 +207,16 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildTextField(_eventController, 'Event Name'),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               isExpanded: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
               ),
-              hint: Text("Select Event Type"),
+              hint: const Text("Select Event Type"),
               value: event_type,
               onChanged: (String? newValue) {
                 if (newValue != null) {
@@ -228,7 +228,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                   value: value,
                   child: Text(
                     value,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color.fromARGB(255, 63, 63, 63),
                       fontFamily: 'DM Sans',
                     ),
@@ -236,14 +236,14 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                 );
               }).toList(),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               isExpanded: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
               ),
-              hint: Text("Select Sacrament"),
+              hint: const Text("Select Sacrament"),
               value: selectedSacrament,
               onChanged: (String? newValue) {
                 setState(() {
@@ -263,7 +263,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                   value: value,
                   child: Text(
                     value,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color.fromARGB(255, 63, 63, 63),
                       fontFamily: 'DM Sans',
                     ),
@@ -271,21 +271,21 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                 );
               }).toList(),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildTextField(_priestController, 'Select Priest'),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildTextField(_lectorsController, 'Select Lectors'),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildTextField(_sacristanController, 'Assign Sacristan'),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildTextField(_addressController, 'Enter Address'),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildTextField(_detailsController, 'Additional Details',
                 maxLines: 4),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               children: [
-                Spacer(),
+                const Spacer(),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
@@ -294,16 +294,16 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                   ),
-                  child: Text("Cancel"),
+                  child: const Text("Cancel"),
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: _updateEvent,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
                   ),
-                  child: Text("Update"),
+                  child: const Text("Update"),
                 ),
               ],
             ),
@@ -320,7 +320,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
       maxLines: maxLines,
       decoration: InputDecoration(
         hintText: hintText,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
     );
   }

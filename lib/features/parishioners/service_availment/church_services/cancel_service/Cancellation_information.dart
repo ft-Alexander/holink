@@ -86,7 +86,7 @@ class _CancellationInformationState extends State<CancellationInformation> {
             (Route<dynamic> route) => false,
           );
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Service cancelled successfully.')),
+            const SnackBar(content: Text('Service cancelled successfully.')),
           );
         } else {
           showError('Failed to cancel service: ${data['message']}');
@@ -106,9 +106,9 @@ class _CancellationInformationState extends State<CancellationInformation> {
           preferredSize: const Size.fromHeight(50.0),
           child: Column(
             children: [
-              Center(
+              const Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0),
                   child: Text(
                     'CANCEL AVAILED SERVICE',
                     style: TextStyle(
