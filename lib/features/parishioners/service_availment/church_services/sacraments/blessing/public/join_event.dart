@@ -10,6 +10,6 @@ class JoinEventScreen extends StatefulWidget {
 class _JoinEventScreenState extends State<JoinEventScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold();
+    return Scaffold();
   }
 }

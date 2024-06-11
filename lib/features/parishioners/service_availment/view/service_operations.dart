@@ -4,7 +4,7 @@ import 'package:holink/features/parishioners/service_availment/church_services/v
 import 'package:holink/features/parishioners/service_availment/church_services/cancel_service/Cancel_Availed_Service.dart';
 
 class BottomButtons extends StatelessWidget {
-  const BottomButtons({super.key});
+  const BottomButtons({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +33,9 @@ class BottomButtons extends StatelessWidget {
                 textStyle:
                     const TextStyle(color: Color.fromARGB(255, 16, 16, 16)),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: const [
                   Text(
                     "AVAIL CHURCH SERVICE",
                     style: TextStyle(
@@ -74,7 +74,7 @@ class BottomButtons extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text.rich(
@@ -101,7 +101,7 @@ class BottomButtons extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Icon(
+                  const Icon(
                     Icons.arrow_forward_ios,
                     color: Color(0xFFB37840),
                     size: 15,
@@ -131,9 +131,9 @@ class BottomButtons extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: const [
                   Text(
                     "CANCEL SERVICE",
                     style: TextStyle(

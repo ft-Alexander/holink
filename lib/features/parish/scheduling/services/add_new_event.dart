@@ -1,58 +1,43 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:holink/dbConnection/localhost.dart';
-import 'package:holink/features/parish/scheduling/model/getEvent_pub_reg.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
-class EditScheduleScreen extends StatefulWidget {
-  final getEvent event;
+class AddEventScreen extends StatefulWidget {
+  final DateTime selectedDate;
+  final Function(DateTime, String, String, String, String, String, String,
+      String, String, String) onSave;
 
-  const EditScheduleScreen({super.key, required this.event});
+  const AddEventScreen(
+      {required this.selectedDate, required this.onSave, Key? key})
+      : super(key: key);
 
   @override
-  State<EditScheduleScreen> createState() => _EditScheduleScreenState();
+  _AddEventScreenState createState() => _AddEventScreenState();
 }
 
-class _EditScheduleScreenState extends State<EditScheduleScreen> {
-  late TextEditingController _eventController;
-  late TextEditingController _priestController;
-  late TextEditingController _sacristanController;
-  late TextEditingController _lectorsController;
-  late TextEditingController _addressController;
-  late TextEditingController _detailsController;
-  late TextEditingController _dateController;
+class _AddEventScreenState extends State<AddEventScreen> {
+  final TextEditingController _eventController = TextEditingController();
+  final TextEditingController _priestController = TextEditingController();
+  final TextEditingController _sacristanController = TextEditingController();
+  final TextEditingController _lectorsController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _detailsController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
 
   localhost localhostInstance = localhost();
   TimeOfDay? _selectedTime;
-  late String event_type;
-  late String selectedSacrament;
+
+  String event_type = 'Public'; // Default value
+  String selectedSacrament = 'Wedding'; // Default value
+  String archive_status = 'display'; // Default value
 
   @override
   void initState() {
     super.initState();
-    _eventController = TextEditingController(text: widget.event.title);
-    _priestController = TextEditingController(text: widget.event.priest);
-    _sacristanController = TextEditingController(text: widget.event.sacristan);
-    _lectorsController = TextEditingController(text: widget.event.lectors);
-    _addressController = TextEditingController(text: widget.event.address);
-    _detailsController = TextEditingController(text: widget.event.details);
-    _dateController = TextEditingController(
-        text: DateFormat('MMMM d, yyyy').format(widget.event.date));
-    _selectedTime = TimeOfDay.fromDateTime(widget.event.date);
-    event_type = widget.event.event_type;
-    selectedSacrament = widget.event.sacraments;
-
-    _validateSelectedSacrament(); // Ensure selectedSacrament is valid initially
-  }
-
-  void _validateSelectedSacrament() {
-    final validSacraments = (event_type == 'Public'
-        ? ['Wedding', 'Baptism', 'Blessing', 'Seminar']
-        : ['Chapel Mass', 'Parish Mass', 'Barangay Mass', 'Confession']);
-    if (!validSacraments.contains(selectedSacrament)) {
-      selectedSacrament = validSacraments.first;
-    }
+    _dateController.text =
+        DateFormat('MMMM d, yyyy').format(widget.selectedDate);
   }
 
   @override
@@ -70,7 +55,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: _selectedTime ?? TimeOfDay.now(),
+      initialTime: TimeOfDay.now(),
     );
     if (picked != null) {
       setState(() {
@@ -79,7 +64,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
     }
   }
 
-  void _updateEvent() async {
+  void _saveEvent() async {
     if (_eventController.text.isNotEmpty &&
         _priestController.text.isNotEmpty &&
         _lectorsController.text.isNotEmpty &&
@@ -88,9 +73,9 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
         _detailsController.text.isNotEmpty &&
         _selectedTime != null) {
       final DateTime eventDateTime = DateTime(
-        widget.event.date.year,
-        widget.event.date.month,
-        widget.event.date.day,
+        widget.selectedDate.year,
+        widget.selectedDate.month,
+        widget.selectedDate.day,
         _selectedTime!.hour,
         _selectedTime!.minute,
       );
@@ -98,10 +83,9 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
       try {
         final response = await http.post(
           Uri.parse(
-              'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/updateEvent.php'),
+              'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/events.php'),
           headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: {
-            's_id': widget.event.s_id.toString(),
             'event_datetime': eventDateTime.toIso8601String(),
             'event_name': _eventController.text,
             'priest': _priestController.text,
@@ -111,19 +95,31 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
             'details': _detailsController.text,
             'sacraments': selectedSacrament,
             'event_type': event_type,
+            'archive_status': archive_status
           },
         );
 
         if (response.statusCode == 200) {
           final responseData = json.decode(response.body);
-          if (responseData['message'] == 'Event updated successfully') {
-            Navigator.pop(context, true); // Pass true to indicate success
+          if (responseData['message'] == 'New record created successfully') {
+            widget.onSave(
+                eventDateTime,
+                _eventController.text,
+                _priestController.text,
+                _lectorsController.text,
+                _sacristanController.text,
+                _addressController.text,
+                _detailsController.text,
+                selectedSacrament,
+                event_type,
+                archive_status);
+            Navigator.pop(context);
           } else {
             _showErrorDialog(context, responseData['message']);
           }
         } else {
           _showErrorDialog(
-              context, 'Failed to update event: ${response.statusCode}');
+              context, 'Failed to save event: ${response.statusCode}');
         }
       } catch (e) {
         _showErrorDialog(context, 'An error occurred: $e');
@@ -156,7 +152,11 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
   void _updateSacramentDropdown(String newEventType) {
     setState(() {
       event_type = newEventType;
-      _validateSelectedSacrament(); // Ensure selectedSacrament is valid after updating event_type
+      if (event_type == 'Public') {
+        selectedSacrament = 'Wedding';
+      } else {
+        selectedSacrament = 'Chapel Mass';
+      }
     });
   }
 
@@ -165,7 +165,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Edit Event'),
+        title: Text('Event Details'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -179,8 +179,21 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                     controller: _dateController,
                     decoration: InputDecoration(
                       hintText: 'Select Date',
-                      suffixIcon: Icon(Icons.calendar_today),
-                      border: OutlineInputBorder(),
+                      labelText: 'Select Date',
+                      suffixIcon: Icon(Icons.calendar_today,
+                          color: const Color.fromARGB(255, 186, 163, 136)),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: const Color.fromARGB(255, 186, 163, 136)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: const Color.fromARGB(255, 186, 163, 136)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: const Color.fromARGB(255, 186, 163, 136)),
+                      ),
                     ),
                     readOnly: true,
                     onTap: () {
@@ -193,8 +206,21 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                   child: TextFormField(
                     decoration: InputDecoration(
                       hintText: 'Select Time',
-                      suffixIcon: Icon(Icons.access_time),
-                      border: OutlineInputBorder(),
+                      labelText: 'Select Time',
+                      suffixIcon: Icon(Icons.access_time,
+                          color: const Color.fromARGB(255, 186, 163, 136)),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: const Color.fromARGB(255, 186, 163, 136)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: const Color.fromARGB(255, 186, 163, 136)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: const Color.fromARGB(255, 186, 163, 136)),
+                      ),
                     ),
                     readOnly: true,
                     onTap: () => _selectTime(context),
@@ -213,7 +239,18 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
             DropdownButtonFormField<String>(
               isExpanded: true,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: const Color.fromARGB(255, 186, 163, 136)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: const Color.fromARGB(255, 186, 163, 136)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: const Color.fromARGB(255, 186, 163, 136)),
+                ),
                 contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
               ),
               hint: Text("Select Event Type"),
@@ -240,7 +277,18 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
             DropdownButtonFormField<String>(
               isExpanded: true,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: const Color.fromARGB(255, 186, 163, 136)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: const Color.fromARGB(255, 186, 163, 136)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: const Color.fromARGB(255, 186, 163, 136)),
+                ),
                 contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
               ),
               hint: Text("Select Sacrament"),
@@ -251,12 +299,19 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                 });
               },
               items: (event_type == 'Public'
-                      ? ['Wedding', 'Baptism', 'Blessing', 'Seminar']
+                      ? [
+                          'Wedding',
+                          'Baptism',
+                          'Blessing',
+                          'Seminar',
+                          "Confirmation"
+                        ]
                       : [
                           'Chapel Mass',
                           'Parish Mass',
                           'Barangay Mass',
-                          'Confession'
+                          'Confession',
+                          'Holy Order',
                         ])
                   .map((String value) {
                 return DropdownMenuItem<String>(
@@ -298,12 +353,12 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                 ),
                 SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: _updateEvent,
+                  onPressed: _saveEvent,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
                   ),
-                  child: Text("Update"),
+                  child: Text("Save"),
                 ),
               ],
             ),
@@ -320,7 +375,19 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
       maxLines: maxLines,
       decoration: InputDecoration(
         hintText: hintText,
-        border: OutlineInputBorder(),
+        labelText: hintText,
+        border: OutlineInputBorder(
+          borderSide:
+              BorderSide(color: const Color.fromARGB(255, 186, 163, 136)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide:
+              BorderSide(color: const Color.fromARGB(255, 186, 163, 136)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide:
+              BorderSide(color: const Color.fromARGB(255, 186, 163, 136)),
+        ),
       ),
     );
   }
