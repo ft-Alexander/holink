@@ -36,10 +36,10 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
   }
 
   final Map<int, Widget> bottomNavBarRoutes = {
-    0: Scaffold(
+    0: const Scaffold(
         body: Center(child: Text("Dashboard"))), // Blank screen for Dashboard
     1: const Service(), // Service screen
-    2: Scaffold(
+    2: const Scaffold(
         body: Center(child: Text("Finance"))), // Blank screen for Finance
     3: const ParishionersProfileScreen(), // Profile screen
   };
@@ -121,7 +121,7 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
         return Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            actions: [             
+            actions: const [             
             ],
             bottom: PreferredSize(
               preferredSize:

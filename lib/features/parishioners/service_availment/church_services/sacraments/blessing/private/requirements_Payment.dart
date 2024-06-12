@@ -52,9 +52,9 @@ class _RequirementsPaymentState extends State<RequirementsPayment> {
           preferredSize: const Size.fromHeight(50.0),
           child: Column(
             children: [
-              Center(
+              const Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0),
                   child: Text(
                     'REQUIRMENTS AND PAYMENTS',
                     style: TextStyle(

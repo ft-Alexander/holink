@@ -12,12 +12,12 @@ class ViewEventScreen extends StatelessWidget {
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
-        side: BorderSide(color: Color(0xFFB37840), width: 2),
+        side: const BorderSide(color: Color(0xFFB37840), width: 2),
       ),
       child: Container(
         width:
             MediaQuery.of(context).size.width * 0.8, // Adjust width as needed
-        padding: EdgeInsets.fromLTRB(16, 16, 16, 25),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 25),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,7 +25,7 @@ class ViewEventScreen extends StatelessWidget {
               Center(
                 child: Text(
                   event.title.toUpperCase(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
@@ -33,7 +33,7 @@ class ViewEventScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _buildDetailRow(
                   'Date:', DateFormat('MMMM d, y').format(event.date)),
               _buildDetailRow('Time:', DateFormat('h:mm a').format(event.date)),
@@ -44,22 +44,22 @@ class ViewEventScreen extends StatelessWidget {
               _buildDetailRow('Lectors:', event.lectors),
               _buildDetailRow('Sacristan:', event.sacristan),
               _buildDetailRow('Details:', event.details),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFB37840), // Button color
+                    backgroundColor: const Color(0xFFB37840), // Button color
                     foregroundColor: Colors.white, // Text color
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                    textStyle: TextStyle(fontSize: 18, fontFamily: 'DM Sans'),
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                    textStyle: const TextStyle(fontSize: 18, fontFamily: 'DM Sans'),
                   ),
-                  child: Text('Close'),
+                  child: const Text('Close'),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -75,7 +75,7 @@ class ViewEventScreen extends StatelessWidget {
         children: [
           Text(
             '$label ',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
@@ -85,7 +85,7 @@ class ViewEventScreen extends StatelessWidget {
           Expanded(
             child: Text(
               value,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 color: Colors.black54,
                 fontStyle: FontStyle.italic,

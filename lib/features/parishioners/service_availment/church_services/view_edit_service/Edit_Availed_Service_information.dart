@@ -26,7 +26,7 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
   bool isLoading = true;
   int id = 0;
   int s_id = 0;
-  localhost localhostInstance = new localhost(); // Add this line
+  localhost localhostInstance = localhost(); // Add this line
 
   @override
   void initState() {
@@ -145,9 +145,9 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
           preferredSize: const Size.fromHeight(50.0),
           child: Column(
             children: [
-              Center(
+              const Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0),
                   child: Text(
                     'EDIT SERVICE INFORMATION',
                     style: TextStyle(

@@ -17,7 +17,7 @@ class _ApprovedServicesState extends State<ApprovedServices> {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications),
+            icon: const Icon(Icons.notifications),
             onPressed: () {},
           ),
         ],
@@ -42,8 +42,9 @@ class _ApprovedServicesState extends State<ApprovedServices> {
           itemCount: globalState.availedServices.length,
           itemBuilder: (context, index) {
             var service = globalState.availedServices[index];
-            if (service["status"] != "approved")
+            if (service["status"] != "approved") {
               return Container(); // Skip non-approved services
+            }
 
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -69,10 +70,10 @@ class _ApprovedServicesState extends State<ApprovedServices> {
                         },
                       );
                     },
-                    child: const Text("View"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                     ),
+                    child: const Text("View"),
                   ),
                 ),
               ),
