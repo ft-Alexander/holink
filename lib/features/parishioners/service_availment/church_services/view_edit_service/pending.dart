@@ -12,7 +12,7 @@ class PendingServices extends StatelessWidget {
     }).toList();
 
     if (pendingServices.isEmpty) {
-      return Center(child: Text("No pending services available"));
+      return const Center(child: Text("No pending services available"));
     }
 
     return ListView.builder(
@@ -44,10 +44,10 @@ class PendingServices extends StatelessWidget {
                     },
                   );
                 },
-                child: const Text("View/Edit"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                 ),
+                child: const Text("View/Edit"),
               ),
             ),
           ),

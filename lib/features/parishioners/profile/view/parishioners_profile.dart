@@ -14,12 +14,12 @@ class _ParishionersProfileScreenState extends State<ParishionersProfileScreen> {
   int _selectedIndexBotNav = 3;
 
   final Map<int, Widget> bottomNavBarRoutes = {
-    0: Scaffold(
+    0: const Scaffold(
         body: Center(child: Text("Dashboard"))), // Blank screen for Dashboard
-    1: Service(), // Service screen
-    2: Scaffold(
+    1: const Service(), // Service screen
+    2: const Scaffold(
         body: Center(child: Text("Finance"))), // Blank screen for Finance
-    3: ParishionersProfileScreen(), // Profile screen
+    3: const ParishionersProfileScreen(), // Profile screen
   };
 
   void _navigateTo(int index, BuildContext context, Map<int, Widget> routes) {
@@ -46,7 +46,7 @@ class _ParishionersProfileScreenState extends State<ParishionersProfileScreen> {
       context,
       MaterialPageRoute(
           builder: (context) =>
-              Login()), // Replace with your login screen widget
+              const Login()), // Replace with your login screen widget
       (Route<dynamic> route) => false,
     );
   }
@@ -59,50 +59,50 @@ class _ParishionersProfileScreenState extends State<ParishionersProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 50,
               backgroundImage: AssetImage(
                   'assets/images/profile_picture.png'), // Replace with your image asset path
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'JaneDoe',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
-            Text(
+            const SizedBox(height: 8),
+            const Text(
               'janedoe@unc.edu.ph',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey,
               ),
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
             Container(
-              padding: EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Color(0xFFB37840), // Border color
+                  color: const Color(0xFFB37840), // Border color
                 ),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
                 children: [
-                  ListTile(
+                  const ListTile(
                     title: Text('LOCATION'),
                     subtitle: Text('St. John The Baptist'),
                   ),
-                  Divider(),
-                  ListTile(
+                  const Divider(),
+                  const ListTile(
                     title: Text('CHANGE PASSWORD'),
                     subtitle: Text('********'),
                   ),
-                  Divider(),
+                  const Divider(),
                   ListTile(
-                    title: Center(child: Text('LOGOUT')),
+                    title: const Center(child: Text('LOGOUT')),
                     onTap: () => _logout(context), // Call the logout function
                   ),
                 ],
@@ -113,7 +113,7 @@ class _ParishionersProfileScreenState extends State<ParishionersProfileScreen> {
       ),
       bottomNavigationBar: Container(
         height: 80.0, // Increase the height of the container
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           border: Border(
             top: BorderSide(
@@ -135,7 +135,7 @@ class _ParishionersProfileScreenState extends State<ParishionersProfileScreen> {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(25.0),
             topRight: Radius.circular(25.0),
           ),
@@ -148,7 +148,7 @@ class _ParishionersProfileScreenState extends State<ParishionersProfileScreen> {
                   Icons.home,
                   size: 30.0, // Increase the size of the icons
                   color: _selectedIndexBotNav == 0
-                      ? Color.fromRGBO(179, 120, 64, 1.0)
+                      ? const Color.fromRGBO(179, 120, 64, 1.0)
                       : Colors.grey,
                 ),
                 label: '',
@@ -158,7 +158,7 @@ class _ParishionersProfileScreenState extends State<ParishionersProfileScreen> {
                   Icons.calendar_today,
                   size: 30.0, // Increase the size of the icons
                   color: _selectedIndexBotNav == 1
-                      ? Color.fromRGBO(179, 120, 64, 1.0)
+                      ? const Color.fromRGBO(179, 120, 64, 1.0)
                       : Colors.grey,
                 ),
                 label: '',
@@ -168,7 +168,7 @@ class _ParishionersProfileScreenState extends State<ParishionersProfileScreen> {
                   Icons.book,
                   size: 30.0, // Increase the size of the icons
                   color: _selectedIndexBotNav == 2
-                      ? Color.fromRGBO(179, 120, 64, 1.0)
+                      ? const Color.fromRGBO(179, 120, 64, 1.0)
                       : Colors.grey,
                 ),
                 label: '',
@@ -178,7 +178,7 @@ class _ParishionersProfileScreenState extends State<ParishionersProfileScreen> {
                   Icons.person,
                   size: 30.0, // Increase the size of the icons
                   color: _selectedIndexBotNav == 3
-                      ? Color.fromRGBO(179, 120, 64, 1.0)
+                      ? const Color.fromRGBO(179, 120, 64, 1.0)
                       : Colors.grey,
                 ),
                 label: '',
@@ -186,7 +186,7 @@ class _ParishionersProfileScreenState extends State<ParishionersProfileScreen> {
             ],
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.white,
-            selectedItemColor: Color.fromRGBO(179, 120, 64, 1.0),
+            selectedItemColor: const Color.fromRGBO(179, 120, 64, 1.0),
             unselectedItemColor: Colors.grey,
             showSelectedLabels: false,
             showUnselectedLabels: false,

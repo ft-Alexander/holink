@@ -1,13 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:holink/features/parish/scheduling/view/ministry.dart';
+import 'package:holink/features/parish/scheduling/view/scheduling.dart';
+// Assuming MinistriesScreen is in this path
 
 class CustomNavBar extends StatelessWidget implements PreferredSizeWidget {
   final int selectedIndex;
-  final Function(int, BuildContext) onTabSelected;
 
-  CustomNavBar({required this.selectedIndex, required this.onTabSelected});
+  CustomNavBar({super.key, required this.selectedIndex});
+
+  final Map<int, Widget> appBarRoutes = {
+    0: const Scheduling(),
+    1: const MinistriesScreen(),
+  };
+
+  void _navigateTo(int index, BuildContext context) {
+    if (appBarRoutes.containsKey(index)) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => appBarRoutes[index]!),
+        (route) => false,
+      );
+    }
+  }
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
@@ -18,15 +35,15 @@ class CustomNavBar extends StatelessWidget implements PreferredSizeWidget {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Spacer(),
+          const Spacer(),
           _buildTabItem(
             context: context,
             index: 0,
             title: 'EVENTS',
             isSelected: selectedIndex == 0,
-            onTap: onTabSelected,
+            onTap: _navigateTo,
           ),
-          Spacer(),
+          const Spacer(),
           Stack(
             children: [
               _buildTabItem(
@@ -34,11 +51,11 @@ class CustomNavBar extends StatelessWidget implements PreferredSizeWidget {
                 index: 1,
                 title: 'MINISTRIES',
                 isSelected: selectedIndex == 1,
-                onTap: onTabSelected,
+                onTap: _navigateTo,
               ),
             ],
           ),
-          Spacer(),
+          const Spacer(),
         ],
       ),
     );
@@ -57,12 +74,12 @@ class CustomNavBar extends StatelessWidget implements PreferredSizeWidget {
         width:
             MediaQuery.of(context).size.width / 3, // Adjust width for spacing
         alignment: Alignment.center,
-        padding: EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
               color: isSelected
-                  ? Color.fromRGBO(179, 120, 64, 1.0)
+                  ? const Color.fromRGBO(179, 120, 64, 1.0)
                   : Colors.transparent,
               width: 2,
             ),
