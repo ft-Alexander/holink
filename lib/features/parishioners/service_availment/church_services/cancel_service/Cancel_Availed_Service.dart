@@ -74,7 +74,7 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
+          preferredSize: const Size.fromHeight(30.0),
           child: Column(
             children: [
               const Center(
@@ -136,8 +136,7 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Card(
                             child: ListTile(
-                              title: Text(
-                                  '${service["service"] ?? 'N/A'} (ID#: ${service["id"] ?? 'N/A'})'),
+                              title: Text('${service["service"] ?? 'N/A'} (ID#: ${service["id"] ?? 'N/A'})'),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

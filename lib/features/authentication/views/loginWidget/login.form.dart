@@ -10,6 +10,7 @@ import 'package:holink/features/parishioners/service_availment/view/service.dart
 import 'package:http/http.dart' as http;
 import 'package:holink/dbConnection/localhost.dart';
 
+
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
 
@@ -180,6 +181,10 @@ class _LoginFormState extends State<LoginForm> {
           ElevatedButton(
             onPressed: () {
               // Add your login functionality here
+            Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Service()),
+            );
             },
             style: ButtonStyle(
               backgroundColor:
@@ -198,7 +203,7 @@ class _LoginFormState extends State<LoginForm> {
               ),
             ),
             child: Text(
-              'Register',
+              'Login as Guest',
               style: TextStyle(
                 fontSize: 16.0,
                 color: HexColor(tbrown),
@@ -210,6 +215,7 @@ class _LoginFormState extends State<LoginForm> {
           ElevatedButton(
             onPressed: () {
               // Add your login functionality here
+              
             },
             style: ButtonStyle(
               backgroundColor:

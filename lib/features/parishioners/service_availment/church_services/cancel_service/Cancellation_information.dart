@@ -103,7 +103,7 @@ class _CancellationInformationState extends State<CancellationInformation> {
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
+          preferredSize: const Size.fromHeight(30.0),
           child: Column(
             children: [
               const Center(
@@ -130,7 +130,7 @@ class _CancellationInformationState extends State<CancellationInformation> {
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
+          : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Form(
                 key: _formKey,
@@ -174,12 +174,12 @@ class _CancellationInformationState extends State<CancellationInformation> {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Note: Cancellation of request is permanent. Any down-payment won’t be refunded as stated in the User Agreement Form. '
+                      'Note: Cancellation of request is permanent. Any down-payment might be refunded as stated in the User Agreement Form. '
                       'Further details will be sent after cancellation of service.',
                       style:
                           TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 16),
                     Align(
                       alignment: Alignment.bottomRight,
                       child: ElevatedButton(
