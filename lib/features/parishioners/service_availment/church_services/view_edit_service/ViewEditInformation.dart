@@ -77,14 +77,12 @@ class _ViewEditInformationState extends State<ViewEditInformation>
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Card(
             child: ListTile(
-              title: Text(
-                  '${service["service"] ?? 'N/A'} (ID#: ${service["id"] ?? 'N/A'})'),
+              title: Text('${service["service"] ?? 'N/A'} (ID#: ${service["id"] ?? 'N/A'})'),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Date Availed: ${service["date_availed"] ?? 'N/A'}"),
-                  Text(
-                      "Scheduled Date: ${formatDate(service["scheduled_date"] ?? 'N/A')}"),
+                  Text("Scheduled Date: ${formatDate(service["scheduled_date"]??'N/A')}"),
                 ],
               ),
               trailing: ElevatedButton(
@@ -99,11 +97,11 @@ class _ViewEditInformationState extends State<ViewEditInformation>
                     },
                   );
                 },
+                child: const Text("View/Edit"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text("View/Edit"),
               ),
             ),
           ),
@@ -166,7 +164,6 @@ class _ViewEditInformationState extends State<ViewEditInformation>
   }
 
   String formatDate(String date) {
-    // if (date == null) return 'N/A';
     try {
       final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
       final DateFormat desiredFormat = DateFormat('yyyy-MM-dd hh:mm a');

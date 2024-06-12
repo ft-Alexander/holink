@@ -100,7 +100,7 @@ class ReviewInformation extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
+          preferredSize: const Size.fromHeight(30.0),
           child: Column(
             children: [
               const Center(
@@ -125,7 +125,7 @@ class ReviewInformation extends StatelessWidget {
           ),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,7 +171,7 @@ class ReviewInformation extends StatelessWidget {
                 _buildScheduleInfo('Time', _formatTime(serviceInformation.scheduled_date)),
               ],
             ),
-            const Spacer(),
+            const SizedBox(height: 32),
             Align(
               alignment: Alignment.bottomRight,
               child: ElevatedButton(

@@ -150,7 +150,7 @@ class _RescheduleAvailedServiceState extends State<RescheduleAvailedService> {
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
+          preferredSize: const Size.fromHeight(30.0),
           child: Column(
             children: [
               const Center(
@@ -228,7 +228,7 @@ class _RescheduleAvailedServiceState extends State<RescheduleAvailedService> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
-                        child: const Text('Save', style: TextStyle(fontSize: 18)),
+                        child: const Text('Save', style: TextStyle(fontSize: 18, color: Colors.white)),
                       ),
                     ),
                   ],

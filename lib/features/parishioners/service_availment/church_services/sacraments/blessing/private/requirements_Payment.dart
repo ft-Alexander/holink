@@ -94,7 +94,7 @@ class _RequirementsPaymentState extends State<RequirementsPayment> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const Text(
-              '(For Optional Payment, Any Amount would be Appreciated)',
+              '(For Optional Payment, Onsite: Users can give either monetary or offeratory, Any Amount would be Appreciated)',
               style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
             ),
             const SizedBox(height: 16),
