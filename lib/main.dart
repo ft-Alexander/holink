@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:holink/features/authentication/views/login.dart';
+import 'package:holink/features/parish/scheduling/view/scheduling.dart';
 
 void main() {
   runApp(const HolinkApp());

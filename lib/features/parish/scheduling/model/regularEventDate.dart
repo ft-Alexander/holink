@@ -1,43 +1,47 @@
+import 'package:holink/features/parish/scheduling/model/regularEvent.dart';
+
 class RegularEventDate {
-  final int id;
-  final DateTime eventDate;
+  int id;
+  DateTime eventDate;
   int? priestId;
   int? lectorId;
   int? sacristanId;
-  final int regularEvent;
-  String? archiveStatus;
+  int regularEvent;
+  RegularEvent? eventDetails;
+  String archiveStatus;
 
   RegularEventDate({
     required this.id,
     required this.eventDate,
-    required this.priestId,
-    required this.lectorId,
-    required this.sacristanId,
+    this.priestId,
+    this.lectorId,
+    this.sacristanId,
     required this.regularEvent,
-    this.archiveStatus,
+    this.eventDetails,
+    required this.archiveStatus,
   });
 
-  factory RegularEventDate.fromMap(Map<String, dynamic> map) {
+  factory RegularEventDate.fromJson(Map<String, dynamic> json) {
     return RegularEventDate(
-      id: map['id'],
-      eventDate: DateTime.parse(map['event_date']),
-      priestId: map['priest_id'],
-      lectorId: map['lector_id'],
-      sacristanId: map['sacristan_id'],
-      regularEvent: map['regular_event'],
-      archiveStatus: map['archive_status'],
+      id: json['event_date_id'],
+      eventDate: DateTime.parse(json['event_date']),
+      priestId: json['priest_id'],
+      lectorId: json['lector_id'],
+      sacristanId: json['sacristan_id'],
+      regularEvent: json['regular_event'],
+      archiveStatus: json['archive_status'],
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'event_date_id': id,
       'event_date': eventDate.toIso8601String(),
       'priest_id': priestId,
       'lector_id': lectorId,
       'sacristan_id': sacristanId,
       'regular_event': regularEvent,
-      'archive_status': archiveStatus
+      'archive_status': archiveStatus,
     };
   }
 }
