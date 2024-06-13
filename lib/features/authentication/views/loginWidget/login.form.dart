@@ -134,26 +134,30 @@ class _LoginFormState extends State<LoginForm> {
           const SizedBox(height: 10.0),
           ElevatedButton(
             onPressed: () {
-              if (_usernameController.text.isEmpty ||
-                  _passwordConttroller.text.isEmpty) {
-                setState(() {
-                  _msg = "Username and Password are required";
-                });
-                return;
-              }
-              switch (dropDown) {
-                case "Parishioners":
-                  loginParishioners();
-                  break;
-                case "Parish Staff":
-                  loginParish();
-                  break;
-                case "Diocese Staff":
-                  loginDiocese();
-                  break;
-                default:
-                  break;
-              }
+              // if (_usernameController.text.isEmpty ||
+              //     _passwordConttroller.text.isEmpty) {
+              //   setState(() {
+              //     _msg = "Username and Password are required";
+              //   });
+              //   return;
+              // }
+              // switch (dropDown) {
+              //   case "Parishioners":
+              //     loginParishioners();
+              //     break;
+              //   case "Parish Staff":
+              //     loginParish();
+              //     break;
+              //   case "Diocese Staff":
+              //     loginDiocese();
+              //     break;
+              //   default:
+              //     break;
+              // }
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => Scheduling()),
+              );
             },
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.all<Color>(HexColor(tbrown)),
