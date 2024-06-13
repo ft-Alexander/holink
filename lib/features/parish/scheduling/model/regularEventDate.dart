@@ -1,43 +1,80 @@
+import 'package:holink/features/parish/scheduling/model/regularEvent.dart';
+
 class RegularEventDate {
-  final int id;
-  final DateTime eventDate;
+  int id;
+  DateTime eventDate;
   int? priestId;
   int? lectorId;
   int? sacristanId;
-  final int regularEvent;
-  String? archiveStatus;
+  int regularEvent;
+  RegularEvent? eventDetails;
+  String archiveStatus;
+  String eventType;
 
   RegularEventDate({
     required this.id,
     required this.eventDate,
-    required this.priestId,
-    required this.lectorId,
-    required this.sacristanId,
+    this.priestId,
+    this.lectorId,
+    this.sacristanId,
     required this.regularEvent,
-    this.archiveStatus,
+    this.eventDetails,
+    required this.archiveStatus,
+    required this.eventType,
   });
 
-  factory RegularEventDate.fromMap(Map<String, dynamic> map) {
+  factory RegularEventDate.fromJson(Map<String, dynamic> json) {
     return RegularEventDate(
-      id: map['id'],
-      eventDate: DateTime.parse(map['event_date']),
-      priestId: map['priest_id'],
-      lectorId: map['lector_id'],
-      sacristanId: map['sacristan_id'],
-      regularEvent: map['regular_event'],
-      archiveStatus: map['archive_status'],
-    );
+        id: json['event_date_id'] is int
+            ? json['event_date_id']
+            : int.tryParse(json['event_date_id'].toString()) ?? 0,
+        eventDate: DateTime.parse(json['event_date']),
+        priestId: json['priest_id'] != null
+            ? (json['priest_id'] is int
+                ? json['priest_id']
+                : int.tryParse(json['priest_id'].toString()))
+            : null,
+        lectorId: json['lector_id'] != null
+            ? (json['lector_id'] is int
+                ? json['lector_id']
+                : int.tryParse(json['lector_id'].toString()))
+            : null,
+        sacristanId: json['sacristan_id'] != null
+            ? (json['sacristan_id'] is int
+                ? json['sacristan_id']
+                : int.tryParse(json['sacristan_id'].toString()))
+            : null,
+        regularEvent: json['event_id'] is int
+            ? json['event_id']
+            : int.tryParse(json['event_id'].toString()) ?? 0,
+        eventDetails: json.containsKey('event_name') &&
+                json.containsKey('description') &&
+                json.containsKey('address')
+            ? RegularEvent(
+                id: json['event_id'] is int
+                    ? json['event_id']
+                    : int.tryParse(json['event_id'].toString()) ?? 0,
+                eventName: json['event_name'],
+                description: json['description'],
+                address: json['address'],
+                eventDates: [],
+              )
+            : null,
+        archiveStatus: json['archive_status'],
+        eventType: json['event_type']);
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'event_date_id': id,
       'event_date': eventDate.toIso8601String(),
       'priest_id': priestId,
       'lector_id': lectorId,
       'sacristan_id': sacristanId,
       'regular_event': regularEvent,
-      'archive_status': archiveStatus
+      'event_details': eventDetails?.toJson(),
+      'archive_status': archiveStatus,
+      'event_type': eventType
     };
   }
 }

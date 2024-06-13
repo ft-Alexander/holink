@@ -1,30 +1,46 @@
+import 'package:holink/features/parish/scheduling/model/regularEventDate.dart';
+
 class RegularEvent {
-  final int id;
-  final String eventName;
-  final String description;
-  final String address;
+  int id;
+  String eventName;
+  String description;
+  String address;
+  List<RegularEventDate> eventDates;
+
   RegularEvent({
     required this.id,
     required this.eventName,
     required this.description,
     required this.address,
+    required this.eventDates,
   });
 
-  factory RegularEvent.fromMap(Map<String, dynamic> map) {
+  factory RegularEvent.fromJson(Map<String, dynamic> json) {
+    var list = json['dates'] as List;
+    List<RegularEventDate> eventDatesList =
+        list.map((i) => RegularEventDate.fromJson(i)).toList();
+
     return RegularEvent(
-      id: map['id'],
-      eventName: map['event_name'],
-      description: map['description'],
-      address: map['address'],
+      id: json['event_id'] is int
+          ? json['event_id']
+          : int.tryParse(json['event_id'].toString()) ?? 0,
+      eventName: json['event_name'],
+      description: json['description'],
+      address: json['address'],
+      eventDates: eventDatesList,
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
+    List<Map> eventDates = this.eventDates != null
+        ? this.eventDates.map((i) => i.toJson()).toList()
+        : [];
     return {
-      'id': id,
+      'event_id': id,
       'event_name': eventName,
       'description': description,
-      'address': address
+      'address': address,
+      'dates': eventDates,
     };
   }
 }
