@@ -10,7 +10,6 @@ import 'package:holink/features/parishioners/service_availment/view/service.dart
 import 'package:http/http.dart' as http;
 import 'package:holink/dbConnection/localhost.dart';
 
-
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
 
@@ -157,12 +156,11 @@ class _LoginFormState extends State<LoginForm> {
               }
             },
             style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all<Color>(HexColor(tbrown)),
-              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+              backgroundColor: WidgetStateProperty.all<Color>(HexColor(tbrown)),
+              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
                 const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
               ),
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
                 ),
@@ -181,18 +179,17 @@ class _LoginFormState extends State<LoginForm> {
           ElevatedButton(
             onPressed: () {
               // Add your login functionality here
-            Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Service()),
-            );
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Service()),
+              );
             },
             style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all<Color>(HexColor(twhite)),
-              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+              backgroundColor: WidgetStateProperty.all<Color>(HexColor(twhite)),
+              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
                 const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
               ),
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
                   side: BorderSide(
@@ -215,17 +212,16 @@ class _LoginFormState extends State<LoginForm> {
           ElevatedButton(
             onPressed: () {
               // Add your login functionality here
-              
             },
             style: ButtonStyle(
               backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.transparent),
-              shadowColor: MaterialStateProperty.all<Color>(Colors.transparent),
-              elevation: MaterialStateProperty.all<double>(0),
-              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                  WidgetStateProperty.all<Color>(Colors.transparent),
+              shadowColor: WidgetStateProperty.all<Color>(Colors.transparent),
+              elevation: WidgetStateProperty.all<double>(0),
+              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
                 const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
               ),
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
                 ),
