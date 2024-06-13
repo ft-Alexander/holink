@@ -137,14 +137,14 @@ class _RegularEventFormState extends State<RegularEventForm> {
               time?.hour ?? 0, time?.minute ?? 0);
 
           RegularEventDate eventDate = RegularEventDate(
-            id: 0,
-            eventDate: eventDateTime,
-            priestId: int.tryParse(_priestIdController.text),
-            lectorId: int.tryParse(_lectorIdController.text),
-            sacristanId: int.tryParse(_sacristanIdController.text),
-            regularEvent: eventId,
-            archiveStatus: 'Display',
-          );
+              id: 0,
+              eventDate: eventDateTime,
+              priestId: int.tryParse(_priestIdController.text),
+              lectorId: int.tryParse(_lectorIdController.text),
+              sacristanId: int.tryParse(_sacristanIdController.text),
+              regularEvent: eventId,
+              archiveStatus: 'Display',
+              eventType: "Regular");
 
           bool success = await _eventService.saveRegularEventDate(eventDate);
           if (!success) {

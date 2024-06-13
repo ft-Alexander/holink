@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:holink/constants/bottom_nav_parish.dart';
 import 'package:holink/features/parish/scheduling/constants/schedule_navbar.dart';
-import 'package:holink/features/parish/scheduling/services/plot_regular_event.dart';
 import 'package:holink/features/parish/scheduling/services/event_service.dart';
+import 'package:holink/features/parish/scheduling/services/plot_regular_event.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:holink/features/parish/scheduling/model/regularEvent.dart';
 import 'package:holink/features/parish/scheduling/model/regularEventDate.dart';
 
 class Scheduling extends StatefulWidget {
@@ -18,92 +17,58 @@ class _SchedulingState extends State<Scheduling> {
   DateTime focusedDate = DateTime.now();
   DateTime selectedDate = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  EventService _eventService = EventService();
+  final EventService _eventService = EventService();
   Map<DateTime, List<RegularEventDate>> _events = {};
   List<RegularEventDate> _selectedEvents = [];
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _fetchEvents();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    fetchAndSetEvents();
+  }
 
-  // Future<void> _fetchEvents() async {
-  //   List<RegularEvent> events = await _eventService.fetchRegularEvents();
-  //   print('Fetched events: $events');
-  //   try {
-  //     setState(() {
-  //       _events = _mapEventsToDates(events);
-  //     });
-
-  //     // Print statements to debug fetched events
-  //     for (var event in events) {
-  //       print(
-  //           'Event: ${event.eventName}, Description: ${event.description}, Address: ${event.address}');
-  //       for (var eventDate in event.eventDates) {
-  //         print(
-  //             'Event Date ID: ${eventDate.id}, Date: ${eventDate.eventDate}, Priest ID: ${eventDate.priestId}, Lector ID: ${eventDate.lectorId}, Sacristan ID: ${eventDate.sacristanId}, Archive Status: ${eventDate.archiveStatus}');
-  //       }
-  //     }
-  //     // Print the events map
-  //     _events.forEach((date, events) {
-  //       print('Date: $date, Events: $events');
-  //     });
-  //   } catch (e) {
-  //     print('Failed to load events: $e');
-  //   }
-  // }
-
-  Map<DateTime, List<RegularEventDate>> _mapEventsToDates(
-      List<RegularEvent> events) {
-    final Map<DateTime, List<RegularEventDate>> mappedEvents = {};
-    for (var event in events) {
-      for (var eventDate in event.eventDates) {
-        final date = DateTime(eventDate.eventDate.year,
-            eventDate.eventDate.month, eventDate.eventDate.day);
-        if (mappedEvents[date] == null) {
-          mappedEvents[date] = <RegularEventDate>[];
+  Future<void> fetchAndSetEvents() async {
+    try {
+      List<RegularEventDate> events =
+          await _eventService.fetchRegularEventDates();
+      setState(() {
+        _events = {};
+        for (var eventDate in events) {
+          final date = DateTime(eventDate.eventDate.year,
+              eventDate.eventDate.month, eventDate.eventDate.day);
+          if (_events[date] != null) {
+            _events[date]!.add(eventDate);
+          } else {
+            _events[date] = [eventDate];
+          }
         }
-        mappedEvents[date]!.add(eventDate);
-      }
+      });
+    } catch (error) {
+      print('Error fetching events: $error');
     }
-    return mappedEvents;
   }
 
   List<RegularEventDate> _getEventsForDay(DateTime day) {
-    return _events[day] ?? [];
-  }
-
-  List<Color> _getEventDotColors(List<RegularEventDate> events) {
-    List<Color> colors = [];
-    for (var event in events) {
-      colors.add(Colors.green); // Regular event color
-    }
-    return colors;
+    return _events[DateTime(day.year, day.month, day.day)] ?? [];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomNavBar(
-        selectedIndex: 0,
-      ),
+      appBar: CustomNavBar(selectedIndex: 0),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              _buildCalendar(),
-              const SizedBox(height: 16.0),
-              _buildAddEventButton(context),
-              const SizedBox(height: 16.0),
-            ],
-          ),
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            _buildCalendar(),
+            const SizedBox(height: 16.0),
+            _buildAddEventButton(context),
+            const SizedBox(height: 16.0),
+            _buildEventsList(),
+          ],
         ),
       ),
-      bottomNavigationBar: BottomNavBarParish(
-        selectedIndex: 1,
-      ),
+      bottomNavigationBar: BottomNavBarParish(selectedIndex: 1),
     );
   }
 
@@ -125,22 +90,17 @@ class _SchedulingState extends State<Scheduling> {
           lastDay: DateTime(2050),
           calendarFormat: _calendarFormat,
           eventLoader: _getEventsForDay,
-          onFormatChanged: (format) {
-            setState(() {
-              _calendarFormat = format;
-            });
-          },
+          onFormatChanged: (format) => setState(() {
+            _calendarFormat = format;
+          }),
           daysOfWeekVisible: true,
-          onDaySelected: (selectedDay, focusedDay) {
-            setState(() {
-              selectedDate = selectedDay;
-              focusedDate = focusedDay;
-              _selectedEvents = _getEventsForDay(selectedDay);
-            });
-          },
-          selectedDayPredicate: (date) {
-            return isSameDay(selectedDate, date);
-          },
+          onDaySelected: (selectedDay, focusedDay) => setState(() {
+            selectedDate = selectedDay;
+            focusedDate = focusedDay;
+            _selectedEvents = _getEventsForDay(selectedDay);
+            print('Events for $selectedDay: $_selectedEvents');
+          }),
+          selectedDayPredicate: (date) => isSameDay(selectedDate, date),
           calendarStyle: const CalendarStyle(
             isTodayHighlighted: true,
             selectedDecoration: BoxDecoration(
@@ -175,16 +135,14 @@ class _SchedulingState extends State<Scheduling> {
           calendarBuilders: CalendarBuilders(
             markerBuilder: (context, date, events) {
               if (events.isEmpty) return const SizedBox.shrink();
-              List<Color> colors =
-                  _getEventDotColors(events as List<RegularEventDate>);
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: colors.map((color) {
+                children: events.map((event) {
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 1.5),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: color,
+                      color: Colors.green,
                     ),
                     width: 8.0,
                     height: 8.0,
@@ -198,13 +156,73 @@ class _SchedulingState extends State<Scheduling> {
     );
   }
 
+  Widget _buildEventsList() {
+    if (_selectedEvents.isEmpty) {
+      return Center(
+        child: Text(
+          'NO SCHEDULED EVENT',
+          style: TextStyle(fontSize: 18, color: Colors.grey),
+        ),
+      );
+    }
+    return Column(
+      children: _selectedEvents.map((event) => _buildEventCard(event)).toList(),
+    );
+  }
+
+  Widget _buildEventCard(RegularEventDate event) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: Card(
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                event.eventDetails!.eventName,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8.0),
+              Text(
+                'Date: ${event.eventDate.toLocal().toString().split(' ')[0]}',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 4.0),
+              Text(
+                'Time: ${event.eventDate.toLocal().toString().split(' ')[1].substring(0, 5)}',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 4.0),
+              Text(
+                'Location: ${event.eventDetails!.address}',
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildAddEventButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        Navigator.push(
+      onPressed: () async {
+        final result = await Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const RegularEventForm()),
         );
+        if (result == true) {
+          // Refresh events after adding a new one
+          fetchAndSetEvents();
+        }
       },
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(

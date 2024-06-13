@@ -21,7 +21,9 @@ class RegularEvent {
         list.map((i) => RegularEventDate.fromJson(i)).toList();
 
     return RegularEvent(
-      id: json['event_id'],
+      id: json['event_id'] is int
+          ? json['event_id']
+          : int.tryParse(json['event_id'].toString()) ?? 0,
       eventName: json['event_name'],
       description: json['description'],
       address: json['address'],

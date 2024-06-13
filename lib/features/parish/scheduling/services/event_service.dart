@@ -44,20 +44,22 @@ class EventService {
     return false;
   }
 
-  // Future<List<RegularEvent>> fetchRegularEvents() async {
-  //   final response = await http.get(Uri.parse(
-  //       'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/getRegularEvents.php'));
+  Future<List<RegularEventDate>> fetchRegularEventDates() async {
+    final response = await http.get(Uri.parse(
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/getRegularEvents.php'));
 
-  //   if (response.statusCode == 200) {
-  //     final jsonResponse = json.decode(response.body);
-  //     if (jsonResponse['success']) {
-  //       List<dynamic> eventsJson = jsonResponse['events'];
-  //       return eventsJson.map((json) => RegularEvent.fromJson(json)).toList();
-  //     } else {
-  //       throw Exception('Failed to load events');
-  //     }
-  //   } else {
-  //     throw Exception('Failed to load events');
-  //   }
-  // }
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      if (jsonResponse['success']) {
+        List<dynamic> eventsJson = jsonResponse['events'];
+        return eventsJson
+            .map((json) => RegularEventDate.fromJson(json))
+            .toList();
+      } else {
+        throw Exception('Failed to load events');
+      }
+    } else {
+      throw Exception('Failed to load events');
+    }
+  }
 }
