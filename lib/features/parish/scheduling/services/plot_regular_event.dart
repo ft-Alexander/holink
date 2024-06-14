@@ -6,7 +6,9 @@ import '../services/event_service.dart';
 import 'form_fields.dart';
 
 class RegularEventForm extends StatefulWidget {
-  const RegularEventForm({super.key});
+  // const RegularEventForm({super.key});
+  final VoidCallback onEventAdded;
+  const RegularEventForm({super.key, required this.onEventAdded});
 
   @override
   _RegularEventFormState createState() => _RegularEventFormState();
@@ -161,6 +163,7 @@ class _RegularEventFormState extends State<RegularEventForm> {
           _specificDatesWithTimes.clear();
         });
 
+        widget.onEventAdded(); // Add this line to call the callback
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

@@ -42,6 +42,8 @@ class _SchedulingState extends State<Scheduling> {
             _events[date] = [eventDate];
           }
         }
+        // Set _selectedEvents for the initially selected date
+        _selectedEvents = _getEventsForDay(selectedDate);
       });
     } catch (error) {
       print('Error fetching events: $error');
@@ -217,7 +219,10 @@ class _SchedulingState extends State<Scheduling> {
       onPressed: () async {
         final result = await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const RegularEventForm()),
+          MaterialPageRoute(
+            builder: (context) => RegularEventForm(
+                onEventAdded: fetchAndSetEvents), // Modify this line
+          ),
         );
         if (result == true) {
           // Refresh events after adding a new one
