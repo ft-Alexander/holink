@@ -6,7 +6,6 @@ import '../services/event_service.dart';
 import 'form_fields.dart';
 
 class RegularEventForm extends StatefulWidget {
-  // const RegularEventForm({super.key});
   final VoidCallback onEventAdded;
   const RegularEventForm({super.key, required this.onEventAdded});
 
@@ -45,7 +44,6 @@ class _RegularEventFormState extends State<RegularEventForm> {
     final Map<DateTime, List<RegularEventDate>> mappedEvents = {};
     for (var event in events) {
       for (var eventDate in event.eventDates) {
-        // Access the eventDates list
         final date = DateTime(eventDate.eventDate.year,
             eventDate.eventDate.month, eventDate.eventDate.day);
         if (mappedEvents[date] == null) {
@@ -118,6 +116,58 @@ class _RegularEventFormState extends State<RegularEventForm> {
         _specificDatesWithTimes[date] = time;
       }
     });
+  }
+
+  void _confirmPlot() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Confirm Plot',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 18.0,
+            ),
+          ),
+          content: Text(
+            'Are you sure you want to plot this event?',
+            style: TextStyle(
+              color: Colors.black87,
+              fontSize: 16.0,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 16.0,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(
+                'Confirm',
+                style: TextStyle(
+                  color: Colors.green,
+                  fontSize: 16.0,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _plotForm();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _plotForm() async {
@@ -246,6 +296,7 @@ class _RegularEventFormState extends State<RegularEventForm> {
                     setState(() {
                       _selectedRepeatOption = newValue;
                     });
+
                     if (newValue != null) _selectTime(context, newValue);
                   },
                 ),
@@ -367,7 +418,7 @@ class _RegularEventFormState extends State<RegularEventForm> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: _plotForm,
+          onPressed: _confirmPlot,
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF57CA63),
             foregroundColor: Colors.white,

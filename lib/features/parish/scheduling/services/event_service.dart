@@ -62,4 +62,29 @@ class EventService {
       throw Exception('Failed to load events');
     }
   }
+
+  Future<void> archiveRegularEvent(int eventId) async {
+    final url =
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/archiveRegularEvent.php';
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        body: {'eventId': eventId.toString()},
+      );
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        if (jsonResponse['message'] != null) {
+          print(jsonResponse['message']); // Print success message
+        } else if (jsonResponse['error'] != null) {
+          print(jsonResponse['error']); // Print error message
+        } else {
+          print('Unexpected response format'); // Handle unexpected response
+        }
+      } else {
+        print('Failed to archive regular event: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception during archive request: $e'); // Handle exceptions
+    }
+  }
 }
