@@ -26,8 +26,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
   int? selectedYear;
   int? selectedMonth;
   int? selectedDay;
-  String? selectedTransactionType;
   String? selectedTransactionCategory;
+  String? selectedTransactionType;
 
   int _selectedIndexBotNav = 2;
 
@@ -98,16 +98,15 @@ class _TransactionsPageState extends State<TransactionsPage> {
               .toList();
         }
 
-        if (selectedTransactionType != null) {
+        if (selectedTransactionCategory != null) {
           transactions = transactions
-              .where((transaction) => transaction.type == selectedTransactionType)
+              .where((transaction) => transaction.transaction_category == selectedTransactionCategory)
               .toList();
         }
 
-        if (selectedTransactionCategory != null) {
+        if (selectedTransactionType != null) {
           transactions = transactions
-              .where((transaction) =>
-                  transaction.transaction_category == selectedTransactionCategory)
+              .where((transaction) => transaction.type == selectedTransactionType)
               .toList();
         }
 
@@ -131,8 +130,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
         int? year;
         int? month;
         int? day;
-        String? transactionType;
         String? transactionCategory;
+        String? transactionType;
 
         return AlertDialog(
           title: const Text('Filter Transactions'),
@@ -187,19 +186,19 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   },
                 ),
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Transaction Type'),
-                  items: ['Income', 'Expense'].map((String category) {
+                  decoration: const InputDecoration(labelText: 'Transaction Category'),
+                  items: ['Collection', 'Expense'].map((String category) {
                     return DropdownMenuItem<String>(
                       value: category,
                       child: Text(category),
                     );
                   }).toList(),
                   onChanged: (value) {
-                    transactionType = value;
+                    transactionCategory = value;
                   },
                 ),
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Transaction Category'),
+                  decoration: const InputDecoration(labelText: 'Transaction Type'),
                   items: [
                     'Mass Collection',
                     'Mass Offering',
@@ -221,14 +220,14 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     'Food',
                     'Decorso Sustento-PP / GP',
                     'Other Parish Expenses'
-                  ].map((String category) {
+                  ].map((String type) {
                     return DropdownMenuItem<String>(
-                      value: category,
-                      child: Text(category),
+                      value: type,
+                      child: Text(type),
                     );
                   }).toList(),
                   onChanged: (value) {
-                    transactionCategory = value;
+                    transactionType = value;
                   },
                 ),
               ],
@@ -242,8 +241,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   selectedYear = null;
                   selectedMonth = null;
                   selectedDay = null;
-                  selectedTransactionType = null;
                   selectedTransactionCategory = null;
+                  selectedTransactionType = null;
                   futureTransactions = fetchTransactions();
                 });
                 Navigator.of(context).pop();
@@ -263,8 +262,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   selectedYear = year;
                   selectedMonth = month;
                   selectedDay = day;
-                  selectedTransactionType = transactionType;
                   selectedTransactionCategory = transactionCategory;
+                  selectedTransactionType = transactionType;
                   futureTransactions = fetchTransactions();
                 });
                 Navigator.of(context).pop();
@@ -457,7 +456,7 @@ class TransactionCard extends StatelessWidget {
         elevation: 0,
         child: ListTile(
           leading: const Icon(Icons.receipt_long, color: Color(0xffB37840)),
-          title: Text(transaction.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(transaction.type, style: const TextStyle(fontWeight: FontWeight.bold)),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -482,8 +481,8 @@ class TransactionCard extends StatelessWidget {
   }
 
   Widget _buildTransactionTag(Transaction transaction) {
-    Color tagColor = transaction.transaction_category == 'Income' ? Colors.green : Colors.red;
-    String tagText = transaction.transaction_category == 'Income' ? 'Income' : 'Expense';
+    Color tagColor = transaction.transaction_category == 'Collection' ? Colors.green : Colors.red;
+    String tagText = transaction.transaction_category == 'Collection' ? 'Collection' : 'Expense';
 
     return Container(
       margin: const EdgeInsets.only(top: 4.0),
@@ -586,7 +585,7 @@ class TransactionCard extends StatelessWidget {
                 const SizedBox(height: 10),
                 Center(
                   child: Text(
-                    transaction.title,
+                    transaction.type,
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -596,16 +595,17 @@ class TransactionCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 _buildDetailRow('Transaction ID:', transaction.transaction_id.toString()),
-                _buildDetailRow('Employee ID:', transaction.par_id.toString()),
-                _buildDetailRow('Transaction Category:', transaction.transaction_category),
-                _buildDetailRow('Transaction Type:', transaction.type),
+                _buildDetailRow('Recorded By:', transaction.par_id.toString()),
                 if (transaction.sacramental_type != null && transaction.sacramental_type!.isNotEmpty)
                   _buildDetailRow('Sacramental Type:', transaction.sacramental_type!),
                 if (transaction.special_event_type != null && transaction.special_event_type!.isNotEmpty)
                   _buildDetailRow('Special Event Type:', transaction.special_event_type!),
                 _buildDetailRow('Date:', DateFormat('MMMM dd, yyyy').format(transaction.date)),
                 _buildDetailRow('Amount:', 'P ${transaction.amount}'),
-                _buildDetailRow('Details:', transaction.description),
+                if(transaction.purpose != null && transaction.purpose!.isNotEmpty)
+                  _buildDetailRow('Purpose:', transaction.purpose ?? 'N/A'),
+                if(transaction.donated_by != null && transaction.donated_by!.isNotEmpty)
+                  _buildDetailRow('Donated By:', transaction.donated_by ?? 'N/A'),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

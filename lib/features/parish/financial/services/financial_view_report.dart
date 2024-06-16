@@ -57,7 +57,7 @@ class DetailedReportView extends StatelessWidget {
                 _buildDetailRow('f) SSS / HDMF PhilHealth', report['sssHdmfPhilHealth']),
                 _buildDetailRow('g) Social Services / Charities', report['socialServicesCharities']),
                 _buildDetailRow('h) Food', report['food']),
-                _buildDetailRow('i) Decorso Sustento-PP / GP', report['decorsoSustentoPPGP']),
+                _buildDetailRow('i) Decoroso Sustento-PP / GP', report['decorsoSustentoPPGP']),
                 _buildDetailRow('j) Other Parish Expenses', report['otherParishExpenses']),
                 _buildDetailRow('Gross Expenses / Disbursements', report['totalExpenses']),
               ]),

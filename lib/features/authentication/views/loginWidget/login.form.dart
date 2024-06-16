@@ -11,6 +11,7 @@ import 'package:holink/features/parish/financial/view/financial_transactions.dar
 import 'package:holink/features/parishioners/service_availment/view/service.dart';
 import 'package:http/http.dart' as http;
 import 'package:holink/dbConnection/localhost.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -258,6 +259,7 @@ class _LoginFormState extends State<LoginForm> {
       if (response.statusCode == 200) {
         var user = jsonDecode(response.body); // return type listmap
         if (user.isNotEmpty) {
+          await _storeParId(username, password);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const Dashboard()),
@@ -296,6 +298,7 @@ class _LoginFormState extends State<LoginForm> {
       if (response.statusCode == 200) {
         var user = jsonDecode(response.body); // return type listmap
         if (user.isNotEmpty) {
+          await _storeParId(username, password);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => Scheduling()),
@@ -334,6 +337,7 @@ class _LoginFormState extends State<LoginForm> {
       if (response.statusCode == 200) {
         var user = jsonDecode(response.body); // return type listmap
         if (user.isNotEmpty) {
+          await _storeParId(username, password);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => Service()),
@@ -352,6 +356,32 @@ class _LoginFormState extends State<LoginForm> {
       setState(() {
         _msg = "$error";
       });
+    }
+  }
+
+  Future<void> _storeParId(String username, String password) async {
+    String url = "http://${localhostInstance.ipServer}/dashboard/myfolder/getAccountId.php";
+
+    final Map<String, dynamic> queryParams = {
+      "username": username,
+      "password": password,
+    };
+
+    try {
+      http.Response response = await http.get(Uri.parse(url).replace(queryParameters: queryParams));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data['success']) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('employeeId', data['par_id']);
+        } else {
+          print("Failed to fetch par_id: ${data['message']}");
+        }
+      } else {
+        print("Server error: ${response.reasonPhrase}");
+      }
+    } catch (error) {
+      print("Error fetching par_id: $error");
     }
   }
 }
