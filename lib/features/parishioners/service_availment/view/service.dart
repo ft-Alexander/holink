@@ -36,17 +36,19 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
   }
 
   final Map<int, Widget> bottomNavBarRoutes = {
-    0: Scaffold(
+    0: const Scaffold(
         body: Center(child: Text("Dashboard"))), // Blank screen for Dashboard
     1: const Service(), // Service screen
-    2: Scaffold(
+    2: const Scaffold(
         body: Center(child: Text("Finance"))), // Blank screen for Finance
     3: const ParishionersProfileScreen(), // Profile screen
   };
 
   Widget _buildCalendar() {
-    return Container(
-      width: double.infinity,
+  return Center(
+    child: Container(
+      width: MediaQuery.of(context).size.width * 0.8, // Adjust the width as needed
+      height: MediaQuery.of(context).size.height * 0.6, // Adjust the height as needed
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(
@@ -56,60 +58,68 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
         borderRadius: BorderRadius.circular(12.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(1.0), // Add padding inside the container
-        child: TableCalendar(
-          focusedDay: selectedDate,
-          firstDay: DateTime(1990),
-          lastDay: DateTime(2050),
-          calendarFormat: _calendarFormat,
-          onFormatChanged: (format) {
-            setState(() {
-              _calendarFormat = format;
-            });
-          },
-          daysOfWeekVisible: true,
-          selectedDayPredicate: (date) {
-            return isSameDay(selectedDate, date);
-          },
-          calendarStyle: const CalendarStyle(
-            isTodayHighlighted: true,
-            selectedDecoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [Color(0xFFCDA782), Color(0xFFEFDBC7)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+        padding: const EdgeInsets.all(8.0), // Add padding inside the containers
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TableCalendar(
+                focusedDay: selectedDate,
+                firstDay: DateTime(1990),
+                lastDay: DateTime(2050),
+                calendarFormat: _calendarFormat,
+                onFormatChanged: (format) {
+                  setState(() {
+                    _calendarFormat = format;
+                  });
+                },
+                daysOfWeekVisible: true,
+                selectedDayPredicate: (date) {
+                  return isSameDay(selectedDate, date);
+                },
+                calendarStyle: const CalendarStyle(
+                  isTodayHighlighted: true,
+                  selectedDecoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFCDA782), Color(0xFFEFDBC7)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  todayDecoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFE8DACE), Color(0xFFD0CDC9)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  markersMaxCount: 1,
+                  markerSizeScale: 0.4,
+                  cellMargin: EdgeInsets.all(4.0),
+                  markersAlignment: Alignment.bottomCenter,
+                ),
+                headerStyle: HeaderStyle(
+                  formatButtonVisible: true,
+                  titleCentered: false,
+                  formatButtonShowsNext: false,
+                  formatButtonDecoration: BoxDecoration(
+                    color: const Color.fromRGBO(179, 120, 64, 1.0),
+                    border: Border.all(color: const Color.fromRGBO(179, 120, 64, 1.0)),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  formatButtonTextStyle: const TextStyle(color: Colors.white),
+                ),
               ),
-            ),
-            todayDecoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [Color(0xFFE8DACE), Color(0xFFD0CDC9)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            markersMaxCount: 1,
-            markerSizeScale: 0.4,
-            cellMargin: EdgeInsets.all(4.0),
-            markersAlignment: Alignment.bottomCenter,
-          ),
-          headerStyle: HeaderStyle(
-            formatButtonVisible: true,
-            titleCentered: false,
-            formatButtonShowsNext: false,
-            formatButtonDecoration: BoxDecoration(
-              color: const Color.fromRGBO(179, 120, 64, 1.0),
-              border:
-                  Border.all(color: const Color.fromRGBO(179, 120, 64, 1.0)),
-              borderRadius: BorderRadius.circular(5.0),
-            ),
-            formatButtonTextStyle: const TextStyle(color: Colors.white),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+
 
   Widget _getSelectedWidget() {
     switch (_selectedIndex) {
@@ -121,7 +131,7 @@ class _ServiceState extends State<Service> with SingleTickerProviderStateMixin {
         return Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            actions: [             
+            actions: const [             
             ],
             bottom: PreferredSize(
               preferredSize:

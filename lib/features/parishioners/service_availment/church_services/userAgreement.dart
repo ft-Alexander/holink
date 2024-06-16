@@ -17,12 +17,12 @@ class _UserAgreementState extends State<UserAgreement> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Container(
+        title: SizedBox(
           height: kToolbarHeight,
           child: Center(
             child: Padding(
@@ -50,7 +50,7 @@ class _UserAgreementState extends State<UserAgreement> {
       ),
       body: Center(
         child: Container(
-          constraints: BoxConstraints(
+          constraints: const BoxConstraints(
             maxWidth: 1000.0, // Adjust the maxWidth as necessary
           ),
           margin: const EdgeInsets.all(16.0),
@@ -62,7 +62,7 @@ class _UserAgreementState extends State<UserAgreement> {
                 color: Colors.black.withOpacity(0.1),
                 spreadRadius: 5,
                 blurRadius: 7,
-                offset: Offset(0, 3), // changes position of shadow
+                offset: const Offset(0, 3), // changes position of shadow
               ),
             ],
           ),
@@ -88,7 +88,7 @@ class _UserAgreementState extends State<UserAgreement> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Center(
+                      const Center(
                         child: Text(
                           'USER AGREEMENT',
                           style: TextStyle(
@@ -100,7 +100,7 @@ class _UserAgreementState extends State<UserAgreement> {
                       ),
                       const SizedBox(height: 16),
                       const Text(
-                        'HOLINK: Integrated Management for Parishes and Diocese',
+                        'Holink: Integrated Management for Parishes and Diocese',
                         style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -108,7 +108,7 @@ class _UserAgreementState extends State<UserAgreement> {
                       ),
                       const SizedBox(height: 16),
                       const Text(
-                        'This User Agreement ("Church Service Availment") is entered into by and between [Organization], a [State] corporation ("HOLINK"), and you, the user ("User"), regarding the use of [Company\'s Service/Platform/Website]. By accessing or using the [Company\'s Service/Platform/Website], you agree to be bound by the terms and conditions of this Agreement. If you do not agree to these terms and conditions, you may not access or use the [Company\'s Service/Platform/Website].',
+                        'This User Agreement outlines the terms and conditions of using Holink. Scroll down and click the checkbox below in order to proceed.',
                         style: TextStyle(fontSize: 16, color: Colors.black),
                       ),
                       const SizedBox(height: 16),
@@ -121,27 +121,10 @@ class _UserAgreementState extends State<UserAgreement> {
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        '1.1 License: Subject to the terms and conditions of this Agreement, Company grants User a limited, non-exclusive, non-transferable, and revocable license to use the [Company\'s Service/Platform/Website] for personal or commercial purposes.',
+                        '1.1 Access and Use: Users are granted access to Holink solely for viewing parish and diocesan activities. Users must ensure their usage aligns with the church mission and guidelines.',
                         style: TextStyle(fontSize: 16, color: Colors.black),
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        '1.2 Restrictions: User agrees not to:',
-                        style: TextStyle(fontSize: 16, color: Colors.black),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        '• Use the [Company\'s Service/Platform/Website] for any illegal or unauthorized purpose.',
-                        style: TextStyle(fontSize: 16, color: Colors.black),
-                      ),
-                      const Text(
-                        '• Modify, adapt, or hack the [Company\'s Service/Platform/Website] or modify another website so as to falsely imply that it is associated with the [Company\'s Service/Platform/Website].',
-                        style: TextStyle(fontSize: 16, color: Colors.black),
-                      ),
-                      const Text(
-                        '• Reproduce, duplicate, copy, sell, resell, or exploit any portion of the [Company\'s Service/Platform/Website] without the express written permission of Company.',
-                        style: TextStyle(fontSize: 16, color: Colors.black),
-                      ),
+                                                                                                    
                       const SizedBox(height: 16),
                       const Text(
                         '2. User Data and Privacy',
@@ -152,17 +135,23 @@ class _UserAgreementState extends State<UserAgreement> {
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        '2.1 Data Collection: Company may collect and use personal information provided by User in accordance with the Company\'s Privacy Policy.',
+                        '2.1 Data Collection: Holink collects personal information necessary for providing its services. This includes names, contact information, and service details.',
                         style: TextStyle(fontSize: 16, color: Colors.black),
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        '2.2 Privacy Policy: User agrees to review and comply with the Company\'s Privacy Policy, which can be found on the [Company\'s Service/Platform/Website].',
+                        '2.2 Data Usage: Collected data will be used exclusively for managing church activities and services. Holink will not share personal data with third parties without user consent, except as required by law.',
                         style: TextStyle(fontSize: 16, color: Colors.black),
                       ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        '2.3 User Rights: Users have the right to access, correct, or delete their personal data stored in Holink. Requests can be made through the app or by contacting Holink support.',
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                      const SizedBox(height: 8),
                       const SizedBox(height: 16),
                       const Text(
-                        '3. Intellectual Property Rights',
+                        '3. Rescheduling and Cancellation of Services',
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -170,17 +159,17 @@ class _UserAgreementState extends State<UserAgreement> {
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        '3.1 Ownership: All intellectual property rights in the [Company\'s Service/Platform/Website], including but not limited to copyrights, trademarks, and patents, are owned by Company.',
+                        '3.1 Rescheduling: Users can reschedule services by submitting a rescheduling request through the app at least [specified time period, e.g., 3 days] before the scheduled date. Approval is subject to availability and church policies.',
                         style: TextStyle(fontSize: 16, color: Colors.black),
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        '3.2 License Grant: User retains ownership of any intellectual property rights that User holds in the content uploaded or submitted to the [Company\'s Service/Platform/Website], but grants Company a non-exclusive, worldwide, royalty-free license to use, reproduce, and distribute such content.',
+                        '3.2 Cancellation: Users can cancel services by submitting a cancellation request through the app. Cancellations must be made at least [specified time period, e.g., 3 days] before the scheduled date to avoid any penalties or fees. Late cancellations may incur charges as per church policy.',
                         style: TextStyle(fontSize: 16, color: Colors.black),
                       ),
                       const SizedBox(height: 16),
                       const Text(
-                        '4. Limitation of Liability',
+                        '4. Amendments',
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -188,25 +177,7 @@ class _UserAgreementState extends State<UserAgreement> {
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        '4.1 Disclaimer: The [Company\'s Service/Platform/Website] is provided "as is" and "as available" without any warranties of any kind, either express or implied.',
-                        style: TextStyle(fontSize: 16, color: Colors.black),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        '4.2 Limitation of Liability: Company shall not be liable for any direct, indirect, incidental, special, or consequential damages arising out of or in any way connected with the use of or inability to use the [Company\'s Service/Platform/Website].',
-                        style: TextStyle(fontSize: 16, color: Colors.black),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        '5. Governing Law',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        '5.1 Jurisdiction: This Agreement shall be governed by and construed in accordance with the laws of the State of [State], without regard to its conflict of law principles.',
+                        '4.1 Changes to Agreement: Holink reserves the right to amend this User Agreement at any time. Users will be notified of any significant changes and continued use of the system constitutes acceptance of the new terms.',
                         style: TextStyle(fontSize: 16, color: Colors.black),
                       ),
                       const SizedBox(height: 16),

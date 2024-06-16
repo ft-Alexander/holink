@@ -9,12 +9,12 @@ class SelectChurchService extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
+          preferredSize: const Size.fromHeight(30.0),
           child: Column(
             children: [
-              Center(
+              const Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0),
                   child: Text(
                     'AVAIL CHURCH SERVICE',
                     style: TextStyle(
@@ -102,11 +102,11 @@ class SelectChurchService extends StatelessWidget {
                 style: const TextStyle(fontSize: 16, color: Colors.black),
               ),
             ),
-            Align(
+            const Align(
               alignment: Alignment.bottomRight,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Text(
                     'Avail Service',
                     style: TextStyle(fontSize: 16, color: Color(0xFFd1a65b)),

@@ -26,7 +26,7 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
   bool isLoading = true;
   int id = 0;
   int s_id = 0;
-  localhost localhostInstance = new localhost(); // Add this line
+  localhost localhostInstance = localhost(); // Add this line
 
   @override
   void initState() {
@@ -115,7 +115,7 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
         if (data['success']) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Service information updated successfully. Selected Type: $selectedType')),
+            SnackBar(content: Text('Service information updated successfully.')),
           );
         } else {
           showError('Failed to update service information: ${data['message']}');
@@ -142,14 +142,14 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
+          preferredSize: const Size.fromHeight(30.0),
           child: Column(
             children: [
-              Center(
+              const Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0),
                   child: Text(
-                    'EDIT SERVICE INFORMATION',
+                    'EDIT INFORMATION',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.normal,
@@ -219,7 +219,7 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
                               });
                             },
                           ),
-                          const Text('Others(Please Specify):'),
+                          const Text('Others: '),
                           if (othersSelected)
                             Expanded(
                               child: TextFormField(
@@ -308,7 +308,7 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                           ),
-                          child: const Text('Save', style: TextStyle(fontSize: 18)),
+                          child: const Text('Save', style: TextStyle(fontSize: 18, color: Colors.white)),
                         ),
                       ),
                     ],

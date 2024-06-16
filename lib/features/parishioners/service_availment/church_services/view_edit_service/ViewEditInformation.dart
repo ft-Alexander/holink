@@ -12,11 +12,12 @@ class ViewEditInformation extends StatefulWidget {
   _ViewEditInformationState createState() => _ViewEditInformationState();
 }
 
-class _ViewEditInformationState extends State<ViewEditInformation> with SingleTickerProviderStateMixin {
+class _ViewEditInformationState extends State<ViewEditInformation>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<Map<String, String>> availedServices = [];
   bool isLoading = true;
-  localhost localhostInstance = new localhost();
+  localhost localhostInstance = localhost();
 
   @override
   void initState() {
@@ -32,14 +33,16 @@ class _ViewEditInformationState extends State<ViewEditInformation> with SingleTi
   }
 
   Future<void> fetchAvailedServices() async {
-    final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/getAllAvailedService.php');
+    final url = Uri.parse(
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/service/getAllAvailedService.php');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['success']) {
           setState(() {
-            availedServices = List<Map<String, String>>.from(data['services'].map((service) => Map<String, String>.from(service)));
+            availedServices = List<Map<String, String>>.from(data['services']
+                .map((service) => Map<String, String>.from(service)));
             isLoading = false;
           });
         } else {
@@ -65,48 +68,47 @@ class _ViewEditInformationState extends State<ViewEditInformation> with SingleTi
   }
 
   Widget _buildServiceList() {
-  return ListView.builder(
-    itemCount: availedServices.length,
-    itemBuilder: (context, index) {
-      var service = availedServices[index];
+    return ListView.builder(
+      itemCount: availedServices.length,
+      itemBuilder: (context, index) {
+        var service = availedServices[index];
 
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Card(
-          child: ListTile(
-            title: Text(service["service"] ?? 'N/A'),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Date Availed: ${service["date_availed"] ?? 'N/A'}"),
-                Text("Scheduled Date: ${formatDate(service["scheduled_date"]??'N/A')}"),
-              ],
-            ),
-            trailing: ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return PopupInformation(
-                      serviceDetails: service,
-                      serviceIndex: index,
-                    );
-                  },
-                );
-              },
-              child: const Text("View/Edit"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Card(
+            child: ListTile(
+              title: Text('${service["service"] ?? 'N/A'} (ID#: ${service["id"] ?? 'N/A'})'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Date Availed: ${service["date_availed"] ?? 'N/A'}"),
+                  Text("Scheduled Date: ${formatDate(service["scheduled_date"]??'N/A')}"),
+                ],
+              ),
+              trailing: ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return PopupInformation(
+                        serviceDetails: service,
+                        serviceIndex: index,
+                      );
+                    },
+                  );
+                },
+                child: const Text("View/Edit"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                ),
               ),
             ),
           ),
-        ),
-      );
-    },
-  );
-}
-
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,8 +118,7 @@ class _ViewEditInformationState extends State<ViewEditInformation> with SingleTi
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        actions: [        
-        ],
+        actions: const [],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.green,
@@ -131,7 +132,8 @@ class _ViewEditInformationState extends State<ViewEditInformation> with SingleTi
         ),
         title: const Text(
           'View/Edit Availed Service',
-          style: TextStyle(fontSize: 15,color: Colors.green, fontWeight: FontWeight.normal),
+          style: TextStyle(
+              fontSize: 15, color: Colors.green, fontWeight: FontWeight.normal),
         ),
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),
@@ -148,11 +150,13 @@ class _ViewEditInformationState extends State<ViewEditInformation> with SingleTi
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: _buildServiceList(), // Placeholder for 'Pending' services
+                  child:
+                      _buildServiceList(), // Placeholder for 'Pending' services
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: _buildServiceList(), // Placeholder for 'Approved' services
+                  child:
+                      _buildServiceList(), // Placeholder for 'Approved' services
                 ),
               ],
             ),
@@ -160,18 +164,13 @@ class _ViewEditInformationState extends State<ViewEditInformation> with SingleTi
   }
 
   String formatDate(String date) {
-  // if (date == null) return 'N/A';
-  try {
-    final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
-    final DateFormat desiredFormat = DateFormat('yyyy-MM-dd hh:mm a');
-    final DateTime dateTime = originalFormat.parse(date);
-    return desiredFormat.format(dateTime);
-  } catch (e) {
-    return 'N/A';
+    try {
+      final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+      final DateFormat desiredFormat = DateFormat('yyyy-MM-dd hh:mm a');
+      final DateTime dateTime = originalFormat.parse(date);
+      return desiredFormat.format(dateTime);
+    } catch (e) {
+      return 'N/A';
+    }
   }
 }
-
-}
-
-
-

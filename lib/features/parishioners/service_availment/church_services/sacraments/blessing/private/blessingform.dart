@@ -1,5 +1,6 @@
 //import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Import the services package for input formatters
 import 'package:holink/dbConnection/localhost.dart';
 import 'package:intl/intl.dart';
 import 'reviewInformation.dart'; // Import the ReviewInformation file
@@ -102,14 +103,14 @@ class _BlessingFormState extends State<BlessingForm> {
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
+          preferredSize: const Size.fromHeight(30.0),
           child: Column(
             children: [
-              Center(
+              const Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0),
                   child: Text(
-                    'ADD INNFORMATION',
+                    'ADD INFORMATION',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.normal,
@@ -176,7 +177,9 @@ class _BlessingFormState extends State<BlessingForm> {
                 const SizedBox(height: 16),
                 _buildTextField(
                   controller: skkController,
-                  labelText: 'SKK NO:',
+                  labelText: 'SKK NO(Enter 00 if unknown):',
+                  keyboardType: TextInputType.number, // Only numbers
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Only digits
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your SKK number';
@@ -204,6 +207,8 @@ class _BlessingFormState extends State<BlessingForm> {
                 _buildTextField(
                   controller: contactController,
                   labelText: 'Contact Number:',
+                  keyboardType: TextInputType.number, // Only numbers
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Only digits
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your contact number';
@@ -223,7 +228,7 @@ class _BlessingFormState extends State<BlessingForm> {
                               date_availed: DateTime.now(),
                               scheduled_date: DateFormat('MM/dd/yyyy hh:mm a').parse('${dateController.text} ${timeController.text}'),
                               service: 'Blessing',
-                              serviceType: 'Private',
+                              serviceType: 'Special',
                               fullName: nameController.text,
                               skkNumber: skkController.text,
                               address: addressController.text,
@@ -305,7 +310,7 @@ class _BlessingFormState extends State<BlessingForm> {
                 });
               },
             ),
-            const Text('Others (Please Specify):'),
+            const Text('Others: '),
             if (othersSelected)
               Expanded(
                 child: TextFormField(
@@ -325,6 +330,8 @@ class _BlessingFormState extends State<BlessingForm> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String labelText,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
     bool readOnly = false,
     VoidCallback? onTap,
@@ -333,6 +340,8 @@ class _BlessingFormState extends State<BlessingForm> {
       controller: controller,
       readOnly: readOnly,
       onTap: onTap,
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
       decoration: InputDecoration(
         labelText: labelText,
         border: const OutlineInputBorder(),

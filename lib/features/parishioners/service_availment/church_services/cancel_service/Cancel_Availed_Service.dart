@@ -74,12 +74,12 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
+          preferredSize: const Size.fromHeight(30.0),
           child: Column(
             children: [
-              Center(
+              const Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0),
                   child: Text(
                     'CANCEL SERVICE',
                     style: TextStyle(
@@ -136,7 +136,7 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Card(
                             child: ListTile(
-                              title: Text(service["service"] ?? 'N/A'),
+                              title: Text('${service["service"] ?? 'N/A'} (ID#: ${service["id"] ?? 'N/A'})'),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -156,15 +156,15 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
                                     ),
                                   );
                                 },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                ),
                                 child: const Text(
                                   "Cancel",
                                   style: TextStyle(
-                                    color: Colors.white, // Change this to the color you want
+                                    color: Colors
+                                        .white, // Change this to the color you want
                                   ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                  
                                 ),
                               ),
                             ),

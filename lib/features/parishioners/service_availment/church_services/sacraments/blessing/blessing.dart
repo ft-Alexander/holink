@@ -12,12 +12,12 @@ class PublicPrivate extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
+          preferredSize: const Size.fromHeight(30.0),
           child: Column(
             children: [
-              Center(
+              const Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0),
                   child: Text(
                     'CHOOSE SERVICE TYPE',
                     style: TextStyle(
@@ -105,8 +105,8 @@ class PublicPrivate extends StatelessWidget {
             ),
           ),
           if (isAvailable)
-            Row(
-              children: const [
+            const Row(
+              children: [
                 Text(
                   'Avail Service',
                   style: TextStyle(fontSize: 16, color: Color(0xFFd1a65b)),

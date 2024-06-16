@@ -32,10 +32,10 @@ class _TransactionsPageState extends State<TransactionsPage> {
   int _selectedIndexBotNav = 2;
 
   final Map<int, Widget> bottomNavBarRoutes = {
-    0: Dashboard(),
-    1: Scheduling(),
-    2: TransactionsPage(),
-    3: ProfileScreen(),
+    0: const Dashboard(),
+    1: const Scheduling(),
+    2: const TransactionsPage(),
+    3: const ProfileScreen(),
   };
 
   void _navigateTo(int index, BuildContext context, Map<int, Widget> routes) {
@@ -62,7 +62,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
 
   Future<List<Transaction>> fetchTransactions() async {
     localhost localhostInstance = localhost();
-    final url = 'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/getTransactions.php';
+    final url =
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/getTransactions.php';
 
     final response = await http.get(Uri.parse(url));
 
@@ -106,16 +107,19 @@ class _TransactionsPageState extends State<TransactionsPage> {
 
         if (selectedTransactionType != null) {
           transactions = transactions
-              .where((transaction) => transaction.type == selectedTransactionType)
+              .where(
+                  (transaction) => transaction.type == selectedTransactionType)
               .toList();
         }
 
         // Sort transactions by transaction_id in descending order
-        transactions.sort((a, b) => (b.transaction_id ?? 0).compareTo(a.transaction_id ?? 0));
+        transactions.sort(
+            (a, b) => (b.transaction_id ?? 0).compareTo(a.transaction_id ?? 0));
 
         return transactions;
       } else {
-        throw Exception('Failed to load transactions: ${responseBody['message']}');
+        throw Exception(
+            'Failed to load transactions: ${responseBody['message']}');
       }
     } else {
       throw Exception('Failed to load transactions: ${response.reasonPhrase}');
@@ -165,7 +169,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     12,
                     (index) => DropdownMenuItem(
                       value: index + 1,
-                      child: Text(DateFormat.MMMM().format(DateTime(0, index + 1))),
+                      child: Text(
+                          DateFormat.MMMM().format(DateTime(0, index + 1))),
                     ),
                   ),
                   onChanged: (value) {
@@ -300,7 +305,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   return ListView.builder(
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
-                      return TransactionCard(transaction: snapshot.data![index]);
+                      return TransactionCard(
+                          transaction: snapshot.data![index]);
                     },
                   );
                 }
@@ -310,8 +316,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
         ],
       ),
       bottomNavigationBar: BottomNavBarParish(
-        selectedIndex: _selectedIndexBotNav,
-        onTabSelected: _onBotNavSelected,
+        selectedIndex: 2,
       ),
     );
   }
@@ -351,7 +356,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const ReportsPage()),
+                    MaterialPageRoute(
+                        builder: (context) => const ReportsPage()),
                   );
                 },
                 child: const Text(
@@ -385,12 +391,15 @@ class _TransactionsPageState extends State<TransactionsPage> {
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const RecordFinancialTransactionPage()),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        const RecordFinancialTransactionPage()),
               );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
               textStyle: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
@@ -410,7 +419,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
             onPressed: _openFilterDialog,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
               textStyle: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
@@ -440,7 +450,7 @@ class TransactionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (transaction.archive_status != 'display') {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Container(
@@ -502,7 +512,8 @@ class TransactionCard extends StatelessWidget {
     );
   }
 
-  Future<void> _archiveRecord(BuildContext context, Transaction transaction) async {
+  Future<void> _archiveRecord(
+      BuildContext context, Transaction transaction) async {
     bool confirm = await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -531,7 +542,8 @@ class TransactionCard extends StatelessWidget {
       localhost localhostInstance = localhost();
       try {
         final response = await http.post(
-          Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/finance/archiveStatus.php'),
+          Uri.parse(
+              'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/archiveStatus.php'),
           body: json.encode(transaction.toMap()),
         );
 
@@ -546,7 +558,9 @@ class TransactionCard extends StatelessWidget {
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to archive record: ${response.statusCode}')),
+            SnackBar(
+                content:
+                    Text('Failed to archive record: ${response.statusCode}')),
           );
           throw Exception('Failed to archive record');
         }
@@ -554,7 +568,7 @@ class TransactionCard extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error archiving record: $error')),
         );
-        throw error;
+        rethrow;
       }
     }
   }
@@ -615,7 +629,8 @@ class TransactionCard extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6.0),
                         ),
@@ -632,12 +647,16 @@ class TransactionCard extends StatelessWidget {
                       onPressed: () {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => EditFinancialTransactionPage(transaction: transaction)),
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  EditFinancialTransactionPage(
+                                      transaction: transaction)),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6.0),
                         ),
