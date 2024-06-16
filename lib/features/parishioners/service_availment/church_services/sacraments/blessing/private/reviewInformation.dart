@@ -31,25 +31,42 @@ class ReviewInformation extends StatelessWidget {
       final DateFormat outputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
       final String formattedDateTime = outputFormat.format(serviceInformation.scheduled_date);
 
-      final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/savePrivateEvent.php');
+      final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/saveBlessingEvent.php');
       print('Saving to database: $url'); // Debug print statement
+
+      // Print the serviceInformation values to the console
+      print('availed_date: ${serviceInformation.availed_date.toIso8601String()}');
+      print('special_event: ${serviceInformation.special_event}');
+      print('scheduled_date: ${serviceInformation.scheduled_date}');
+      print('service: ${serviceInformation.service}');
+      print('event_type: ${serviceInformation.event_type}');
+      print('fullName: ${serviceInformation.fullName}');
+      print('skk_number: ${serviceInformation.skk_number}');
+      print('address: ${serviceInformation.address}');
+      print('landmark: ${serviceInformation.landmark}');
+      print('contact_number: ${serviceInformation.contact_number}');
+      print('select_type: ${serviceInformation.select_type}');
+
+      // Print the request body
+      final requestBody = {
+        'availed_date': serviceInformation.availed_date.toIso8601String(),
+        'special_event': serviceInformation.special_event.toString(), // Converted int to string
+        'scheduled_date': serviceInformation.scheduled_date.toIso8601String(),
+        'service': serviceInformation.service,
+        'serviceType': serviceInformation.event_type,
+        'fullName': serviceInformation.fullName,
+        'skkNumber': serviceInformation.skk_number,
+        'address': serviceInformation.address,
+        'landmark': serviceInformation.landmark,
+        'contactNumber': serviceInformation.contact_number,
+        'selectedType': serviceInformation.select_type,
+      };
+      print('Request body: ${json.encode(requestBody)}');
 
       final response = await http.post(
         url,
-        body: {
-          'date_availed': serviceInformation.date_availed.toIso8601String(),
-          'scheduled_date': formattedDateTime,
-          'service': serviceInformation.service,
-          'serviceType': serviceInformation.serviceType,
-          'fullName': serviceInformation.fullName,
-          'skkNumber': serviceInformation.skkNumber,
-          'address': serviceInformation.address,
-          'landmark': serviceInformation.landmark,
-          'contactNumber': serviceInformation.contactNumber,
-          'selectedType': serviceInformation.selectedType,
-        },
+        body: requestBody,
       );
-      print(formattedDateTime);
 
       if (response.statusCode == 200) {
         final responseBody = json.decode(response.body);
@@ -61,16 +78,16 @@ class ReviewInformation extends StatelessWidget {
               builder: (context) => RequirementsPayment(
                 serviceDetails: {
                   "title": serviceInformation.service,
-                  "availedDate": serviceInformation.date_availed.toString(),
+                  "availedDate": serviceInformation.availed_date.toString(),
                   "scheduledDate": serviceInformation.scheduled_date.toString(),
                   "time": _formatTime(serviceInformation.scheduled_date),
-                  "Service type": serviceInformation.serviceType,
+                  "Service type": serviceInformation.event_type,
                   "fullName": serviceInformation.fullName,
-                  "skkNumber": serviceInformation.skkNumber,
+                  "skkNumber": serviceInformation.skk_number,
                   "address": serviceInformation.address,
                   "landmark": serviceInformation.landmark,
-                  "contactNumber": serviceInformation.contactNumber,
-                  "selectedType": serviceInformation.selectedType,
+                  "contactNumber": serviceInformation.contact_number,
+                  "selectedType": serviceInformation.select_type,
                 },
               ),
             ),
@@ -133,7 +150,7 @@ class ReviewInformation extends StatelessWidget {
             const SizedBox(height: 16),
             _buildReviewRow('Church Service:', serviceInformation.service),
             const SizedBox(height: 16),
-            _buildReviewRow('Service Type:', serviceInformation.serviceType),
+            _buildReviewRow('Service Type:', serviceInformation.event_type),
             const SizedBox(height: 16),
             const Text(
               'Parishioner Detail\'s:',
@@ -149,12 +166,12 @@ class ReviewInformation extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildInfoText('Selected Type: ${serviceInformation.selectedType}'),
+                  _buildInfoText('Selected Type: ${serviceInformation.select_type}'),
                   _buildInfoText('Full Name: ${serviceInformation.fullName}'),
-                  _buildInfoText('SKK NO: ${serviceInformation.skkNumber}'),
+                  _buildInfoText('SKK NO: ${serviceInformation.skk_number}'),
                   _buildInfoText('Address: ${serviceInformation.address}'),
                   _buildInfoText('Nearby Landmark: ${serviceInformation.landmark}'),
-                  _buildInfoText('Contact Number: ${serviceInformation.contactNumber}'),
+                  _buildInfoText('Contact Number: ${serviceInformation.contact_number}'),
                 ],
               ),
             ),

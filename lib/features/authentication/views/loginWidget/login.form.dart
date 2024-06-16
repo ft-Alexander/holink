@@ -24,7 +24,7 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _passwordConttroller = TextEditingController();
   localhost localhostInstance = localhost();
 
-  String dropDown = 'Parishioners';
+  String dropDown = 'Parish Staff';
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +55,6 @@ class _LoginFormState extends State<LoginForm> {
                 },
                 underline: Container(),
                 items: const [
-                  'Parishioners',
                   'Parish Staff',
                   'Diocese Staff',
                 ].map((String value) {
@@ -135,30 +134,23 @@ class _LoginFormState extends State<LoginForm> {
           const SizedBox(height: 10.0),
           ElevatedButton(
             onPressed: () {
-              // if (_usernameController.text.isEmpty ||
-              //     _passwordConttroller.text.isEmpty) {
-              //   setState(() {
-              //     _msg = "Username and Password are required";
-              //   });
-              //   return;
-              // }
-              // switch (dropDown) {
-              //   case "Parishioners":
-              //     loginParishioners();
-              //     break;
-              //   case "Parish Staff":
-              //     loginParish();
-              //     break;
-              //   case "Diocese Staff":
-              //     loginDiocese();
-              //     break;
-              //   default:
-              //     break;
-              // }
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => Scheduling()),
-              );
+              if (_usernameController.text.isEmpty ||
+                  _passwordConttroller.text.isEmpty) {
+                setState(() {
+                  _msg = "Username and Password are required";
+                });
+                return;
+              }
+              switch (dropDown) {
+                case "Parish Staff":
+                  loginParish();
+                  break;
+                case "Diocese Staff":
+                  loginDiocese();
+                  break;
+                default:
+                  break;
+              }
             },
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.all<Color>(HexColor(tbrown)),

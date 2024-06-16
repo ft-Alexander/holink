@@ -1,4 +1,3 @@
-//import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import the services package for input formatters
 import 'package:holink/dbConnection/localhost.dart';
@@ -225,16 +224,17 @@ class _BlessingFormState extends State<BlessingForm> {
                     onPressed: _allFieldsFilled()
                         ? () {
                             ServiceInformation serviceInformation = ServiceInformation(
-                              date_availed: DateTime.now(),
+                              availed_date: DateTime.now(),
+                              special_event: 0, // Placeholder, update with actual event date ID
                               scheduled_date: DateFormat('MM/dd/yyyy hh:mm a').parse('${dateController.text} ${timeController.text}'),
                               service: 'Blessing',
-                              serviceType: 'Special',
+                              event_type: 'Special',
                               fullName: nameController.text,
-                              skkNumber: skkController.text,
+                              skk_number: skkController.text,
                               address: addressController.text,
                               landmark: landmarkController.text,
-                              contactNumber: contactController.text,
-                              selectedType: _getSelectedType(),
+                              contact_number: contactController.text,
+                              select_type: _getSelectedType(),
                             );
 
                             Navigator.push(
