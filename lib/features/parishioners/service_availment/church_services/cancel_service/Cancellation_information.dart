@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:holink/dbConnection/localhost.dart'; // Import your localhost instance
 import 'Request_Submitted.dart'; // Import the RequestSubmitted file
 import 'package:http/http.dart' as http; // Add this import statement
+import 'package:intl/intl.dart'; // Add this import statement
 
 class CancellationInformation extends StatefulWidget {
   final int serviceIndex;
+  final Map<String, String> serviceDetails; // Add serviceDetails parameter
 
-  const CancellationInformation({super.key, required this.serviceIndex});
+  const CancellationInformation({super.key, required this.serviceIndex, required this.serviceDetails}); // Update the constructor
 
   @override
-  _CancellationInformationState createState() =>
-      _CancellationInformationState();
+  _CancellationInformationState createState() => _CancellationInformationState();
 }
 
 class _CancellationInformationState extends State<CancellationInformation> {
@@ -24,30 +25,45 @@ class _CancellationInformationState extends State<CancellationInformation> {
   @override
   void initState() {
     super.initState();
-    fetchServiceDetails();
+    serviceDetails = widget.serviceDetails; // Initialize with passed service details
+    setState(() {
+      isLoading = false; // Set isLoading to false since details are already provided
+    });
+
+    // Print service details for debugging
+    print('Service Details:');
+    serviceDetails?.forEach((key, value) {
+      print('$key: $value');
+    });
   }
 
-  Future<void> fetchServiceDetails() async {
-    final url = Uri.parse(
-        'http://${localhostInstance.ipServer}/dashboard/myfolder/service/getAllAvailedService.php');
+  String _formatDate(String? date) {
+    if (date == null || date == 'N/A') {
+      return 'N/A';
+    }
     try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['success']) {
-          setState(() {
-            serviceDetails = data['services'][widget.serviceIndex];
-            isLoading = false;
-          });
-        } else {
-          showError('Failed to fetch service details: ${data['message']}');
-        }
-      } else {
-        showError('Failed to fetch service details: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error fetching service details: $error');
-      showError('An error occurred while fetching service details: $error');
+      final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+      final DateFormat desiredFormat = DateFormat('MM/dd/yyyy');
+      final DateTime dateTime = originalFormat.parse(date);
+      return desiredFormat.format(dateTime);
+    } catch (e) {
+      print('Error formatting date: $e'); // Debug print statement
+      return 'N/A';
+    }
+  }
+
+  String _formatTime(String? date) {
+    if (date == null || date == 'N/A') {
+      return 'N/A';
+    }
+    try {
+      final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+      final DateFormat desiredFormat = DateFormat('hh:mm a');
+      final DateTime dateTime = originalFormat.parse(date);
+      return desiredFormat.format(dateTime);
+    } catch (e) {
+      print('Error formatting time: $e'); // Debug print statement
+      return 'N/A';
     }
   }
 
@@ -63,9 +79,10 @@ class _CancellationInformationState extends State<CancellationInformation> {
   Future<void> _submitCancellation() async {
     if (_formKey.currentState!.validate()) {
       final url = Uri.parse(
-          'http://${localhostInstance.ipServer}/dashboard/myfolder/service/removeAvailedService.php');
+          'http://${localhostInstance.ipServer}/dashboard/myfolder/service/removeAvailedServiceBlessing.php');
       final body = json.encode({
-        's_id': serviceDetails!['s_id'].toString(),
+        'id': serviceDetails!['id'].toString(),
+        'description': _descriptionController.text,
       });
 
       try {
@@ -100,6 +117,18 @@ class _CancellationInformationState extends State<CancellationInformation> {
 
   @override
   Widget build(BuildContext context) {
+    final availedDate = serviceDetails?["availed_date"];
+    final scheduledDate = serviceDetails?["event_date"];
+    final formattedAvailedDate = _formatDate(availedDate);
+    final formattedScheduledDate = _formatDate(scheduledDate);
+    final formattedScheduledTime = _formatTime(scheduledDate);
+
+    print('Availed Date: $availedDate'); // Debug print statement
+    print('Scheduled Date: $scheduledDate'); // Debug print statement
+    print('Formatted Availed Date: $formattedAvailedDate'); // Debug print statement
+    print('Formatted Scheduled Date: $formattedScheduledDate'); // Debug print statement
+    print('Formatted Scheduled Time: $formattedScheduledTime'); // Debug print statement
+
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
@@ -143,10 +172,9 @@ class _CancellationInformationState extends State<CancellationInformation> {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                                "Date Availed: ${serviceDetails?["date_availed"] ?? 'N/A'}"),
-                            Text(
-                                "Scheduled Date: ${serviceDetails?["scheduled_date"] ?? 'N/A'}"),
+                            Text("Date Availed: $formattedAvailedDate"),
+                            Text("Scheduled Date: $formattedScheduledDate"),
+                            Text("Time: $formattedScheduledTime"),
                           ],
                         ),
                       ),
@@ -176,8 +204,7 @@ class _CancellationInformationState extends State<CancellationInformation> {
                     const Text(
                       'Note: Cancellation of request is permanent. Any down-payment might be refunded as stated in the User Agreement Form. '
                       'Further details will be sent after cancellation of service.',
-                      style:
-                          TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+                      style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
                     ),
                     const SizedBox(height: 16),
                     Align(
@@ -191,8 +218,7 @@ class _CancellationInformationState extends State<CancellationInformation> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
-                        child: const Text('Submit',
-                            style: TextStyle(fontSize: 18, color: Colors.white)),
+                        child: const Text('Submit', style: TextStyle(fontSize: 18, color: Colors.white)),
                       ),
                     ),
                   ],

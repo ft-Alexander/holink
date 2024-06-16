@@ -24,8 +24,7 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
   }
 
   Future<void> fetchAvailedServices() async {
-    final url = Uri.parse(
-        'http://${localhostInstance.ipServer}/dashboard/myfolder/service/getAllAvailedService.php');
+    final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/getAvailedServiceBlessing.php');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -35,6 +34,7 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
             availedServices = List<Map<String, String>>.from(data['services']
                 .map((service) => Map<String, String>.from(service)));
             isLoading = false;
+            print('Fetched availed services: $availedServices'); // Debug print statement
           });
         } else {
           showError(data['message']);
@@ -58,10 +58,21 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
     });
   }
 
+  String formatDate(String dateTime) {
+    try {
+      final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+      final DateFormat targetFormat = DateFormat('MM/dd/yyyy');
+      final DateTime parsedDateTime = originalFormat.parse(dateTime);
+      return targetFormat.format(parsedDateTime);
+    } catch (e) {
+      return dateTime;
+    }
+  }
+
   String formatDateTime(String dateTime) {
     try {
       final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
-      final DateFormat targetFormat = DateFormat('yyyy-MM-dd hh:mm a');
+      final DateFormat targetFormat = DateFormat('MM/dd/yyyy hh:mm a');
       final DateTime parsedDateTime = originalFormat.parse(dateTime);
       return targetFormat.format(parsedDateTime);
     } catch (e) {
@@ -130,18 +141,23 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
                       itemBuilder: (context, index) {
                         var service = availedServices[index];
                         String formattedDateTime =
-                            formatDateTime(service["scheduled_date"] ?? 'N/A');
+                            formatDateTime(service["event_date"] ?? 'N/A');
+                        String formattedAvailedDate =
+                            formatDate(service["availed_date"] ?? 'N/A');
+
+                        print('Service: ${service["service"]}'); // Debug print statement
+                        print('Date Availed: ${service["availed_date"]}');
+                        print('Scheduled Date: $formattedDateTime');
 
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Card(
                             child: ListTile(
-                              title: Text('${service["service"] ?? 'N/A'} (ID#: ${service["id"] ?? 'N/A'})'),
+                              title: Text('${service["service"] ?? 'N/A'} (ID#: 000${service["id"] ?? 'N/A'})'),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                      "Date Availed: ${service["date_availed"] ?? 'N/A'}"),
+                                  Text("Date Availed: $formattedAvailedDate"),
                                   Text("Scheduled Date: $formattedDateTime"),
                                 ],
                               ),
@@ -150,9 +166,10 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          CancellationInformation(
-                                              serviceIndex: index),
+                                      builder: (context) => CancellationInformation(
+                                        serviceIndex: index,
+                                        serviceDetails: service,
+                                      ),
                                     ),
                                   );
                                 },
@@ -162,8 +179,7 @@ class _CancelAvailedServiceState extends State<CancelAvailedService> {
                                 child: const Text(
                                   "Cancel",
                                   style: TextStyle(
-                                    color: Colors
-                                        .white, // Change this to the color you want
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),

@@ -7,11 +7,13 @@ class PopupInformation extends StatelessWidget {
   final Map<String, String> serviceDetails;
   final int serviceIndex;
 
-  const PopupInformation(
-      {super.key, required this.serviceDetails, required this.serviceIndex});
+  const PopupInformation({
+    super.key,
+    required this.serviceDetails,
+    required this.serviceIndex,
+  });
 
   String formatDateTime(String dateTime) {
-    // if (dateTime == null) return 'N/A';
     try {
       final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
       final DateFormat desiredFormat = DateFormat('yyyy-MM-dd');
@@ -23,7 +25,6 @@ class PopupInformation extends StatelessWidget {
   }
 
   String formatTime(String dateTime) {
-    // if (dateTime == null) return 'N/A';
     try {
       final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
       final DateFormat timeFormat = DateFormat('hh:mm a');
@@ -37,6 +38,9 @@ class PopupInformation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isApproved = serviceDetails['status'] == 'approved';
+
+    // Debug prints to check values
+    print('Service Details: $serviceDetails');
 
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -54,11 +58,11 @@ class PopupInformation extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Scheduled Date: ${formatDateTime(serviceDetails['scheduled_date'] ?? 'N/A')}',
+              'Scheduled Date: ${formatDateTime(serviceDetails['event_date'] ?? 'N/A')}',
               style: const TextStyle(fontSize: 16),
             ),
             Text(
-              'Time: ${formatTime(serviceDetails['scheduled_date'] ?? 'N/A')}',
+              'Time: ${formatTime(serviceDetails['event_date'] ?? 'N/A')}',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
@@ -67,11 +71,11 @@ class PopupInformation extends StatelessWidget {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Text(
-              'Selected Type: ${serviceDetails['selected_type'] ?? 'N/A'}',
+              'Selected Type: ${serviceDetails['select_type'] ?? 'N/A'}',
               style: const TextStyle(fontSize: 16),
             ),
             Text(
-              'Full Name: ${serviceDetails['fullName'] ?? 'N/A'}',
+              'Full Name: ${serviceDetails['fullname'] ?? 'N/A'}',
               style: const TextStyle(fontSize: 16),
             ),
             Text(
@@ -101,7 +105,9 @@ class PopupInformation extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => EditAvailedServiceInformation(
-                              serviceIndex: serviceIndex),
+                            serviceIndex: serviceIndex,
+                            serviceDetails: serviceDetails,
+                          ),
                         ),
                       );
                       if (result == 'updated') {
@@ -124,7 +130,9 @@ class PopupInformation extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => RescheduleAvailedService(
-                              serviceIndex: serviceIndex),
+                            serviceIndex: serviceIndex,
+                            serviceDetails: serviceDetails,
+                          ),
                         ),
                       );
                       if (result == 'updated') {

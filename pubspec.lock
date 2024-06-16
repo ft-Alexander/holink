@@ -212,7 +212,7 @@ packages:
     dependency: "direct overridden"
     description:
       name: leak_tracker_flutter_testing
-      sha256: b46c5e37c19120a8a01918cfaf293547f47269f7cb4b0058f21531c2465d6ef0
+      sha256: "60a63cdbfae81d199ac7f8f656ce0200eca19294655b1b7377eb2b673136346e"
       url: "https://pub.dev"
     source: hosted
     version: "3.0.4"
