@@ -77,11 +77,12 @@ class _RequirementsPaymentState extends State<RequirementsPayment> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Text(
               'Needed Requirements/Documents:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,),
+            
             ),
             const SizedBox(height: 8),
             const Text(
@@ -98,7 +99,9 @@ class _RequirementsPaymentState extends State<RequirementsPayment> {
               style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
             ),
             const SizedBox(height: 16),
-            Row(
+            Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Checkbox(
                   value: onsiteSelected,
@@ -123,6 +126,8 @@ class _RequirementsPaymentState extends State<RequirementsPayment> {
                 const Text('Skip'),
               ],
             ),
+          ),
+
             if (gcashSelected) ...[
               const SizedBox(height: 8),
               const Text(
@@ -141,23 +146,27 @@ class _RequirementsPaymentState extends State<RequirementsPayment> {
               ),
               const SizedBox(height: 8),
               if (uploadedFile.isNotEmpty)
-                Row(
-                  children: [
-                    Text(
-                      uploadedFile,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(width: 8),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          uploadedFile = '';
-                        });
-                      },
-                      child: const Text('Remove'),
-                    ),
-                  ],
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        uploadedFile,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            uploadedFile = '';
+                          });
+                        },
+                        child: const Text('Remove'),
+                      ),
+                    ],
+                  ),
                 ),
+
             ],
             const Spacer(),
             Align(

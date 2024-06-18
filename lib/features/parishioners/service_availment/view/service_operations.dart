@@ -23,7 +23,8 @@ class BottomButtons extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                fixedSize: const Size(250, 50),
+                backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                fixedSize: const Size(280, 60),
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 side: const BorderSide(width: 1.0, color: Color(0xFFB37840)),
@@ -40,7 +41,7 @@ class BottomButtons extends StatelessWidget {
                     "AVAIL CHURCH SERVICE",
                     style: TextStyle(
                       color: Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 10,
+                      fontSize: 12,
                       fontFamily: "DM Sans",
                       fontWeight: FontWeight.bold,
                     ),
@@ -66,7 +67,8 @@ class BottomButtons extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                fixedSize: const Size(250, 50),
+                backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                fixedSize: const Size(280, 60),
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 side: const BorderSide(width: 1.0, color: Color(0xFFB37840)),
@@ -81,21 +83,21 @@ class BottomButtons extends StatelessWidget {
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: "VIEW/EDIT AVAILED SERVICE\n",
+                          text: "VIEW/EDIT/RESCHEDULE\n",
                           style: TextStyle(
                             color: Color.fromARGB(255, 0, 0, 0),
                             fontFamily: "DM Sans",
                             fontWeight: FontWeight.bold,
-                            fontSize: 10,
+                            fontSize: 12,
                           ),
                         ),
                         TextSpan(
-                          text: "INFORMATION",
+                          text: "AVAILED SERVICE",
                           style: TextStyle(
                             color: Color.fromARGB(255, 0, 0, 0),
                             fontFamily: "DM Sans",
                             fontWeight: FontWeight.bold,
-                            fontSize: 10,
+                            fontSize: 12,
                           ),
                         ),
                       ],
@@ -123,7 +125,7 @@ class BottomButtons extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                fixedSize: const Size(250, 50),
+                fixedSize: const Size(280, 60),
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 side: const BorderSide(width: 1.0, color: Color(0xFFB37840)),
@@ -140,7 +142,7 @@ class BottomButtons extends StatelessWidget {
                       color: Color.fromARGB(255, 0, 0, 0),
                       fontWeight: FontWeight.bold,
                       fontFamily: "DM Sans",
-                      fontSize: 10,
+                      fontSize: 12,
                     ),
                   ),
                   Icon(
