@@ -211,4 +211,21 @@ class EventService {
       throw Exception('Failed to load assignments');
     }
   }
+
+  Future<List<FetchEvents>> getEventsByDateId(int eventDateId) async {
+    final response = await http.get(Uri.parse(
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/getEventsByDateId.php?eventDateId=$eventDateId'));
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      if (jsonResponse['success'] == true) {
+        List<dynamic> data = jsonResponse['events'];
+        return data.map((event) => FetchEvents.fromJson(event)).toList();
+      } else {
+        throw Exception(jsonResponse['message']);
+      }
+    } else {
+      throw Exception('Failed to load events');
+    }
+  }
 }

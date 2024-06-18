@@ -1,48 +1,58 @@
-class getMnistry {
-  final int id;
-  int? lector_id;
-  DateTime? lector_date;
-  int? priest_id;
-  DateTime? priest_date;
-  int? sacristan_id;
-  DateTime? sacristan_date;
+class getMinistry {
+  List<MinistryData> priests;
+  List<MinistryData> lectors;
+  List<MinistryData> sacristans;
 
-  getMnistry({
-    required this.id,
-    this.lector_id,
-    this.lector_date,
-    this.priest_id,
-    this.priest_date,
-    this.sacristan_id,
-    this.sacristan_date,
+  getMinistry({
+    required this.priests,
+    required this.lectors,
+    required this.sacristans,
   });
-  factory getMnistry.fromAssignments(
-      int eventDateId, Map<String, dynamic> assignments) {
-    return getMnistry(
-      id: eventDateId,
-      lector_id: assignments['lectors'].isNotEmpty
-          ? assignments['lectors'][0]['id']
-          : null,
-      lector_date: assignments['lectors'].isNotEmpty
-          ? DateTime.parse(assignments['lectors'][0]['date'])
-          : null,
-      priest_id: assignments['priests'].isNotEmpty
-          ? assignments['priests'][0]['id']
-          : null,
-      priest_date: assignments['priests'].isNotEmpty
-          ? DateTime.parse(assignments['priests'][0]['date'])
-          : null,
-      sacristan_id: assignments['sacristans'].isNotEmpty
-          ? assignments['sacristans'][0]['id']
-          : null,
-      sacristan_date: assignments['sacristans'].isNotEmpty
-          ? DateTime.parse(assignments['sacristans'][0]['date'])
+
+  factory getMinistry.fromJson(Map<String, dynamic> json) {
+    return getMinistry(
+      priests: (json['priests'] as List)
+          .map((item) => MinistryData.fromJson(item))
+          .toList(),
+      lectors: (json['lectors'] as List)
+          .map((item) => MinistryData.fromJson(item))
+          .toList(),
+      sacristans: (json['sacristans'] as List)
+          .map((item) => MinistryData.fromJson(item))
+          .toList(),
+    );
+  }
+
+  @override
+  String toString() {
+    return 'getMinistry{priests: $priests, lectors: $lectors, sacristans: $sacristans}';
+  }
+}
+
+class MinistryData {
+  int? id;
+  int? ministryId;
+  int? event_date;
+
+  MinistryData({
+    required this.id,
+    this.ministryId,
+    this.event_date,
+  });
+
+  factory MinistryData.fromJson(Map<String, dynamic> json) {
+    return MinistryData(
+      id: json['id'],
+      ministryId:
+          json['priest_id'] ?? json['lector_id'] ?? json['sacristan_id'],
+      event_date: json['event_date'] != null
+          ? int.tryParse(json['event_date'].toString())
           : null,
     );
   }
 
   @override
   String toString() {
-    return 'getMnistry{id: $id, lector_id: $lector_id, lector_date: $lector_date, priest_id: $priest_id, priest_date: $priest_date, sacristan_id: $sacristan_id, sacristan_date: $sacristan_date}';
+    return 'MinistryData{id: $id, ministryId: $ministryId, event_date: $event_date}';
   }
 }

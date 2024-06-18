@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:holink/features/parish/scheduling/services/AddPersonDialog.dart';
+import 'package:holink/features/parish/scheduling/services/EditForm.dart';
 import 'package:intl/intl.dart';
 import 'package:holink/features/parish/scheduling/model/get_all_event.dart';
 import 'package:holink/features/parish/scheduling/services/event_service.dart';
@@ -52,7 +53,7 @@ class _EventCardState extends State<EventCard> {
         sacristans = fetchedSacristans;
       });
     } catch (e) {
-      print('Failed to fetch data: $e');
+      _showErrorSnackbar('Failed to fetch data: $e');
     }
   }
 
@@ -64,14 +65,13 @@ class _EventCardState extends State<EventCard> {
         selectedLectors.map((lector) => lector.id!).toList(),
         selectedSacristans.map((sacristan) => sacristan.id!).toList(),
       );
-      print('Response: $response');
       if (response['success']) {
-        print('Successfully saved selected persons');
+        _showSuccessSnackbar('Successfully saved selected persons');
       } else {
-        print('Failed to save selected persons');
+        _showErrorSnackbar('Failed to save selected persons');
       }
     } catch (e) {
-      print('Failed to save selected persons: $e');
+      _showErrorSnackbar('Failed to save selected persons: $e');
     }
   }
 
@@ -93,67 +93,92 @@ class _EventCardState extends State<EventCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      widget.event.eventId != null
-                          ? widget.event.eventName ?? 'Unknown Event'
-                          : widget.event.specialEventName ?? 'Special Event',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Roboto',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8.0),
-                  _buildEventTypeLabel(widget.event.eventType),
-                ],
-              ),
+              _buildEventHeader(),
               const SizedBox(height: 6.0),
-              Text(
-                'Date: ${widget.event.eventDate?.toLocal().toString().split(' ')[0]}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontFamily: 'Roboto',
-                ),
-              ),
-              const SizedBox(height: 4.0),
-              Text(
-                'Time: ${DateFormat('h:mm a').format(widget.event.eventDate!.toLocal())}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontFamily: 'Roboto',
-                ),
-              ),
-              const SizedBox(height: 4.0),
-              if (widget.event.eventId != null)
-                Text(
-                  'Location: ${widget.event.regularEventAddress ?? 'Unknown Address'}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontFamily: 'Roboto',
-                  ),
-                ),
+              _buildEventDetails(),
               const SizedBox(height: 12.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildActionButton(Icons.person_add, Colors.green,
-                      () => _showAddPersonDialog(context)),
-                  _buildActionButton(Icons.edit, Colors.blue, widget.onEdit),
-                  _buildActionButton(Icons.cancel, Colors.red, () async {
-                    await _archiveRegularEvent(widget.event.eventDateId!);
-                    widget.onCancel();
-                  }),
-                ],
-              ),
+              _buildActionButtons(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildEventHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Text(
+            widget.event.eventId != null
+                ? widget.event.eventName ?? 'Unknown Event'
+                : widget.event.specialEventName ?? 'Special Event',
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Roboto',
+            ),
+          ),
+        ),
+        const SizedBox(width: 8.0),
+        _buildEventTypeLabel(widget.event.eventType),
+      ],
+    );
+  }
+
+  Widget _buildEventDetails() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Date: ${widget.event.eventDate?.toLocal().toString().split(' ')[0]}',
+          style: const TextStyle(
+            fontSize: 14,
+            fontFamily: 'Roboto',
+          ),
+        ),
+        const SizedBox(height: 4.0),
+        Text(
+          'Time: ${DateFormat('h:mm a').format(widget.event.eventDate!.toLocal())}',
+          style: const TextStyle(
+            fontSize: 14,
+            fontFamily: 'Roboto',
+          ),
+        ),
+        const SizedBox(height: 4.0),
+        if (widget.event.eventId != null)
+          Text(
+            'Location: ${widget.event.regularEventAddress ?? 'Unknown Address'}',
+            style: const TextStyle(
+              fontSize: 14,
+              fontFamily: 'Roboto',
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildActionButton(Icons.person_add, Colors.green,
+            () => _showAddPersonDialog(context)),
+        _buildActionButton(Icons.edit, Colors.blue, () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  EditForm(eventDateId: widget.event.eventDateId!),
+            ),
+          );
+        }),
+        _buildActionButton(Icons.cancel, Colors.red, () async {
+          await _archiveRegularEvent(widget.event.eventDateId!);
+          widget.onCancel();
+        }),
+      ],
     );
   }
 
@@ -207,7 +232,7 @@ class _EventCardState extends State<EventCard> {
     try {
       await eventService.archiveRegularEvent(eventId);
     } catch (e) {
-      print('Failed to archive regular event: $e');
+      _showErrorSnackbar('Failed to archive regular event: $e');
     }
   }
 
@@ -225,6 +250,18 @@ class _EventCardState extends State<EventCard> {
           onSave: _saveSelectedPersons,
         );
       },
+    );
+  }
+
+  void _showErrorSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
+  }
+
+  void _showSuccessSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.green),
     );
   }
 }
