@@ -52,7 +52,10 @@ class _SchedulingState extends State<Scheduling> {
   }
 
   List<FetchEvents> _getEventsForDay(DateTime day) {
-    return _events[DateTime(day.year, day.month, day.day)] ?? [];
+    return _events[DateTime(day.year, day.month, day.day)]
+            ?.where((event) => event.archiveStatus != 'Archive')
+            .toList() ??
+        [];
   }
 
   void _refreshEvents() {
@@ -145,11 +148,18 @@ class _SchedulingState extends State<Scheduling> {
           ),
           calendarBuilders: CalendarBuilders(
             markerBuilder: (context, date, events) {
-              if (events.isEmpty) return const SizedBox.shrink();
-              final uniqueEventTypes = events.map((event) {
+              final nonArchivedEvents = events.where((event) {
+                final fetchEvent = event as FetchEvents;
+                return fetchEvent.archiveStatus != 'Archive';
+              }).toList();
+
+              if (nonArchivedEvents.isEmpty) return const SizedBox.shrink();
+
+              final uniqueEventTypes = nonArchivedEvents.map((event) {
                 final fetchEvent = event as FetchEvents;
                 return fetchEvent.eventType;
               }).toSet();
+
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: uniqueEventTypes.map((eventType) {
@@ -219,8 +229,8 @@ class _SchedulingState extends State<Scheduling> {
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => RegularEventForm(
-                onEventAdded: fetchAndSetEvents), // Modify this line
+            builder: (context) =>
+                RegularEventForm(onEventAdded: fetchAndSetEvents),
           ),
         );
         if (result == true) {
