@@ -15,11 +15,18 @@ class EventService {
     final url = Uri.parse(
         'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/saveRegularEvent.php');
 
+    final payload = jsonEncode(event.toJson());
+    print("Sending payload: $payload");
+
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(event.toJson()),
+      body: payload,
     );
+
+    print("Response status: ${response.statusCode}");
+    print("Response body: ${response.body}");
+
     if (response.statusCode == 200) {
       final responseBody = jsonDecode(response.body);
       if (responseBody['id'] is int) {
@@ -184,6 +191,24 @@ class EventService {
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to save selected persons');
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchAssignmentsForDate(int eventDateId) async {
+    final url = Uri.parse(
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/getAssignmentsForDate.php?eventDateId=$eventDateId');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      if (jsonResponse['success']) {
+        return jsonResponse['assignments'];
+      } else {
+        throw Exception('Failed to load assignments');
+      }
+    } else {
+      throw Exception('Failed to load assignments');
     }
   }
 }

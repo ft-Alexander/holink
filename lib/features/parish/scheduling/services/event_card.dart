@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holink/features/parish/scheduling/services/AddPersonDialog.dart';
 import 'package:intl/intl.dart';
 import 'package:holink/features/parish/scheduling/model/get_all_event.dart';
 import 'package:holink/features/parish/scheduling/services/event_service.dart';
@@ -44,19 +45,12 @@ class _EventCardState extends State<EventCard> {
       final fetchedPriests = await eventService.fetchAllPriests();
       final fetchedLectors = await eventService.fetchAllLectors();
       final fetchedSacristans = await eventService.fetchAllSacristans();
+
       setState(() {
         priests = fetchedPriests;
         lectors = fetchedLectors;
         sacristans = fetchedSacristans;
       });
-
-      // Print statements to display fetched data
-      print(
-          "Fetched Priests: ${priests.map((priest) => priest.name).toList()}");
-      print(
-          "Fetched Lectors: ${lectors.map((lector) => lector.name).toList()}");
-      print(
-          "Fetched Sacristans: ${sacristans.map((sacristan) => sacristan.name).toList()}");
     } catch (e) {
       print('Failed to fetch data: $e');
     }
@@ -64,13 +58,6 @@ class _EventCardState extends State<EventCard> {
 
   Future<void> _saveSelectedPersons() async {
     try {
-      print(
-          'Selected Priests: ${selectedPriests.map((priest) => priest.name).toList()}');
-      print(
-          'Selected Lectors: ${selectedLectors.map((lector) => lector.name).toList()}');
-      print(
-          'Selected Sacristans: ${selectedSacristans.map((sacristan) => sacristan.name).toList()}');
-
       final response = await eventService.saveSelectedPersons(
         widget.event.eventDateId!,
         selectedPriests.map((priest) => priest.id!).toList(),
@@ -228,136 +215,16 @@ class _EventCardState extends State<EventCard> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return AlertDialog(
-              title: Text('Add Person'),
-              content: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    _buildMultiSelectDropdown<Priest>(
-                      label: 'Select Priests',
-                      items: priests,
-                      selectedItems: selectedPriests,
-                      displayString: (priest) => priest.name,
-                      onChanged: (Priest? value) {
-                        setState(() {
-                          if (selectedPriests.contains(value)) {
-                            selectedPriests.remove(value);
-                          } else {
-                            selectedPriests.add(value!);
-                          }
-                        });
-                      },
-                      parentSetState: setState,
-                    ),
-                    SizedBox(height: 16.0),
-                    _buildMultiSelectDropdown<Lector>(
-                      label: 'Select Lectors',
-                      items: lectors,
-                      selectedItems: selectedLectors,
-                      displayString: (lector) => lector.name,
-                      onChanged: (Lector? value) {
-                        setState(() {
-                          if (selectedLectors.contains(value)) {
-                            selectedLectors.remove(value);
-                          } else {
-                            selectedLectors.add(value!);
-                          }
-                        });
-                      },
-                      parentSetState: setState,
-                    ),
-                    SizedBox(height: 16.0),
-                    _buildMultiSelectDropdown<Sacristan>(
-                      label: 'Select Sacristans',
-                      items: sacristans,
-                      selectedItems: selectedSacristans,
-                      displayString: (sacristan) => sacristan.name,
-                      onChanged: (Sacristan? value) {
-                        setState(() {
-                          if (selectedSacristans.contains(value)) {
-                            selectedSacristans.remove(value);
-                          } else {
-                            selectedSacristans.add(value!);
-                          }
-                        });
-                      },
-                      parentSetState: setState,
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    await _saveSelectedPersons();
-                    Navigator.of(context).pop();
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text('Assign'),
-                ),
-              ],
-            );
-          },
+        return AddPersonDialog(
+          priests: priests,
+          selectedPriests: selectedPriests,
+          lectors: lectors,
+          selectedLectors: selectedLectors,
+          sacristans: sacristans,
+          selectedSacristans: selectedSacristans,
+          onSave: _saveSelectedPersons,
         );
       },
-    );
-  }
-
-  Widget _buildMultiSelectDropdown<T>({
-    required String label,
-    required List<T> items,
-    required List<T> selectedItems,
-    required String Function(T) displayString,
-    required ValueChanged<T?> onChanged,
-    required StateSetter parentSetState,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: TextStyle(fontSize: 16)),
-        SizedBox(height: 8.0),
-        DropdownButtonFormField<T>(
-          items: items.map((T item) {
-            return DropdownMenuItem<T>(
-              value: item,
-              child: Text(displayString(item)),
-            );
-          }).toList(),
-          onChanged: onChanged,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-          ),
-        ),
-        Wrap(
-          children: selectedItems.map((T item) {
-            return Chip(
-              label: Text(displayString(item)),
-              onDeleted: () {
-                parentSetState(() {
-                  selectedItems.remove(item);
-                });
-              },
-            );
-          }).toList(),
-        ),
-      ],
     );
   }
 }

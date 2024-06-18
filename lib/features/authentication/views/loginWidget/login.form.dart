@@ -21,7 +21,7 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   String _msg = "";
   final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordConttroller = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   localhost localhostInstance = localhost();
 
   String dropDown = 'Parish Staff';
@@ -98,7 +98,7 @@ class _LoginFormState extends State<LoginForm> {
           ),
           const SizedBox(height: 5.0),
           TextField(
-            controller: _passwordConttroller,
+            controller: _passwordController,
             decoration: InputDecoration(
               labelText: 'Password',
               labelStyle: GoogleFonts.dmSans(
@@ -135,7 +135,7 @@ class _LoginFormState extends State<LoginForm> {
           ElevatedButton(
             onPressed: () {
               if (_usernameController.text.isEmpty ||
-                  _passwordConttroller.text.isEmpty) {
+                  _passwordController.text.isEmpty) {
                 setState(() {
                   _msg = "Username and Password are required";
                 });
@@ -153,11 +153,12 @@ class _LoginFormState extends State<LoginForm> {
               }
             },
             style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all<Color>(HexColor(tbrown)),
-              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(HexColor(tbrown)),
+              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                 const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
               ),
-              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
                 ),
@@ -182,11 +183,12 @@ class _LoginFormState extends State<LoginForm> {
               );
             },
             style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all<Color>(HexColor(twhite)),
-              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(HexColor(twhite)),
+              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                 const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
               ),
-              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
                   side: BorderSide(
@@ -212,13 +214,13 @@ class _LoginFormState extends State<LoginForm> {
             },
             style: ButtonStyle(
               backgroundColor:
-                  WidgetStateProperty.all<Color>(Colors.transparent),
-              shadowColor: WidgetStateProperty.all<Color>(Colors.transparent),
-              elevation: WidgetStateProperty.all<double>(0),
-              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
+                  MaterialStateProperty.all<Color>(Colors.transparent),
+              shadowColor: MaterialStateProperty.all<Color>(Colors.transparent),
+              elevation: MaterialStateProperty.all<double>(0),
+              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                 const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
               ),
-              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
                 ),
@@ -243,7 +245,7 @@ class _LoginFormState extends State<LoginForm> {
         "http://${localhostInstance.ipServer}/dashboard/myfolder/loginParish.php";
 
     String username = _usernameController.text;
-    String password = _passwordConttroller.text;
+    String password = _passwordController.text;
 
     final Map<String, dynamic> queryParams = {
       "username": username, // Pass username as string
@@ -282,7 +284,7 @@ class _LoginFormState extends State<LoginForm> {
         "http://${localhostInstance.ipServer}/dashboard/myfolder/loginDiocese.php";
 
     String username = _usernameController.text;
-    String password = _passwordConttroller.text;
+    String password = _passwordController.text;
 
     final Map<String, dynamic> queryParams = {
       "username": username, // Pass username as string
@@ -321,7 +323,7 @@ class _LoginFormState extends State<LoginForm> {
         "http://${localhostInstance.ipServer}/dashboard/myfolder/loginParishioners.php";
 
     String username = _usernameController.text;
-    String password = _passwordConttroller.text;
+    String password = _passwordController.text;
 
     final Map<String, dynamic> queryParams = {
       "username": username, // Pass username as string
@@ -356,7 +358,8 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Future<void> _storeParId(String username, String password) async {
-    String url = "http://${localhostInstance.ipServer}/dashboard/myfolder/getAccountId.php";
+    String url =
+        "http://${localhostInstance.ipServer}/dashboard/myfolder/getAccountId.php";
 
     final Map<String, dynamic> queryParams = {
       "username": username,
@@ -364,7 +367,8 @@ class _LoginFormState extends State<LoginForm> {
     };
 
     try {
-      http.Response response = await http.get(Uri.parse(url).replace(queryParameters: queryParams));
+      http.Response response =
+          await http.get(Uri.parse(url).replace(queryParameters: queryParams));
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         if (data['success']) {
