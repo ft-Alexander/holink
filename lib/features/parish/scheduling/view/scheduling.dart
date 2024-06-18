@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:holink/constants/bottom_nav_parish.dart';
 import 'package:holink/features/parish/scheduling/constants/schedule_navbar.dart';
+import 'package:holink/features/parish/scheduling/model/get_all_event.dart';
 import 'package:holink/features/parish/scheduling/services/event_card.dart';
 import 'package:holink/features/parish/scheduling/services/event_service.dart';
 import 'package:holink/features/parish/scheduling/services/plot_regular_event.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:holink/features/parish/scheduling/model/regularEventDate.dart';
 
 class Scheduling extends StatefulWidget {
   const Scheduling({super.key});
@@ -19,8 +19,8 @@ class _SchedulingState extends State<Scheduling> {
   DateTime selectedDate = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
   final EventService _eventService = EventService();
-  Map<DateTime, List<RegularEventDate>> _events = {};
-  List<RegularEventDate> _selectedEvents = [];
+  Map<DateTime, List<FetchEvents>> _events = {};
+  List<FetchEvents> _selectedEvents = [];
 
   @override
   void initState() {
@@ -30,17 +30,17 @@ class _SchedulingState extends State<Scheduling> {
 
   Future<void> fetchAndSetEvents() async {
     try {
-      List<RegularEventDate> events =
-          await _eventService.fetchRegularEventDates();
+      List<FetchEvents> events =
+          await _eventService.fetchAllRegularEventDates();
       setState(() {
         _events = {};
-        for (var eventDate in events) {
-          final date = DateTime(eventDate.eventDate.year,
-              eventDate.eventDate.month, eventDate.eventDate.day);
+        for (var event in events) {
+          final date = DateTime(event.eventDate!.year, event.eventDate!.month,
+              event.eventDate!.day);
           if (_events[date] != null) {
-            _events[date]!.add(eventDate);
+            _events[date]!.add(event);
           } else {
-            _events[date] = [eventDate];
+            _events[date] = [event];
           }
         }
         // Set _selectedEvents for the initially selected date
@@ -51,7 +51,7 @@ class _SchedulingState extends State<Scheduling> {
     }
   }
 
-  List<RegularEventDate> _getEventsForDay(DateTime day) {
+  List<FetchEvents> _getEventsForDay(DateTime day) {
     return _events[DateTime(day.year, day.month, day.day)] ?? [];
   }
 
@@ -147,8 +147,8 @@ class _SchedulingState extends State<Scheduling> {
             markerBuilder: (context, date, events) {
               if (events.isEmpty) return const SizedBox.shrink();
               final uniqueEventTypes = events.map((event) {
-                final regularEvent = event as RegularEventDate;
-                return regularEvent.eventType;
+                final fetchEvent = event as FetchEvents;
+                return fetchEvent.eventType;
               }).toSet();
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,

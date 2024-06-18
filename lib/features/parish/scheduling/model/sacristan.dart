@@ -5,11 +5,11 @@ class Sacristan {
 
   Sacristan({required this.id, required this.name, required this.contactInfo});
 
-  factory Sacristan.fromMap(Map<String, dynamic> map) {
+  factory Sacristan.fromJson(Map<String, dynamic> json) {
     return Sacristan(
-      id: map['id'],
-      name: map['name'],
-      contactInfo: map['contact_info'],
+      id: json['id'] is int ? json['id'] : int.parse(json['id']),
+      name: json['name'],
+      contactInfo: json['contact_info'],
     );
   }
 

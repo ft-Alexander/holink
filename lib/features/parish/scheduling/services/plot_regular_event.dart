@@ -17,9 +17,6 @@ class _RegularEventFormState extends State<RegularEventForm> {
   final _formKey = GlobalKey<FormState>();
   final _eventNameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _priestIdController = TextEditingController();
-  final _lectorIdController = TextEditingController();
-  final _sacristanIdController = TextEditingController();
   final _addressController = TextEditingController();
   final EventService _eventService = EventService();
 
@@ -59,9 +56,6 @@ class _RegularEventFormState extends State<RegularEventForm> {
   void dispose() {
     _eventNameController.dispose();
     _descriptionController.dispose();
-    _priestIdController.dispose();
-    _lectorIdController.dispose();
-    _sacristanIdController.dispose();
     _addressController.dispose();
     super.dispose();
   }
@@ -191,9 +185,6 @@ class _RegularEventFormState extends State<RegularEventForm> {
           RegularEventDate eventDate = RegularEventDate(
               id: 0,
               eventDate: eventDateTime,
-              priestId: int.tryParse(_priestIdController.text),
-              lectorId: int.tryParse(_lectorIdController.text),
-              sacristanId: int.tryParse(_sacristanIdController.text),
               regularEvent: eventId,
               archiveStatus: 'Display',
               eventType: "Regular");
