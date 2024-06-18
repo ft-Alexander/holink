@@ -22,6 +22,8 @@ class Report {
   final double totalIncome;
   final double totalExpenses;
   final double netDeficit;
+  final String parishioners_access; // new field
+  final String report_type; // new field
 
   Report({
     this.report_id,
@@ -47,6 +49,8 @@ class Report {
     required this.totalIncome,
     required this.totalExpenses,
     required this.netDeficit,
+    this.parishioners_access = 'hidden', // default value
+    required this.report_type, // new field
   });
 
   factory Report.fromJson(Map<String, dynamic> json) {
@@ -74,6 +78,8 @@ class Report {
       totalIncome: double.parse(json['totalIncome']),
       totalExpenses: double.parse(json['totalExpenses']),
       netDeficit: double.parse(json['netDeficit']),
+      parishioners_access: json['parishioners_access'] ?? 'hidden', // new field
+      report_type: json['report_type'], // new field
     );
   }
 
@@ -102,6 +108,8 @@ class Report {
       'totalIncome': totalIncome.toStringAsFixed(2),
       'totalExpenses': totalExpenses.toStringAsFixed(2),
       'netDeficit': netDeficit.toStringAsFixed(2),
+      'parishioners_access': parishioners_access, // new field
+      'report_type': report_type, // new field
     };
   }
 
@@ -109,6 +117,7 @@ class Report {
     return {
       'report_id': report_id,
       'archive_status': archive_status,
+      'parishioners_access': parishioners_access,
     };
   }
 }

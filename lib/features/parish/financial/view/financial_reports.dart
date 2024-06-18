@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'package:flutter/material.dart';
 import 'package:holink/constants/bottom_nav_parish.dart';
 import 'package:holink/features/parish/dashboard/view/dashboard.dart';
@@ -23,8 +25,13 @@ class _ReportsPageState extends State<ReportsPage> {
   List<Map<String, dynamic>> reports = [];
   int? selectedYear;
   String? selectedMonth;
+  int? selectedDay;
   String? selectedStatus;
+  DateTime? startDate;
+  DateTime? endDate;
   bool isLoading = false;
+  String selectedReportType = 'daily'; // Default report type
+  DateTime? selectedDate;
 
   int _selectedIndexBotNav = 2;
 
@@ -62,53 +69,165 @@ class _ReportsPageState extends State<ReportsPage> {
       isLoading = true;
     });
 
-    localhost localhostInstance = localhost();
-    final url =
-        'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/getReports.php';
+    try {
+      localhost localhostInstance = localhost();
+      final url =
+          'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/getReports.php';
 
-    final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url));
 
-    if (response.statusCode == 200) {
-      final responseBody = json.decode(response.body);
-      if (responseBody['success']) {
-        setState(() {
-          reports = List<Map<String, dynamic>>.from(responseBody['reports'])
-              .where((report) => report['archive_status'] == 'display')
-              .toList();
-
-          // Apply filters
-          if (selectedYear != null) {
-            reports = reports.where((report) {
-              final reportYear =
-                  DateFormat('MMMM yyyy').parse(report['date']).year;
-              return reportYear == selectedYear;
-            }).toList();
-          }
-
-          if (selectedMonth != null) {
-            reports = reports.where((report) {
-              final reportMonth = DateFormat('MMMM')
-                  .format(DateFormat('MMMM yyyy').parse(report['date']));
-              return reportMonth == selectedMonth;
-            }).toList();
-          }
-
-          if (selectedStatus != null) {
-            reports = reports
-                .where((report) => report['status'] == selectedStatus)
+      if (response.statusCode == 200) {
+        final responseBody = json.decode(response.body);
+        if (responseBody['success']) {
+          setState(() {
+            reports = List<Map<String, dynamic>>.from(responseBody['reports'])
+                .where((report) => report['archive_status'] == 'display')
                 .toList();
+
+            // Sort reports by report_id in descending order (latest first)
+            reports.sort((a, b) {
+              final aId = a['report_id'];
+              final bId = b['report_id'];
+              if (aId == null && bId == null) return 0;
+              if (aId == null) return 1;
+              if (bId == null) return -1;
+              return bId.compareTo(aId);
+            });
+
+            isLoading = false;
+          });
+        } else {
+          throw Exception('Failed to load reports: ${responseBody['message']}');
+        }
+      } else {
+        throw Exception('Failed to load reports: ${response.reasonPhrase}');
+      }
+    } catch (e, stackTrace) {
+      print('Error fetching reports: $e');
+      print('Stack trace: $stackTrace');
+    }
+  }
+
+  void _applyDailyFilters() {
+    try {
+      if (selectedYear != null) {
+        reports = reports.where((report) {
+          DateTime? reportDate;
+          try {
+            reportDate = DateFormat('MMMM d, yyyy').parse(report['date']);
+          } catch (e) {
+            try {
+              reportDate = DateFormat('MMMM yyyy').parse(report['date']);
+            } catch (e) {
+              return false;
+            }
+          }
+          return reportDate.year == selectedYear;
+        }).toList();
+      }
+
+      if (selectedMonth != null) {
+        reports = reports.where((report) {
+          DateTime? reportDate;
+          try {
+            reportDate = DateFormat('MMMM d, yyyy').parse(report['date']);
+          } catch (e) {
+            try {
+              reportDate = DateFormat('MMMM yyyy').parse(report['date']);
+            } catch (e) {
+              return false;
+            }
+          }
+          final reportMonth = DateFormat('MMMM').format(reportDate);
+          return reportMonth == selectedMonth;
+        }).toList();
+      }
+
+      if (selectedDay != null) {
+        reports = reports.where((report) {
+          DateTime? reportDate;
+          try {
+            reportDate = DateFormat('MMMM d, yyyy').parse(report['date']);
+          } catch (e) {
+            try {
+              reportDate = DateFormat('MMMM yyyy').parse(report['date']);
+            } catch (e) {
+              return false;
+            }
+          }
+          final reportDay = DateFormat('d').format(reportDate);
+          return int.parse(reportDay) == selectedDay;
+        }).toList();
+      }
+
+      if (selectedStatus != null) {
+        reports = reports.where((report) => report['status'] == selectedStatus).toList();
+      }
+    } catch (e, stackTrace) {
+      print('Error applying daily filters: $e');
+      print('Stack trace: $stackTrace');
+    }
+  }
+
+  void _applyWeeklyFilters() {
+    try {
+      if (startDate != null || endDate != null) {
+        reports = reports.where((report) {
+          DateTime? reportDate;
+          try {
+            reportDate = DateFormat('MMMM d, yyyy').parse(report['date']);
+          } catch (e) {
+            try {
+              reportDate = DateFormat('MMMM yyyy').parse(report['date']);
+            } catch (e) {
+              return false;
+            }
           }
 
-          // Sort reports by report_id in descending order (latest first)
-          reports.sort((a, b) => b['report_id'].compareTo(a['report_id']));
-
-          isLoading = false;
-        });
-      } else {
-        throw Exception('Failed to load reports: ${responseBody['message']}');
+          if (startDate != null && endDate != null) {
+            return reportDate.isAfter(startDate!.subtract(const Duration(days: 1))) &&
+                  reportDate.isBefore(endDate!.add(const Duration(days: 1)));
+          } else if (startDate != null) {
+            return reportDate.isAfter(startDate!.subtract(const Duration(days: 1)));
+          } else if (endDate != null) {
+            return reportDate.isBefore(endDate!.add(const Duration(days: 1)));
+          }
+          return false;
+        }).toList();
       }
-    } else {
-      throw Exception('Failed to load reports: ${response.reasonPhrase}');
+
+      if (selectedStatus != null) {
+        reports = reports.where((report) => report['status'] == selectedStatus).toList();
+      }
+    } catch (e, stackTrace) {
+      print('Error applying weekly filters: $e');
+      print('Stack trace: $stackTrace');
+    }
+  }
+
+  void _applyMonthlyFilters() {
+    try {
+      if (selectedYear != null) {
+        reports = reports.where((report) {
+          final reportDate = DateFormat('MMMM yyyy').parse(report['date']);
+          return reportDate.year == selectedYear;
+        }).toList();
+      }
+
+      if (selectedMonth != null) {
+        reports = reports.where((report) {
+          final reportDate = DateFormat('MMMM yyyy').parse(report['date']);
+          final reportMonth = DateFormat('MMMM').format(reportDate);
+          return reportMonth == selectedMonth;
+        }).toList();
+      }
+
+      if (selectedStatus != null) {
+        reports = reports.where((report) => report['status'] == selectedStatus).toList();
+      }
+    } catch (e, stackTrace) {
+      print('Error applying monthly filters: $e');
+      print('Stack trace: $stackTrace');
     }
   }
 
@@ -121,6 +240,7 @@ class _ReportsPageState extends State<ReportsPage> {
       ),
       body: Column(
         children: [
+          _buildReportTypeButtons(), // Add report type buttons
           _buildGenerateAndFilterButtons(),
           Expanded(
               child: isLoading
@@ -129,7 +249,7 @@ class _ReportsPageState extends State<ReportsPage> {
         ],
       ),
       bottomNavigationBar: BottomNavBarParish(
-        selectedIndex: 2,
+        selectedIndex: _selectedIndexBotNav,
       ),
     );
   }
@@ -177,6 +297,48 @@ class _ReportsPageState extends State<ReportsPage> {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildReportTypeButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildReportTypeButton('Daily', 'daily'),
+          _buildReportTypeButton('Weekly', 'weekly'),
+          _buildReportTypeButton('Monthly', 'monthly'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReportTypeButton(String label, String type) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          selectedReportType = type;
+        });
+        _fetchReports(); // Fetch reports for the selected type
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: selectedReportType == type ? Colors.blue : Colors.grey,
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+        textStyle: const TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(6.0),
+        ),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          color: Colors.white,
+        ),
+      ),
     );
   }
 
@@ -241,59 +403,174 @@ class _ReportsPageState extends State<ReportsPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Select Month and Year'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Select Month'),
-                items: DateFormat().dateSymbols.MONTHS.map((String month) {
-                  return DropdownMenuItem<String>(
-                    value: month,
-                    child: Text(month),
-                  );
-                }).toList(),
-                onChanged: (value) {
+        if (selectedReportType == 'daily') {
+          return AlertDialog(
+            title: const Text('Select Date'),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: CalendarDatePicker(
+                initialDate: DateTime.now(),
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2101),
+                onDateChanged: (DateTime date) {
                   setState(() {
-                    selectedMonth = value;
+                    selectedDate = date;
+                    print('Selected Date: $selectedDate'); // Debugging statement
                   });
                 },
               ),
-              const SizedBox(height: 10),
-              DropdownButtonFormField<int>(
-                decoration: const InputDecoration(labelText: 'Select Year'),
-                items: List<int>.generate(50, (index) => 2024 - index)
-                    .map((int year) {
-                  return DropdownMenuItem<int>(
-                    value: year,
-                    child: Text(year.toString()),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedYear = value;
-                  });
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
                 },
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _generateReport();
+                },
+                child: const Text('Generate'),
               ),
             ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
+          );
+        } else if (selectedReportType == 'weekly') {
+          return AlertDialog(
+            title: const Text('Select Week Range'),
+            content: SingleChildScrollView(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      title: const Text('Start Date'),
+                      trailing: TextButton(
+                        onPressed: () async {
+                          DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: startDate ?? DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                          );
+                          if (picked != null) {
+                            setState(() {
+                              startDate = picked;
+                              print('Selected Start Date: $startDate'); // Debugging statement
+                            });
+                          }
+                        },
+                        child: Text(startDate != null
+                            ? DateFormat('MMMM d, yyyy').format(startDate!)
+                            : 'Select Date'),
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text('End Date'),
+                      trailing: TextButton(
+                        onPressed: () async {
+                          DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: endDate ?? DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                          );
+                          if (picked != null) {
+                            setState(() {
+                              endDate = picked;
+                              print('Selected End Date: $endDate'); // Debugging statement
+                            });
+                          }
+                        },
+                        child: Text(endDate != null
+                            ? DateFormat('MMMM d, yyyy').format(endDate!)
+                            : 'Select Date'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _generateReport();
-              },
-              child: const Text('Generate'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _generateReport();
+                },
+                child: const Text('Generate'),
+              ),
+            ],
+          );
+        } else {
+          return AlertDialog(
+            title: const Text('Select Month and Year'),
+            content: SingleChildScrollView(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(labelText: 'Select Month'),
+                      items: DateFormat().dateSymbols.MONTHS.map((String month) {
+                        return DropdownMenuItem<String>(
+                          value: month,
+                          child: Text(month),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedMonth = value;
+                          print('Selected Month: $selectedMonth'); // Debugging statement
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<int>(
+                      decoration: const InputDecoration(labelText: 'Select Year'),
+                      items: List<int>.generate(50, (index) => 2024 - index)
+                          .map((int year) {
+                        return DropdownMenuItem<int>(
+                          value: year,
+                          child: Text(year.toString()),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedYear = value;
+                          print('Selected Year: $selectedYear'); // Debugging statement
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ],
-        );
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _generateReport();
+                },
+                child: const Text('Generate'),
+              ),
+            ],
+          );
+        }
       },
     );
   }
@@ -302,128 +579,382 @@ class _ReportsPageState extends State<ReportsPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        String? filterMonth;
-        int? filterYear;
-        String? filterStatus;
-
-        return AlertDialog(
-          title: const Text('Filter Reports'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Select Month'),
-                items: DateFormat().dateSymbols.MONTHS.map((String month) {
-                  return DropdownMenuItem<String>(
-                    value: month,
-                    child: Text(month),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  filterMonth = value;
-                },
-              ),
-              const SizedBox(height: 10),
-              DropdownButtonFormField<int>(
-                decoration: const InputDecoration(labelText: 'Select Year'),
-                items: List<int>.generate(50, (index) => 2024 - index)
-                    .map((int year) {
-                  return DropdownMenuItem<int>(
-                    value: year,
-                    child: Text(year.toString()),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  filterYear = value;
-                },
-              ),
-              const SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Select Status'),
-                items: ['Accepted', 'Pending', 'Rejected'].map((String status) {
-                  return DropdownMenuItem<String>(
-                    value: status,
-                    child: Text(status),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  filterStatus = value;
-                },
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  selectedMonth = null;
-                  selectedYear = null;
-                  selectedStatus = null;
-                  _fetchReports();
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('Reset'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  selectedMonth = filterMonth;
-                  selectedYear = filterYear;
-                  selectedStatus = filterStatus;
-                  _fetchReports();
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('Apply'),
-            ),
-          ],
-        );
+        if (selectedReportType == 'daily') {
+          return _buildDailyFilterDialog(context);
+        } else if (selectedReportType == 'weekly') {
+          return _buildWeeklyFilterDialog(context);
+        } else {
+          return _buildMonthlyFilterDialog(context);
+        }
       },
     );
   }
 
+  Widget _buildDailyFilterDialog(BuildContext context) {
+    String? filterMonth;
+    int? filterDay;
+    int? filterYear;
+    String? filterStatus;
+
+    return AlertDialog(
+      title: const Text('Filter Daily Reports'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(labelText: 'Select Month'),
+            items: DateFormat().dateSymbols.MONTHS.map((String month) {
+              return DropdownMenuItem<String>(
+                value: month,
+                child: Text(month),
+              );
+            }).toList(),
+            onChanged: (value) {
+              filterMonth = value;
+            },
+          ),
+          const SizedBox(height: 10),
+          DropdownButtonFormField<int>(
+            decoration: const InputDecoration(labelText: 'Select Day'),
+            items: List<int>.generate(31, (index) => index + 1).map((int day) {
+              return DropdownMenuItem<int>(
+                value: day,
+                child: Text(day.toString()),
+              );
+            }).toList(),
+            onChanged: (value) {
+              filterDay = value;
+            },
+          ),
+          const SizedBox(height: 10),
+          DropdownButtonFormField<int>(
+            decoration: const InputDecoration(labelText: 'Select Year'),
+            items: List<int>.generate(50, (index) => 2024 - index).map((int year) {
+              return DropdownMenuItem<int>(
+                value: year,
+                child: Text(year.toString()),
+              );
+            }).toList(),
+            onChanged: (value) {
+              filterYear = value;
+            },
+          ),
+          const SizedBox(height: 10),
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(labelText: 'Select Status'),
+            items: ['Accepted', 'Pending', 'Rejected'].map((String status) {
+              return DropdownMenuItem<String>(
+                value: status,
+                child: Text(status),
+              );
+            }).toList(),
+            onChanged: (value) {
+              filterStatus = value;
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            setState(() {
+              selectedMonth = null;
+              selectedDay = null;
+              selectedYear = null;
+              selectedStatus = null;
+              _fetchReports();
+            });
+            Navigator.of(context).pop();
+          },
+          child: const Text('Reset'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            setState(() {
+              selectedMonth = filterMonth;
+              selectedDay = filterDay;
+              selectedYear = filterYear;
+              selectedStatus = filterStatus;
+              _fetchReports();
+            });
+            Navigator.of(context).pop();
+          },
+          child: const Text('Apply'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWeeklyFilterDialog(BuildContext context) {
+    DateTime? filterStartDate;
+    DateTime? filterEndDate;
+    String? filterStatus;
+
+    return AlertDialog(
+      title: const Text('Filter Weekly Reports'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            title: const Text('Start Date'),
+            trailing: TextButton(
+              onPressed: () async {
+                DateTime? picked = await showDatePicker(
+                  context: context,
+                  initialDate: filterStartDate ?? DateTime.now(),
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2101),
+                );
+                if (picked != null) {
+                  setState(() {
+                    filterStartDate = picked;
+                  });
+                }
+              },
+              child: Text(filterStartDate != null
+                  ? DateFormat('MMMM d, yyyy').format(filterStartDate)
+                  : 'Select Date'),
+            ),
+          ),
+          ListTile(
+            title: const Text('End Date'),
+            trailing: TextButton(
+              onPressed: () async {
+                DateTime? picked = await showDatePicker(
+                  context: context,
+                  initialDate: filterEndDate ?? DateTime.now(),
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2101),
+                );
+                if (picked != null) {
+                  setState(() {
+                    filterEndDate = picked;
+                  });
+                }
+              },
+              child: Text(filterEndDate != null
+                  ? DateFormat('MMMM d, yyyy').format(filterEndDate)
+                  : 'Select Date'),
+            ),
+          ),
+          const SizedBox(height: 10),
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(labelText: 'Select Status'),
+            items: ['Accepted', 'Pending', 'Rejected'].map((String status) {
+              return DropdownMenuItem<String>(
+                value: status,
+                child: Text(status),
+              );
+            }).toList(),
+            onChanged: (value) {
+              filterStatus = value;
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            setState(() {
+              startDate = null;
+              endDate = null;
+              selectedStatus = null;
+              _fetchReports();
+            });
+            Navigator.of(context).pop();
+          },
+          child: const Text('Reset'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            setState(() {
+              startDate = filterStartDate;
+              endDate = filterEndDate;
+              selectedStatus = filterStatus;
+              _fetchReports();
+            });
+            Navigator.of(context).pop();
+          },
+          child: const Text('Apply'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMonthlyFilterDialog(BuildContext context) {
+    String? filterMonth;
+    int? filterYear;
+    String? filterStatus;
+
+    return AlertDialog(
+      title: const Text('Filter Monthly Reports'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(labelText: 'Select Month'),
+            items: DateFormat().dateSymbols.MONTHS.map((String month) {
+              return DropdownMenuItem<String>(
+                value: month,
+                child: Text(month),
+              );
+            }).toList(),
+            onChanged: (value) {
+              filterMonth = value;
+            },
+          ),
+          const SizedBox(height: 10),
+          DropdownButtonFormField<int>(
+            decoration: const InputDecoration(labelText: 'Select Year'),
+            items: List<int>.generate(50, (index) => 2024 - index).map((int year) {
+              return DropdownMenuItem<int>(
+                value: year,
+                child: Text(year.toString()),
+              );
+            }).toList(),
+            onChanged: (value) {
+              filterYear = value;
+            },
+          ),
+          const SizedBox(height: 10),
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(labelText: 'Select Status'),
+            items: ['Accepted', 'Pending', 'Rejected'].map((String status) {
+              return DropdownMenuItem<String>(
+                value: status,
+                child: Text(status),
+              );
+            }).toList(),
+            onChanged: (value) {
+              filterStatus = value;
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            setState(() {
+              selectedMonth = null;
+              selectedYear = null;
+              selectedStatus = null;
+              _fetchReports();
+            });
+            Navigator.of(context).pop();
+          },
+          child: const Text('Reset'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            setState(() {
+              selectedMonth = filterMonth;
+              selectedYear = filterYear;
+              selectedStatus = filterStatus;
+              _fetchReports();
+            });
+            Navigator.of(context).pop();
+          },
+          child: const Text('Apply'),
+        ),
+      ],
+    );
+  }
+
   Future<void> _generateReport() async {
-    if (selectedMonth == null || selectedYear == null) return;
+    print('Generating report...'); // Debugging statement
+    print('Selected Report Type: $selectedReportType'); // Debugging statement
+    print('Selected Date: $selectedDate'); // Debugging statement
+    print('Start Date: $startDate'); // Debugging statement
+    print('End Date: $endDate'); // Debugging statement
+
+    if (selectedReportType == 'daily' && selectedDate == null) {
+      print('Daily report selected but no date provided.');
+      return;
+    }
+    if (selectedReportType == 'weekly' && (startDate == null || endDate == null)) {
+      print('Weekly report selected but start or end date not provided.');
+      return;
+    }
+    if (selectedReportType == 'monthly' && (selectedMonth == null || selectedYear == null)) {
+      print('Monthly report selected but month or year not provided.');
+      return;
+    }
 
     setState(() {
       isLoading = true;
     });
 
-    localhost localhostInstance = localhost();
-    final url =
-        'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/getTransactions.php';
+    try {
+      localhost localhostInstance = localhost();
+      final url = 'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/getTransactions.php';
 
-    final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url));
 
-    if (response.statusCode == 200) {
-      final responseBody = json.decode(response.body);
-      if (responseBody['success']) {
-        List<Transaction> transactions = (responseBody['transactions'] as List)
-            .map((data) => Transaction.fromJson(data))
-            .where((transaction) => transaction.archive_status == 'display')
-            .toList();
+      if (response.statusCode == 200) {
+        final responseBody = json.decode(response.body);
+        if (responseBody['success']) {
+          List<Transaction> transactions = (responseBody['transactions'] as List)
+              .map((data) => Transaction.fromJson(data))
+              .where((transaction) => transaction.archive_status == 'display')
+              .toList();
 
-        final reportData = _consolidateReportData(transactions);
+          // Filter transactions for the daily report
+          if (selectedReportType == 'daily') {
+            transactions = transactions.where((transaction) {
+              return DateFormat('yyyy-MM-dd').format(transaction.date) == DateFormat('yyyy-MM-dd').format(selectedDate!);
+            }).toList();
+          }
 
-        await _saveReport(reportData);
+          final reportData = _consolidateReportData(transactions);
 
-        setState(() {
-          reports.add(reportData);
-          isLoading = false;
-        });
+          await _saveReport(reportData);
+
+          setState(() {
+            reports.insert(0, reportData); // Insert the new report at the top
+            // Sort reports by report_id in descending order (latest first)
+            reports.sort((a, b) {
+              final aId = a['report_id'];
+              final bId = b['report_id'];
+              if (aId == null && bId == null) return 0;
+              if (aId == null) return 1;
+              if (bId == null) return -1;
+              return bId.compareTo(aId);
+            });
+
+            isLoading = false;
+          });
+
+          _fetchReports(); // Refresh reports list after generating a new report
+        } else {
+          throw Exception('Failed to load transactions: ${responseBody['message']}');
+        }
       } else {
-        throw Exception(
-            'Failed to load transactions: ${responseBody['message']}');
+        throw Exception('Failed to load transactions: ${response.reasonPhrase}');
       }
-    } else {
-      throw Exception('Failed to load transactions: ${response.reasonPhrase}');
+    } catch (e, stackTrace) {
+      print('Error generating report: $e');
+      print('Stack trace: $stackTrace');
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -446,8 +977,113 @@ class _ReportsPageState extends State<ReportsPage> {
 
     for (var transaction in transactions) {
       final date = transaction.date;
-      if (DateFormat('MMMM').format(date) == selectedMonth &&
-          DateFormat('yyyy').format(date) == selectedYear.toString()) {
+      if (selectedReportType == 'daily' &&
+          DateFormat('yyyy-MM-dd').format(date) == DateFormat('yyyy-MM-dd').format(selectedDate!)) {
+        switch (transaction.type) {
+          case 'Mass Collection':
+          case 'Mass Offering':
+            massesFunds += double.parse(transaction.amount);
+            break;
+          case 'Sacramental Collection':
+          case 'Sacramental Offering':
+            stoleFees += double.parse(transaction.amount);
+            break;
+          case 'Special Event Collection':
+          case 'Special Event Offering':
+            massCollections += double.parse(transaction.amount);
+            break;
+          case 'Fund Raising':
+          case 'Donation':
+            otherReceipts += double.parse(transaction.amount);
+            break;
+          case 'Communication Expense':
+            communicationExpenses += double.parse(transaction.amount);
+            break;
+          case 'Electricity Bill':
+          case 'Water Bill':
+            electricityWaterBill += double.parse(transaction.amount);
+            break;
+          case 'Office Supply':
+            officeSupplies += double.parse(transaction.amount);
+            break;
+          case 'Transportation':
+            transportation += double.parse(transaction.amount);
+            break;
+          case 'Salary':
+            salariesWages += double.parse(transaction.amount);
+            break;
+          case 'SSS':
+          case 'PhilHealth':
+            sssHdmfPhilHealth += double.parse(transaction.amount);
+            break;
+          case 'Social Service / Charity':
+            socialServicesCharities += double.parse(transaction.amount);
+            break;
+          case 'Food':
+            food += double.parse(transaction.amount);
+            break;
+          case 'Decorso Sustento-PP / GP':
+            decorsoSustentoPPGP += double.parse(transaction.amount);
+            break;
+          case 'Other Parish Expenses':
+            otherParishExpenses += double.parse(transaction.amount);
+            break;
+        }
+      } else if (selectedReportType == 'weekly' &&
+          date.isAfter(startDate!.subtract(const Duration(days: 1))) &&
+          date.isBefore(endDate!.add(const Duration(days: 1)))) {
+        switch (transaction.type) {
+          case 'Mass Collection':
+          case 'Mass Offering':
+            massesFunds += double.parse(transaction.amount);
+            break;
+          case 'Sacramental Collection':
+          case 'Sacramental Offering':
+            stoleFees += double.parse(transaction.amount);
+            break;
+          case 'Special Event Collection':
+          case 'Special Event Offering':
+            massCollections += double.parse(transaction.amount);
+            break;
+          case 'Fund Raising':
+          case 'Donation':
+            otherReceipts += double.parse(transaction.amount);
+            break;
+          case 'Communication Expense':
+            communicationExpenses += double.parse(transaction.amount);
+            break;
+          case 'Electricity Bill':
+          case 'Water Bill':
+            electricityWaterBill += double.parse(transaction.amount);
+            break;
+          case 'Office Supply':
+            officeSupplies += double.parse(transaction.amount);
+            break;
+          case 'Transportation':
+            transportation += double.parse(transaction.amount);
+            break;
+          case 'Salary':
+            salariesWages += double.parse(transaction.amount);
+            break;
+          case 'SSS':
+          case 'PhilHealth':
+            sssHdmfPhilHealth += double.parse(transaction.amount);
+            break;
+          case 'Social Service / Charity':
+            socialServicesCharities += double.parse(transaction.amount);
+            break;
+          case 'Food':
+            food += double.parse(transaction.amount);
+            break;
+          case 'Decorso Sustento-PP / GP':
+            decorsoSustentoPPGP += double.parse(transaction.amount);
+            break;
+          case 'Other Parish Expenses':
+            otherParishExpenses += double.parse(transaction.amount);
+            break;
+        }
+      } else if (selectedReportType == 'monthly' &&
+          DateFormat('MMMM yyyy').format(date) == '$selectedMonth $selectedYear') {
         switch (transaction.type) {
           case 'Mass Collection':
           case 'Mass Offering':
@@ -515,10 +1151,19 @@ class _ReportsPageState extends State<ReportsPage> {
         otherParishExpenses;
     double netDeficit = grossIncome - grossExpenses;
 
+    print('Report Data:'); // Debugging statement
+    print('Gross Income: $grossIncome'); // Debugging statement
+    print('Gross Expenses: $grossExpenses'); // Debugging statement
+    print('Net Deficit: $netDeficit'); // Debugging statement
+
     return {
       'par_id': 1,
       'parish_name': 'St. James the Greater Parish',
-      'date': '$selectedMonth $selectedYear',
+      'date': selectedReportType == 'daily'
+          ? DateFormat('MMMM d, yyyy').format(selectedDate!)
+          : selectedReportType == 'weekly'
+              ? '${DateFormat('MMMM d, yyyy').format(startDate!)} to ${DateFormat('MMMM d, yyyy').format(endDate!)}'
+              : '$selectedMonth $selectedYear',
       'status': 'Pending',
       'archive_status': 'display',
       'massesFunds': massesFunds.toStringAsFixed(2),
@@ -540,34 +1185,46 @@ class _ReportsPageState extends State<ReportsPage> {
       'totalIncome': grossIncome.toStringAsFixed(2),
       'totalExpenses': grossExpenses.toStringAsFixed(2),
       'netDeficit': netDeficit.toStringAsFixed(2),
+      'report_type': selectedReportType, // Add report type here
+      'parishioners_access': 'hidden', // default value
     };
   }
 
   Future<void> _saveReport(Map<String, dynamic> reportData) async {
-    localhost localhostInstance = localhost();
-    final url =
-        'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/saveReport.php';
+    try {
+      localhost localhostInstance = localhost();
+      final url =
+          'http://${localhostInstance.ipServer}/dashboard/myfolder/finance/saveReport.php';
 
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: json.encode(reportData),
-    );
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: json.encode(reportData),
+      );
 
-    if (response.statusCode != 200) {
-      final responseBody = json.decode(response.body);
-      throw Exception('Failed to save report: ${responseBody['message']}');
+      if (response.statusCode != 200) {
+        final responseBody = json.decode(response.body);
+        throw Exception('Failed to save report: ${responseBody['message']}');
+      }
+    } catch (e, stackTrace) {
+      print('Error saving report: $e');
+      print('Stack trace: $stackTrace');
     }
   }
 
   Widget _buildReportList() {
+    // Filter reports based on the selected report type (daily, weekly, monthly)
+    List<Map<String, dynamic>> filteredReports = reports.where((report) {
+      return report['report_type'] == selectedReportType;
+    }).toList();
+
     return ListView.builder(
-      itemCount: reports.length,
+      itemCount: filteredReports.length,
       itemBuilder: (context, index) {
         return ReportCard(
-          report: reports[index],
+          report: filteredReports[index],
         );
       },
     );
