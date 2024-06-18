@@ -194,24 +194,6 @@ class EventService {
     }
   }
 
-  Future<Map<String, dynamic>> fetchAssignmentsForDate(int eventDateId) async {
-    final url = Uri.parse(
-        'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/getAssignmentsForDate.php?eventDateId=$eventDateId');
-
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final jsonResponse = json.decode(response.body);
-      if (jsonResponse['success']) {
-        return jsonResponse['assignments'];
-      } else {
-        throw Exception('Failed to load assignments');
-      }
-    } else {
-      throw Exception('Failed to load assignments');
-    }
-  }
-
   Future<List<FetchEvents>> getEventsByDateId(int eventDateId) async {
     final response = await http.get(Uri.parse(
         'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/getEventsByDateId.php?eventDateId=$eventDateId'));
@@ -226,6 +208,25 @@ class EventService {
       }
     } else {
       throw Exception('Failed to load events');
+    }
+  }
+
+  Future<Map<String, dynamic>> saveEventData(Map<String, dynamic> data) async {
+    final url = Uri.parse(
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/updateEvent.php');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      return responseData;
+    } else {
+      throw Exception(
+          'Failed to save event with status code: ${response.statusCode}');
     }
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:holink/features/parish/scheduling/model/get_all_event.dart';
 import 'package:holink/features/parish/scheduling/services/event_service.dart';
-import 'package:intl/intl.dart'; // Add this for formatting dates and times
+import 'package:intl/intl.dart';
 
 class EditForm extends StatefulWidget {
   final int eventDateId;
@@ -25,6 +25,10 @@ class _EditFormState extends State<EditForm> {
   final TextEditingController selectTypeController = TextEditingController();
   final TextEditingController serviceController = TextEditingController();
 
+  int? eventId;
+  int? specialEventId;
+  DateTime? availedDate;
+
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
 
@@ -47,6 +51,9 @@ class _EditFormState extends State<EditForm> {
       setState(() {
         if (events.isNotEmpty) {
           FetchEvents event = events.first;
+          eventId = event.eventId;
+          specialEventId = event.specialEventId;
+          availedDate = event.eventDate;
           eventName = event.eventName?.isNotEmpty == true
               ? event.eventName!
               : event.specialEventName ?? '';
@@ -134,6 +141,9 @@ class _EditFormState extends State<EditForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit Event'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: isLoading
@@ -290,8 +300,7 @@ class _EditFormState extends State<EditForm> {
                                   foregroundColor: Colors.white),
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
-                                  // Save the form data
-                                  _saveFormData();
+                                  _showConfirmationDialog();
                                 }
                               },
                               child: Text('Save'),
@@ -306,6 +315,33 @@ class _EditFormState extends State<EditForm> {
     );
   }
 
+  Future<void> _showConfirmationDialog() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Save'),
+          content: Text('Are you sure you want to save these changes?'),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Confirm'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _saveFormData();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _saveFormData() async {
     final DateTime dateTime = DateTime(
       selectedDate!.year,
@@ -314,15 +350,39 @@ class _EditFormState extends State<EditForm> {
       selectedTime!.hour,
       selectedTime!.minute,
     );
-    print('Event Name: $eventName');
-    print('Event Type: ${eventTypeController.text}');
-    print('Description: ${descriptionController.text}');
-    print('Date and Time: ${DateFormat('yyyy-MM-dd HH:mm').format(dateTime)}');
-    print('Location: ${regularEventAddressController.text}');
-    print('SKK Number: ${skkNumberController.text}');
-    print('Landmark: ${landmarkController.text}');
-    print('Contact Number: ${contactNumberController.text}');
-    print('Select Type: ${selectTypeController.text}');
-    print('Service: ${serviceController.text}');
+
+    final Map<String, dynamic> data = {
+      'eventDateId': widget.eventDateId,
+      'eventDate': DateFormat('yyyy-MM-dd HH:mm').format(dateTime),
+      'archiveStatus': 'Display',
+      'eventType': eventTypeController.text,
+      'eventId': eventId,
+      'eventName': eventName,
+      'description': descriptionController.text,
+      'regularEventAddress': regularEventAddressController.text,
+      'specialEventId': specialEventId,
+      'specialEventName': eventName,
+      'skkNumber': skkNumberController.text,
+      'specialEventAddress': regularEventAddressController.text,
+      'landmark': landmarkController.text,
+      'contactNumber': contactNumberController.text,
+      'availedDate': availedDate != null
+          ? DateFormat('yyyy-MM-dd').format(availedDate!)
+          : null,
+      'selectType': selectTypeController.text,
+      'service': serviceController.text,
+    };
+
+    try {
+      final response = await eventService.saveEventData(data);
+      if (response['success']) {
+        print('Event saved successfully.');
+        Navigator.of(context).pop(); // Go back after saving
+      } else {
+        print('Failed to save event: ${response['message']}');
+      }
+    } catch (e) {
+      print('Failed to save event: $e');
+    }
   }
 }
