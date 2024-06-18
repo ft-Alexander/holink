@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:holink/features/parishioners/service_availment/church_services/sacraments/blessing/private/blessingform.dart';
-import 'package:holink/features/parishioners/service_availment/church_services/sacraments/blessing/public/public_event_page.dart';
 
 class PublicPrivate extends StatelessWidget {
   final String service;
@@ -47,14 +46,7 @@ class PublicPrivate extends StatelessWidget {
                 context,
                 'REGULAR(Public)',
                 isAvailable: true,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PublicEventsPage(),
-                    ),
-                  );
-                },
+                onTap: () {},
               ),
               const SizedBox(height: 16),
               _buildServiceTypeButton(
@@ -91,7 +83,10 @@ class PublicPrivate extends StatelessWidget {
         minimumSize: const Size.fromHeight(70), // Set height
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
-          side: BorderSide(color: isAvailable ? const Color(0xFFd1a65b) : Colors.grey), // Add border color
+          side: BorderSide(
+              color: isAvailable
+                  ? const Color(0xFFd1a65b)
+                  : Colors.grey), // Add border color
         ),
       ),
       child: Row(
@@ -101,7 +96,9 @@ class PublicPrivate extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 16,
-              color: isAvailable ? Colors.black : Colors.grey, // Font color for regular and private
+              color: isAvailable
+                  ? Colors.black
+                  : Colors.grey, // Font color for regular and private
             ),
           ),
           if (isAvailable)

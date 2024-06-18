@@ -1,15 +1,15 @@
 class Lector {
   final int id;
   final String name;
-  final String contactInfo;
+  String? contactInfo;
 
-  Lector({required this.id, required this.name, required this.contactInfo});
+  Lector({required this.id, required this.name, this.contactInfo});
 
-  factory Lector.fromMap(Map<String, dynamic> map) {
+  factory Lector.fromJson(Map<String, dynamic> json) {
     return Lector(
-      id: map['id'],
-      name: map['name'],
-      contactInfo: map['contact_info'],
+      id: json['id'] is int ? json['id'] : int.parse(json['id']),
+      name: json['name'],
+      contactInfo: json['contact_info'],
     );
   }
 
