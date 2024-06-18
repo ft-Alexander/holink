@@ -5,11 +5,11 @@ class Priest {
 
   Priest({required this.id, required this.name, required this.contactInfo});
 
-  factory Priest.fromMap(Map<String, dynamic> map) {
+  factory Priest.fromJson(Map<String, dynamic> json) {
     return Priest(
-      id: map['id'],
-      name: map['name'],
-      contactInfo: map['contact_info'],
+      id: json['id'] is int ? json['id'] : int.parse(json['id']),
+      name: json['name'],
+      contactInfo: json['contact_info'],
     );
   }
 

@@ -12,8 +12,7 @@ class ViewEditInformation extends StatefulWidget {
   _ViewEditInformationState createState() => _ViewEditInformationState();
 }
 
-class _ViewEditInformationState extends State<ViewEditInformation>
-    with SingleTickerProviderStateMixin {
+class _ViewEditInformationState extends State<ViewEditInformation> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<Map<String, String>> availedServices = [];
   bool isLoading = true;
@@ -32,9 +31,30 @@ class _ViewEditInformationState extends State<ViewEditInformation>
     super.dispose();
   }
 
+  String _formatDate(String date) {
+    try {
+      final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+      final DateFormat desiredFormat = DateFormat('MM/dd/yyyy');
+      final DateTime dateTime = originalFormat.parse(date);
+      return desiredFormat.format(dateTime);
+    } catch (e) {
+      return 'N/A';
+    }
+  }
+
+  String _formatTime(String date) {
+    try {
+      final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+      final DateFormat desiredFormat = DateFormat('hh:mm a');
+      final DateTime dateTime = originalFormat.parse(date);
+      return desiredFormat.format(dateTime);
+    } catch (e) {
+      return 'N/A';
+    }
+  }
+
   Future<void> fetchAvailedServices() async {
-    final url = Uri.parse(
-        'http://${localhostInstance.ipServer}/dashboard/myfolder/service/getAllAvailedService.php');
+    final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/getAvailedServiceBlessing.php');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -77,12 +97,12 @@ class _ViewEditInformationState extends State<ViewEditInformation>
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Card(
             child: ListTile(
-              title: Text('${service["service"] ?? 'N/A'} (ID#: ${service["id"] ?? 'N/A'})'),
+              title: Text('${service["service"] ?? 'N/A'} (ID#: 000${service["id"] ?? 'N/A'})'),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Date Availed: ${service["date_availed"] ?? 'N/A'}"),
-                  Text("Scheduled Date: ${formatDate(service["scheduled_date"]??'N/A')}"),
+                  Text("Date Availed: ${_formatDate(service["availed_date"] ?? 'N/A')}"),
+                  Text("Scheduled Date: ${_formatDate(service["event_date"] ?? 'N/A')} ${_formatTime(service["event_date"] ?? 'N/A')}"),
                 ],
               ),
               trailing: ElevatedButton(
@@ -131,7 +151,7 @@ class _ViewEditInformationState extends State<ViewEditInformation>
           ],
         ),
         title: const Text(
-          'View/Edit Availed Service',
+          'View/Edit/Reschedule Availed Service',
           style: TextStyle(
               fontSize: 15, color: Colors.green, fontWeight: FontWeight.normal),
         ),
@@ -161,16 +181,5 @@ class _ViewEditInformationState extends State<ViewEditInformation>
               ],
             ),
     );
-  }
-
-  String formatDate(String date) {
-    try {
-      final DateFormat originalFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
-      final DateFormat desiredFormat = DateFormat('yyyy-MM-dd hh:mm a');
-      final DateTime dateTime = originalFormat.parse(date);
-      return desiredFormat.format(dateTime);
-    } catch (e) {
-      return 'N/A';
-    }
   }
 }

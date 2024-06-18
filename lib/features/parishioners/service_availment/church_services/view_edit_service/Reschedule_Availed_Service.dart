@@ -6,8 +6,13 @@ import 'package:holink/dbConnection/localhost.dart';
 
 class RescheduleAvailedService extends StatefulWidget {
   final int serviceIndex;
+  final Map<String, String> serviceDetails; // Add serviceDetails parameter
 
-  const RescheduleAvailedService({super.key, required this.serviceIndex});
+  const RescheduleAvailedService({
+    super.key,
+    required this.serviceIndex,
+    required this.serviceDetails, // Add this line
+  });
 
   @override
   _RescheduleAvailedServiceState createState() => _RescheduleAvailedServiceState();
@@ -19,7 +24,6 @@ class _RescheduleAvailedServiceState extends State<RescheduleAvailedService> {
   late TextEditingController _timeController;
   bool isLoading = true;
   int id = 0;
-  int s_id = 0;
   localhost localhostInstance = localhost(); // Add this line
 
   @override
@@ -31,33 +35,12 @@ class _RescheduleAvailedServiceState extends State<RescheduleAvailedService> {
   }
 
   Future<void> fetchServiceDetails() async {
-    final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/getAllAvailedService.php'); // Use localhost instance
-    try {
-      final response = await http.get(url);
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        print('Parsed data: $data');
-        if (data['success']) {
-          var service = data['services'][widget.serviceIndex];
-          setState(() {
-            _dateController.text = service["scheduled_date"]?.split(' ').first ?? '';
-            _timeController.text = service["scheduled_date"]?.split(' ').last ?? '';
-            id = int.parse(service["id"]);
-            s_id = int.parse(service["s_id"]);
-            isLoading = false;
-          });
-        } else {
-          showError('Failed to fetch service details: ${data['message']}');
-        }
-      } else {
-        showError('Failed to fetch service details: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error fetching service details: $error');
-      showError('An error occurred while fetching service details: $error');
-    }
+    setState(() {
+      _dateController.text = widget.serviceDetails["event_date"]?.split(' ').first ?? '';
+      _timeController.text = widget.serviceDetails["event_date"]?.split(' ').last ?? '';
+      id = int.parse(widget.serviceDetails["event_type_id"]!);
+      isLoading = false;
+    });
   }
 
   void showError(String message) {
@@ -84,9 +67,8 @@ class _RescheduleAvailedServiceState extends State<RescheduleAvailedService> {
         final DateFormat outputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
         final String formattedDateTime = outputFormat.format(eventDateTime);
 
-        final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/rescheduleAvailedService.php'); // Use localhost instance
+        final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/rescheduleAvailedServiceBlessing.php'); // Use localhost instance
         final body = {
-          's_id': s_id.toString(),
           'id': id.toString(),
           'event_datetime': formattedDateTime,
         };

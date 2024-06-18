@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:holink/constants/bottom_nav_parish.dart';
 import 'package:holink/features/parish/scheduling/constants/schedule_navbar.dart';
+import 'package:holink/features/parish/scheduling/model/get_all_event.dart';
+import 'package:holink/features/parish/scheduling/services/event_card.dart';
 import 'package:holink/features/parish/scheduling/services/event_service.dart';
 import 'package:holink/features/parish/scheduling/services/plot_regular_event.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:holink/features/parish/scheduling/model/regularEventDate.dart';
 
 class Scheduling extends StatefulWidget {
   const Scheduling({super.key});
@@ -18,8 +19,8 @@ class _SchedulingState extends State<Scheduling> {
   DateTime selectedDate = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
   final EventService _eventService = EventService();
-  Map<DateTime, List<RegularEventDate>> _events = {};
-  List<RegularEventDate> _selectedEvents = [];
+  Map<DateTime, List<FetchEvents>> _events = {};
+  List<FetchEvents> _selectedEvents = [];
 
   @override
   void initState() {
@@ -29,17 +30,17 @@ class _SchedulingState extends State<Scheduling> {
 
   Future<void> fetchAndSetEvents() async {
     try {
-      List<RegularEventDate> events =
-          await _eventService.fetchRegularEventDates();
+      List<FetchEvents> events =
+          await _eventService.fetchAllRegularEventDates();
       setState(() {
         _events = {};
-        for (var eventDate in events) {
-          final date = DateTime(eventDate.eventDate.year,
-              eventDate.eventDate.month, eventDate.eventDate.day);
+        for (var event in events) {
+          final date = DateTime(event.eventDate!.year, event.eventDate!.month,
+              event.eventDate!.day);
           if (_events[date] != null) {
-            _events[date]!.add(eventDate);
+            _events[date]!.add(event);
           } else {
-            _events[date] = [eventDate];
+            _events[date] = [event];
           }
         }
         // Set _selectedEvents for the initially selected date
@@ -50,8 +51,16 @@ class _SchedulingState extends State<Scheduling> {
     }
   }
 
-  List<RegularEventDate> _getEventsForDay(DateTime day) {
-    return _events[DateTime(day.year, day.month, day.day)] ?? [];
+  List<FetchEvents> _getEventsForDay(DateTime day) {
+    return _events[DateTime(day.year, day.month, day.day)]
+            ?.where((event) => event.archiveStatus != 'Archive')
+            .toList() ??
+        [];
+  }
+
+  void _refreshEvents() {
+    // Fetch and update the events after cancellation
+    fetchAndSetEvents();
   }
 
   @override
@@ -64,7 +73,10 @@ class _SchedulingState extends State<Scheduling> {
           children: [
             _buildCalendar(),
             const SizedBox(height: 16.0),
-            _buildAddEventButton(context),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: _buildAddEventButton(context),
+            ),
             const SizedBox(height: 16.0),
             _buildEventsList(),
           ],
@@ -136,15 +148,40 @@ class _SchedulingState extends State<Scheduling> {
           ),
           calendarBuilders: CalendarBuilders(
             markerBuilder: (context, date, events) {
-              if (events.isEmpty) return const SizedBox.shrink();
+              final nonArchivedEvents = events.where((event) {
+                final fetchEvent = event as FetchEvents;
+                return fetchEvent.archiveStatus != 'Archive';
+              }).toList();
+
+              if (nonArchivedEvents.isEmpty) return const SizedBox.shrink();
+
+              final uniqueEventTypes = nonArchivedEvents.map((event) {
+                final fetchEvent = event as FetchEvents;
+                return fetchEvent.eventType;
+              }).toSet();
+
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: events.map((event) {
+                children: uniqueEventTypes.map((eventType) {
+                  Color color;
+                  switch (eventType) {
+                    case 'Regular':
+                      color = Colors.green;
+                      break;
+                    case 'Mass':
+                      color = Colors.orange;
+                      break;
+                    case 'Special':
+                      color = Colors.brown;
+                      break;
+                    default:
+                      color = Colors.grey;
+                  }
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 1.5),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.green,
+                      color: color,
                     ),
                     width: 8.0,
                     height: 8.0,
@@ -160,7 +197,7 @@ class _SchedulingState extends State<Scheduling> {
 
   Widget _buildEventsList() {
     if (_selectedEvents.isEmpty) {
-      return Center(
+      return const Center(
         child: Text(
           'NO SCHEDULED EVENT',
           style: TextStyle(fontSize: 18, color: Colors.grey),
@@ -168,49 +205,21 @@ class _SchedulingState extends State<Scheduling> {
       );
     }
     return Column(
-      children: _selectedEvents.map((event) => _buildEventCard(event)).toList(),
-    );
-  }
-
-  Widget _buildEventCard(RegularEventDate event) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      child: Card(
-        margin: const EdgeInsets.symmetric(vertical: 8.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                event.eventDetails!.eventName,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              Text(
-                'Date: ${event.eventDate.toLocal().toString().split(' ')[0]}',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 4.0),
-              Text(
-                'Time: ${event.eventDate.toLocal().toString().split(' ')[1].substring(0, 5)}',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 4.0),
-              Text(
-                'Location: ${event.eventDetails!.address}',
-                style: TextStyle(fontSize: 16),
-              ),
-            ],
-          ),
-        ),
-      ),
+      children: _selectedEvents
+          .map((event) => EventCard(
+                event: event,
+                onAddPerson: () {
+                  // Add person functionality
+                },
+                onEdit: () {
+                  // Edit information functionality
+                },
+                onCancel: () {
+                  // Call _refreshEvents to update the state
+                  _refreshEvents();
+                },
+              ))
+          .toList(),
     );
   }
 
@@ -220,8 +229,8 @@ class _SchedulingState extends State<Scheduling> {
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => RegularEventForm(
-                onEventAdded: fetchAndSetEvents), // Modify this line
+            builder: (context) =>
+                RegularEventForm(onEventAdded: fetchAndSetEvents),
           ),
         );
         if (result == true) {
@@ -234,7 +243,7 @@ class _SchedulingState extends State<Scheduling> {
           borderRadius: BorderRadius.circular(3.0),
         ),
         backgroundColor: const Color(0xFF57CA63),
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
       ),
       child: const Text(
         'Plot Regular Events',

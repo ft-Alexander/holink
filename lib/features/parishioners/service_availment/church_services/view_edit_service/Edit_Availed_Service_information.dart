@@ -5,8 +5,13 @@ import 'package:http/http.dart' as http;
 
 class EditAvailedServiceInformation extends StatefulWidget {
   final int serviceIndex;
+  final Map<String, String> serviceDetails;
 
-  const EditAvailedServiceInformation({super.key, required this.serviceIndex});
+  const EditAvailedServiceInformation({
+    super.key,
+    required this.serviceIndex,
+    required this.serviceDetails,
+  });
 
   @override
   _EditAvailedServiceInformationState createState() => _EditAvailedServiceInformationState();
@@ -25,8 +30,8 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
   bool othersSelected = false;
   bool isLoading = true;
   int id = 0;
-  int s_id = 0;
-  localhost localhostInstance = localhost(); // Add this line
+  int special_event = 0;
+  localhost localhostInstance = localhost();
 
   @override
   void initState() {
@@ -37,44 +42,33 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
     _landmarkController = TextEditingController();
     _contactNumberController = TextEditingController();
     _othersController = TextEditingController();
-    fetchServiceDetails();
+    populateServiceDetails();
   }
 
-  Future<void> fetchServiceDetails() async {
-    final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/getAllAvailedService.php'); // Use localhost instance
-    try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['success']) {
-          var service = data['services'][widget.serviceIndex];
-          setState(() {
-            _fullNameController.text = service["fullName"] ?? '';
-            _skkNumberController.text = service["skk_number"] ?? '';
-            _addressController.text = service["address"] ?? '';
-            _landmarkController.text = service["landmark"] ?? '';
-            _contactNumberController.text = service["contact_number"] ?? '';
-            String selectedType = service["selected_type"] ?? '';
-            houseSelected = selectedType == 'House';
-            storeSelected = selectedType == 'Store';
-            othersSelected = selectedType.isNotEmpty && selectedType != 'House' && selectedType != 'Store';
-            _othersController.text = othersSelected ? selectedType : '';
-            id = int.parse(service["id"]);
-            s_id = int.parse(service["s_id"]);
-            isLoading = false;
-            print('id: $id'); // Print id
-            print('s_id: $s_id'); // Print s_id
-          });
-        } else {
-          showError('Failed to fetch service details: ${data['message']}');
-        }
-      } else {
-        showError('Failed to fetch service details: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error fetching service details: $error'); // Print detailed error
-      showError('An error occurred while fetching service details: $error');
-    }
+  void populateServiceDetails() {
+    setState(() {
+      _fullNameController.text = widget.serviceDetails["fullname"] ?? '';
+      _skkNumberController.text = widget.serviceDetails["skk_number"] ?? '';
+      _addressController.text = widget.serviceDetails["address"] ?? '';
+      _landmarkController.text = widget.serviceDetails["landmark"] ?? '';
+      _contactNumberController.text = widget.serviceDetails["contact_number"] ?? '';
+      String selectedType = widget.serviceDetails["select_type"] ?? '';
+      houseSelected = selectedType == 'House';
+      storeSelected = selectedType == 'Store';
+      othersSelected = selectedType.isNotEmpty && selectedType != 'House' && selectedType != 'Store';
+      _othersController.text = othersSelected ? selectedType : '';
+      id = int.parse(widget.serviceDetails["id"] ?? '0');
+      special_event = int.parse(widget.serviceDetails["special_event"] ?? '0');
+      isLoading = false;
+      print('id: $id'); // Print id
+      print('special_event: $special_event'); // Print special_event
+      print('fullname: ${_fullNameController.text}');
+      print('skk_number: ${_skkNumberController.text}');
+      print('address: ${_addressController.text}');
+      print('landmark: ${_landmarkController.text}');
+      print('contact_number: ${_contactNumberController.text}');
+      print('select_type: ${_othersController.text}');
+    });
   }
 
   void showError(String message) {
@@ -96,24 +90,28 @@ class _EditAvailedServiceInformationState extends State<EditAvailedServiceInform
                   ? _othersController.text
                   : '';
 
-      final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/updateAvailedService.php'); // Use localhost instance
+      final url = Uri.parse('http://${localhostInstance.ipServer}/dashboard/myfolder/service/updateServiceInformationBlessing.php');
       final body = {
-        's_id': s_id.toString(),
+        'special_event': special_event.toString(),
         'id': id.toString(),
-        'serviceIndex': widget.serviceIndex.toString(),
-        'fullName': _fullNameController.text,
-        'skkNumber': _skkNumberController.text,
+        'fullname': _fullNameController.text,
+        'skk_number': _skkNumberController.text,
         'address': _addressController.text,
         'landmark': _landmarkController.text,
-        'contactNumber': _contactNumberController.text,
-        'selectedType': selectedType,
+        'contact_number': _contactNumberController.text,
+        'select_type': selectedType,
       };
+
+      print('Sending request to $url with body: $body'); // Print request details
 
       try {
         final response = await http.post(url, body: body);
+        print('Response status: ${response.statusCode}'); // Print response status
+        print('Response body: ${response.body}'); // Print response body
+
         final data = json.decode(response.body);
         if (data['success']) {
-          Navigator.pop(context);
+          Navigator.pop(context, 'updated');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Service information updated successfully.')),
           );
