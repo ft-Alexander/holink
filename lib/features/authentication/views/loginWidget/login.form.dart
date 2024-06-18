@@ -157,7 +157,7 @@ class _LoginFormState extends State<LoginForm> {
               // }
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => Scheduling()),
+                MaterialPageRoute(builder: (context) => Dashboard()),
               );
             },
             style: ButtonStyle(
