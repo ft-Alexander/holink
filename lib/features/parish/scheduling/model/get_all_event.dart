@@ -42,7 +42,7 @@ class FetchEvents {
       eventDateId: json['event_date_id'] is int
           ? json['event_date_id']
           : int.tryParse(json['event_date_id'].toString()),
-      eventDate: json.containsKey('event_date') && json['event_date'] != null
+      eventDate: json['event_date'] != null
           ? DateTime.parse(json['event_date'])
           : null,
       archiveStatus: json['archive_status'],
@@ -52,7 +52,8 @@ class FetchEvents {
           : int.tryParse(json['event_id'].toString()),
       eventName: json['event_name'],
       description: json['description'],
-      regularEventAddress: json['regular_event_address'],
+      regularEventAddress:
+          json['regular_event_address'], // Ensure this matches the JSON key
       specialEventId: json['special_event_id'] is int
           ? json['special_event_id']
           : int.tryParse(json['special_event_id'].toString()),
@@ -65,5 +66,28 @@ class FetchEvents {
       selectType: json['select_type'],
       service: json['service'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'event_date_id': eventDateId,
+      'event_date': eventDate?.toIso8601String(),
+      'archive_status': archiveStatus,
+      'event_type': eventType,
+      'event_id': eventId,
+      'event_name': eventName,
+      'description': description,
+      'regular_event_address':
+          regularEventAddress, // Ensure this matches the JSON key
+      'special_event_id': specialEventId,
+      'special_event_name': specialEventName,
+      'skk_number': skkNumber,
+      'special_event_address': specialEventAddress,
+      'landmark': landmark,
+      'contact_number': contactNumber,
+      'availed_date': availedDate,
+      'select_type': selectType,
+      'service': service,
+    };
   }
 }
