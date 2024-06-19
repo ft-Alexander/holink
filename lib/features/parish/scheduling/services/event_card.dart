@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:holink/features/parish/scheduling/services/AddPersonDialog.dart';
 import 'package:holink/features/parish/scheduling/services/EditForm.dart';
+import 'package:holink/features/parish/scheduling/services/ViewEvent.dart';
 import 'package:intl/intl.dart';
 import 'package:holink/features/parish/scheduling/model/get_all_event.dart';
 import 'package:holink/features/parish/scheduling/services/event_service.dart';
@@ -51,6 +52,9 @@ class _EventCardState extends State<EventCard> {
         priests = fetchedPriests;
         lectors = fetchedLectors;
         sacristans = fetchedSacristans;
+
+        // Print the event data
+        print('Event Data: ${widget.event.toJson()}');
       });
     } catch (e) {
       _showErrorSnackbar('Failed to fetch data: $e');
@@ -81,24 +85,35 @@ class _EventCardState extends State<EventCard> {
       return SizedBox.shrink();
     }
 
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      child: Card(
-        margin: const EdgeInsets.symmetric(vertical: 8.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildEventHeader(),
-              const SizedBox(height: 6.0),
-              _buildEventDetails(),
-              const SizedBox(height: 12.0),
-              _buildActionButtons(),
-            ],
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                ViewEvent(eventDateId: widget.event.eventDateId!),
+          ),
+        );
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        child: Card(
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildEventHeader(),
+                const SizedBox(height: 6.0),
+                _buildEventDetails(),
+                const SizedBox(height: 12.0),
+                _buildActionButtons(),
+              ],
+            ),
           ),
         ),
       ),
@@ -184,7 +199,7 @@ class _EventCardState extends State<EventCard> {
 
   Widget _buildEventTypeLabel(String? eventType) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
       decoration: BoxDecoration(
         color: _getEventTypeColor(eventType),
         borderRadius: BorderRadius.circular(5.0),

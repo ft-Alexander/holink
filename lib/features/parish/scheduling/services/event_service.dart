@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'package:holink/dbConnection/localhost.dart';
+import 'package:holink/features/parish/scheduling/model/get_event_lectors.dart';
+import 'package:holink/features/parish/scheduling/model/get_event_priest.dart';
+import 'package:holink/features/parish/scheduling/model/get_event_sacristan.dart';
 import 'package:holink/features/parish/scheduling/model/lector.dart';
 import 'package:holink/features/parish/scheduling/model/priest.dart';
 import 'package:holink/features/parish/scheduling/model/regularEvent.dart';
@@ -227,6 +230,56 @@ class EventService {
     } else {
       throw Exception(
           'Failed to save event with status code: ${response.statusCode}');
+    }
+  }
+
+  Future<List<GetEventPriest>> getEventPriests(int eventDateId) async {
+    final response = await http.get(Uri.parse(
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/getEventPriest.php?eventDateId=$eventDateId'));
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      if (jsonResponse['success'] == true) {
+        List<dynamic> data = jsonResponse['priests'];
+        return data.map((priest) => GetEventPriest.fromJson(priest)).toList();
+      } else {
+        throw Exception(jsonResponse['message']);
+      }
+    } else {
+      throw Exception('Failed to load priests');
+    }
+  }
+
+  Future<List<GetEventLectors>> getEventLectors(int eventDateId) async {
+    final response = await http.get(Uri.parse(
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/getEventLector.php?eventDateId=$eventDateId'));
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      if (jsonResponse['success'] == true) {
+        List<dynamic> data = jsonResponse['lectors'];
+        return data.map((lector) => GetEventLectors.fromJson(lector)).toList();
+      } else {
+        throw Exception(jsonResponse['message']);
+      }
+    } else {
+      throw Exception('Failed to load lectors');
+    }
+  }
+
+  Future<List<GetEventSacristan>> getEventSacristans(int eventDateId) async {
+    final response = await http.get(Uri.parse(
+        'http://${localhostInstance.ipServer}/dashboard/myfolder/scheduling/getEventSacristan.php?eventDateId=$eventDateId'));
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      if (jsonResponse['success'] == true) {
+        List<dynamic> data = jsonResponse['sacristan'];
+        return data
+            .map((sacristan) => GetEventSacristan.fromJson(sacristan))
+            .toList();
+      } else {
+        throw Exception(jsonResponse['message']);
+      }
+    } else {
+      throw Exception('Failed to load sacristans');
     }
   }
 }
