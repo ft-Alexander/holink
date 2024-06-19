@@ -29,7 +29,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
   String? selectedTransactionCategory;
   String? selectedTransactionType;
 
-  int _selectedIndexBotNav = 2;
+  //int _selectedIndexBotNav = 2;
 
   final Map<int, Widget> bottomNavBarRoutes = {
     0: const Dashboard(),
@@ -47,12 +47,12 @@ class _TransactionsPageState extends State<TransactionsPage> {
     }
   }
 
-  void _onBotNavSelected(int index, BuildContext context) {
-    setState(() {
-      _selectedIndexBotNav = index;
-    });
-    _navigateTo(index, context, bottomNavBarRoutes);
-  }
+  // void _onBotNavSelected(int index, BuildContext context) {
+  //   setState(() {
+  //     _selectedIndexBotNav = index;
+  //   });
+  //   _navigateTo(index, context, bottomNavBarRoutes);
+  // }
 
   @override
   void initState() {
