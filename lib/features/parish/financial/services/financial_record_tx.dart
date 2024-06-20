@@ -549,41 +549,7 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
             },
             value: _selectedSpecialEventType,
           ),
-        const SizedBox(height: 10.0),
-        Row(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () => _selectDate(context),
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    controller: _dateController,
-                    decoration: const InputDecoration(
-                      labelText: 'Select Date',
-                      border: OutlineInputBorder(),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xffB37840)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xffB37840)),
-                      ),
-                      suffixIcon: Icon(Icons.calendar_today),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select a Date';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10.0),
-        _buildDenominationsForm(),
-        if (_showPurposeField) const SizedBox(height: 10.0),
+          if (_showPurposeField) const SizedBox(height: 10.0),
         if (_showPurposeField)
           TextFormField(
             controller: _purposeController,
@@ -625,6 +591,40 @@ class _RecordFinancialTransactionPageState extends State<RecordFinancialTransact
               return null;
             },
           ),
+        const SizedBox(height: 10.0),
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () => _selectDate(context),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: _dateController,
+                    decoration: const InputDecoration(
+                      labelText: 'Select Date',
+                      border: OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Color(0xffB37840)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Color(0xffB37840)),
+                      ),
+                      suffixIcon: Icon(Icons.calendar_today),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select a Date';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10.0),
+        _buildDenominationsForm(),
       ],
     );
   }
