@@ -94,6 +94,9 @@ class _ReportsPageState extends State<ReportsPage> {
               return bId.compareTo(aId);
             });
 
+            // Apply filters after fetching the reports
+            _applyFilters();
+
             isLoading = false;
           });
         } else {
@@ -108,89 +111,63 @@ class _ReportsPageState extends State<ReportsPage> {
     }
   }
 
-  void _applyDailyFilters() {
-    try {
-      if (selectedYear != null) {
-        reports = reports.where((report) {
-          DateTime? reportDate;
-          try {
-            reportDate = DateFormat('MMMM d, yyyy').parse(report['date']);
-          } catch (e) {
-            try {
-              reportDate = DateFormat('MMMM yyyy').parse(report['date']);
-            } catch (e) {
-              return false;
-            }
-          }
-          return reportDate.year == selectedYear;
-        }).toList();
-      }
-
-      if (selectedMonth != null) {
-        reports = reports.where((report) {
-          DateTime? reportDate;
-          try {
-            reportDate = DateFormat('MMMM d, yyyy').parse(report['date']);
-          } catch (e) {
-            try {
-              reportDate = DateFormat('MMMM yyyy').parse(report['date']);
-            } catch (e) {
-              return false;
-            }
-          }
-          final reportMonth = DateFormat('MMMM').format(reportDate);
-          return reportMonth == selectedMonth;
-        }).toList();
-      }
-
-      if (selectedDay != null) {
-        reports = reports.where((report) {
-          DateTime? reportDate;
-          try {
-            reportDate = DateFormat('MMMM d, yyyy').parse(report['date']);
-          } catch (e) {
-            try {
-              reportDate = DateFormat('MMMM yyyy').parse(report['date']);
-            } catch (e) {
-              return false;
-            }
-          }
-          final reportDay = DateFormat('d').format(reportDate);
-          return int.parse(reportDay) == selectedDay;
-        }).toList();
-      }
-
-      if (selectedStatus != null) {
-        reports = reports.where((report) => report['status'] == selectedStatus).toList();
-      }
-    } catch (e, stackTrace) {
-      print('Error applying daily filters: $e');
-      print('Stack trace: $stackTrace');
+  void _applyFilters() {
+    if (selectedReportType == 'daily') {
+      _applyDailyFilters();
+    } else if (selectedReportType == 'weekly') {
+      _applyWeeklyFilters();
+    } else if (selectedReportType == 'monthly') {
+      _applyMonthlyFilters();
     }
   }
 
+  void _applyDailyFilters() {
+    setState(() {
+      print("Applying daily filters:");
+      print("Selected Year: $selectedYear");
+      print("Selected Month: $selectedMonth");
+      print("Selected Day: $selectedDay");
+      print("Selected Status: $selectedStatus");
+
+      reports = reports.where((report) {
+        final reportYear = report['year'];
+        final reportMonth = report['month'];
+        final reportDay = report['day'] != null ? int.parse(report['day']) : null;
+        final reportStatus = report['status'];
+
+        print("Checking report: $reportYear, $reportMonth, $reportDay, $reportStatus");
+
+        bool matchesYear = selectedYear == null || reportYear == selectedYear;
+        bool matchesMonth = selectedMonth == null || reportMonth == selectedMonth;
+        bool matchesDay = selectedDay == null || reportDay == selectedDay;
+        bool matchesStatus = selectedStatus == null || reportStatus == selectedStatus;
+
+        return matchesYear && matchesMonth && matchesDay && matchesStatus;
+      }).toList();
+    });
+  }
+
   void _applyWeeklyFilters() {
-    try {
+    setState(() {
       if (startDate != null || endDate != null) {
         reports = reports.where((report) {
-          DateTime? reportDate;
+          DateTime? reportStartDate;
+          DateTime? reportEndDate;
+
           try {
-            reportDate = DateFormat('MMMM d, yyyy').parse(report['date']);
+            reportStartDate = DateFormat('MMMM d, yyyy').parse('${report['month']} ${report['day']}, ${report['year']}');
+            reportEndDate = DateFormat('MMMM d, yyyy').parse('${report['end_month']} ${report['end_day']}, ${report['end_year']}');
           } catch (e) {
-            try {
-              reportDate = DateFormat('MMMM yyyy').parse(report['date']);
-            } catch (e) {
-              return false;
-            }
+            return false;
           }
 
           if (startDate != null && endDate != null) {
-            return reportDate.isAfter(startDate!.subtract(const Duration(days: 1))) &&
-                  reportDate.isBefore(endDate!.add(const Duration(days: 1)));
+            return (reportStartDate.isAfter(startDate!.subtract(const Duration(days: 1))) &&
+                reportEndDate.isBefore(endDate!.add(const Duration(days: 1))));
           } else if (startDate != null) {
-            return reportDate.isAfter(startDate!.subtract(const Duration(days: 1)));
+            return reportStartDate.isAfter(startDate!.subtract(const Duration(days: 1)));
           } else if (endDate != null) {
-            return reportDate.isBefore(endDate!.add(const Duration(days: 1)));
+            return reportEndDate.isBefore(endDate!.add(const Duration(days: 1)));
           }
           return false;
         }).toList();
@@ -199,36 +176,23 @@ class _ReportsPageState extends State<ReportsPage> {
       if (selectedStatus != null) {
         reports = reports.where((report) => report['status'] == selectedStatus).toList();
       }
-    } catch (e, stackTrace) {
-      print('Error applying weekly filters: $e');
-      print('Stack trace: $stackTrace');
-    }
+    });
   }
 
   void _applyMonthlyFilters() {
-    try {
+    setState(() {
       if (selectedYear != null) {
-        reports = reports.where((report) {
-          final reportDate = DateFormat('MMMM yyyy').parse(report['date']);
-          return reportDate.year == selectedYear;
-        }).toList();
+        reports = reports.where((report) => report['year'] == selectedYear).toList();
       }
 
       if (selectedMonth != null) {
-        reports = reports.where((report) {
-          final reportDate = DateFormat('MMMM yyyy').parse(report['date']);
-          final reportMonth = DateFormat('MMMM').format(reportDate);
-          return reportMonth == selectedMonth;
-        }).toList();
+        reports = reports.where((report) => report['month'] == selectedMonth).toList();
       }
 
       if (selectedStatus != null) {
         reports = reports.where((report) => report['status'] == selectedStatus).toList();
       }
-    } catch (e, stackTrace) {
-      print('Error applying monthly filters: $e');
-      print('Stack trace: $stackTrace');
-    }
+    });
   }
 
   @override
@@ -591,10 +555,10 @@ class _ReportsPageState extends State<ReportsPage> {
   }
 
   Widget _buildDailyFilterDialog(BuildContext context) {
-    String? filterMonth;
-    int? filterDay;
-    int? filterYear;
-    String? filterStatus;
+    String? filterMonth = selectedMonth;
+    int? filterDay = selectedDay;
+    int? filterYear = selectedYear;
+    String? filterStatus = selectedStatus;
 
     return AlertDialog(
       title: const Text('Filter Daily Reports'),
@@ -603,6 +567,7 @@ class _ReportsPageState extends State<ReportsPage> {
         children: [
           DropdownButtonFormField<String>(
             decoration: const InputDecoration(labelText: 'Select Month'),
+            value: filterMonth,
             items: DateFormat().dateSymbols.MONTHS.map((String month) {
               return DropdownMenuItem<String>(
                 value: month,
@@ -610,12 +575,15 @@ class _ReportsPageState extends State<ReportsPage> {
               );
             }).toList(),
             onChanged: (value) {
-              filterMonth = value;
+              setState(() {
+                filterMonth = value;
+              });
             },
           ),
           const SizedBox(height: 10),
           DropdownButtonFormField<int>(
             decoration: const InputDecoration(labelText: 'Select Day'),
+            value: filterDay,
             items: List<int>.generate(31, (index) => index + 1).map((int day) {
               return DropdownMenuItem<int>(
                 value: day,
@@ -623,12 +591,15 @@ class _ReportsPageState extends State<ReportsPage> {
               );
             }).toList(),
             onChanged: (value) {
-              filterDay = value;
+              setState(() {
+                filterDay = value;
+              });
             },
           ),
           const SizedBox(height: 10),
           DropdownButtonFormField<int>(
             decoration: const InputDecoration(labelText: 'Select Year'),
+            value: filterYear,
             items: List<int>.generate(50, (index) => 2024 - index).map((int year) {
               return DropdownMenuItem<int>(
                 value: year,
@@ -636,12 +607,15 @@ class _ReportsPageState extends State<ReportsPage> {
               );
             }).toList(),
             onChanged: (value) {
-              filterYear = value;
+              setState(() {
+                filterYear = value;
+              });
             },
           ),
           const SizedBox(height: 10),
           DropdownButtonFormField<String>(
             decoration: const InputDecoration(labelText: 'Select Status'),
+            value: filterStatus,
             items: ['Accepted', 'Pending', 'Rejected'].map((String status) {
               return DropdownMenuItem<String>(
                 value: status,
@@ -649,7 +623,9 @@ class _ReportsPageState extends State<ReportsPage> {
               );
             }).toList(),
             onChanged: (value) {
-              filterStatus = value;
+              setState(() {
+                filterStatus = value;
+              });
             },
           ),
         ],
@@ -681,7 +657,7 @@ class _ReportsPageState extends State<ReportsPage> {
               selectedDay = filterDay;
               selectedYear = filterYear;
               selectedStatus = filterStatus;
-              _fetchReports();
+              _applyFilters();
             });
             Navigator.of(context).pop();
           },
@@ -1159,11 +1135,20 @@ class _ReportsPageState extends State<ReportsPage> {
     return {
       'par_id': 1,
       'parish_name': 'St. James the Greater Parish',
-      'date': selectedReportType == 'daily'
-          ? DateFormat('MMMM d, yyyy').format(selectedDate!)
-          : selectedReportType == 'weekly'
-              ? '${DateFormat('MMMM d, yyyy').format(startDate!)} to ${DateFormat('MMMM d, yyyy').format(endDate!)}'
-              : '$selectedMonth $selectedYear',
+      'month': selectedReportType == 'daily' || selectedReportType == 'weekly'
+          ? DateFormat('MMMM').format(selectedDate!)
+          : selectedMonth,
+      'day': selectedReportType == 'daily' || selectedReportType == 'weekly'
+          ? selectedDate!.day
+          : null,
+      'year': selectedReportType == 'daily' || selectedReportType == 'weekly'
+          ? selectedDate!.year
+          : selectedYear,
+      'end_month': selectedReportType == 'weekly'
+          ? DateFormat('MMMM').format(endDate!)
+          : null,
+      'end_day': selectedReportType == 'weekly' ? endDate!.day : null,
+      'end_year': selectedReportType == 'weekly' ? endDate!.year : null,
       'status': 'Pending',
       'archive_status': 'display',
       'massesFunds': massesFunds.toStringAsFixed(2),
@@ -1257,7 +1242,7 @@ class ReportCard extends StatelessWidget {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(report['date']),
+              Text(_formatReportDate(report)),
               Container(
                 margin: const EdgeInsets.only(top: 4.0),
                 padding:
@@ -1299,5 +1284,15 @@ class ReportCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatReportDate(Map<String, dynamic> report) {
+    if (report['report_type'] == 'daily') {
+      return '${report['month']} ${report['day']}, ${report['year']}';
+    } else if (report['report_type'] == 'weekly') {
+      return '${report['month']} ${report['day']}, ${report['year']} to ${report['end_month']} ${report['end_day']}, ${report['end_year']}';
+    } else {
+      return '${report['month']} ${report['year']}';
+    }
   }
 }

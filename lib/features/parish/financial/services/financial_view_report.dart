@@ -36,7 +36,7 @@ class DetailedReportView extends StatelessWidget {
                       style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      report['date']!,
+                      _formatReportDate(report),
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -67,7 +67,7 @@ class DetailedReportView extends StatelessWidget {
                 _buildDetailRow('Gross Expenses / Disbursements', report['totalExpenses']),
               ]),
               const SizedBox(height: 16),
-              _buildSection('Summary as of ${report['date']}', [
+              _buildSection('Summary as of ${_formatReportDate(report)}', [
                 _buildDetailRow('a) Total Income', report['totalIncome']),
                 _buildDetailRow('b) Total Expenses', report['totalExpenses']),
                 _buildDetailRow('c) Net / Deficit', report['netDeficit']),
@@ -81,6 +81,16 @@ class DetailedReportView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatReportDate(Map<String, dynamic> report) {
+    if (report['report_type'] == 'daily') {
+      return '${report['month']} ${report['day']}, ${report['year']}';
+    } else if (report['report_type'] == 'weekly') {
+      return '${report['month']} ${report['day']}, ${report['year']} to ${report['end_month']} ${report['end_day']}, ${report['end_year']}';
+    } else {
+      return '${report['month']} ${report['year']}';
+    }
   }
 
   Widget _buildSection(String title, List<Widget> rows) {
@@ -312,24 +322,6 @@ class DetailedReportView extends StatelessWidget {
           ),
           child: const Text(
             'Archive',
-            style: TextStyle(
-              color: Colors.white,
-            ),
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            _editReport(context);
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6.0),
-            ),
-          ),
-          child: const Text(
-            'Edit',
             style: TextStyle(
               color: Colors.white,
             ),
