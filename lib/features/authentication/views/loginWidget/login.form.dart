@@ -258,24 +258,32 @@ class _LoginFormState extends State<LoginForm> {
         var user = jsonDecode(response.body); // return type listmap
         if (user.isNotEmpty) {
           await _storeParId(username, password);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Dashboard()),
-          );
+          if (mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Dashboard()),
+            );
+          }
         } else {
-          setState(() {
-            _msg = "Invalid Username Or Password";
-          });
+          if (mounted) {
+            setState(() {
+              _msg = "Invalid Username Or Password";
+            });
+          }
         }
       } else {
-        setState(() {
-          _msg = "Error: ${response.statusCode}";
-        });
+        if (mounted) {
+          setState(() {
+            _msg = "Error: ${response.statusCode}";
+          });
+        }
       }
     } catch (error) {
-      setState(() {
-        _msg = "$error";
-      });
+      if (mounted) {
+        setState(() {
+          _msg = "$error";
+        });
+      }
     }
   }
 
@@ -297,24 +305,32 @@ class _LoginFormState extends State<LoginForm> {
         var user = jsonDecode(response.body); // return type listmap
         if (user.isNotEmpty) {
           await _storeParId(username, password);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Scheduling()),
-          );
+          if (mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Scheduling()),
+            );
+          }
         } else {
-          setState(() {
-            _msg = "Invalid Username Or Password";
-          });
+          if (mounted) {
+            setState(() {
+              _msg = "Invalid Username Or Password";
+            });
+          }
         }
       } else {
-        setState(() {
-          _msg = "Error: ${response.statusCode}";
-        });
+        if (mounted) {
+          setState(() {
+            _msg = "Error: ${response.statusCode}";
+          });
+        }
       }
     } catch (error) {
-      setState(() {
-        _msg = "$error";
-      });
+      if (mounted) {
+        setState(() {
+          _msg = "$error";
+        });
+      }
     }
   }
 
@@ -336,24 +352,32 @@ class _LoginFormState extends State<LoginForm> {
         var user = jsonDecode(response.body); // return type listmap
         if (user.isNotEmpty) {
           await _storeParId(username, password);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Service()),
-          );
+          if (mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Service()),
+            );
+          }
         } else {
-          setState(() {
-            _msg = "Invalid Username Or Password";
-          });
+          if (mounted) {
+            setState(() {
+              _msg = "Invalid Username Or Password";
+            });
+          }
         }
       } else {
-        setState(() {
-          _msg = "Error: ${response.statusCode}";
-        });
+        if (mounted) {
+          setState(() {
+            _msg = "Error: ${response.statusCode}";
+          });
+        }
       }
     } catch (error) {
-      setState(() {
-        _msg = "$error";
-      });
+      if (mounted) {
+        setState(() {
+          _msg = "$error";
+        });
+      }
     }
   }
 
