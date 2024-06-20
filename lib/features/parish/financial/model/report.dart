@@ -2,7 +2,6 @@ class Report {
   final int? report_id;
   final int? par_id;
   final String parish_name;
-  final String date;
   final String status;
   final String archive_status;
   final double massesFunds;
@@ -25,11 +24,18 @@ class Report {
   final String parishioners_access; // new field
   final String report_type; // new field
 
+  // New date fields
+  final String? month;
+  final int? day;
+  final int? year;
+  final String? end_month;
+  final int? end_day;
+  final int? end_year;
+
   Report({
     this.report_id,
     this.par_id,
     required this.parish_name,
-    required this.date,
     required this.status,
     required this.archive_status,
     required this.massesFunds,
@@ -51,6 +57,12 @@ class Report {
     required this.netDeficit,
     this.parishioners_access = 'hidden', // default value
     required this.report_type, // new field
+    this.month,
+    this.day,
+    this.year,
+    this.end_month,
+    this.end_day,
+    this.end_year,
   });
 
   factory Report.fromJson(Map<String, dynamic> json) {
@@ -58,7 +70,6 @@ class Report {
       report_id: json['report_id'] != null ? int.parse(json['report_id']) : null,
       par_id: json['par_id'] != null ? int.parse(json['par_id']) : null,
       parish_name: json['parish_name'],
-      date: json['date'],
       status: json['status'],
       archive_status: json['archive_status'],
       massesFunds: double.parse(json['massesFunds']),
@@ -80,6 +91,12 @@ class Report {
       netDeficit: double.parse(json['netDeficit']),
       parishioners_access: json['parishioners_access'] ?? 'hidden', // new field
       report_type: json['report_type'], // new field
+      month: json['month'],
+      day: json['day'] != null ? int.parse(json['day']) : null,
+      year: json['year'] != null ? int.parse(json['year']) : null,
+      end_month: json['end_month'],
+      end_day: json['end_day'] != null ? int.parse(json['end_day']) : null,
+      end_year: json['end_year'] != null ? int.parse(json['end_year']) : null,
     );
   }
 
@@ -88,7 +105,6 @@ class Report {
       'report_id': report_id,
       'par_id': par_id,
       'parish_name': parish_name,
-      'date': date,
       'status': status,
       'archive_status': archive_status,
       'massesFunds': massesFunds.toStringAsFixed(2),
@@ -110,6 +126,12 @@ class Report {
       'netDeficit': netDeficit.toStringAsFixed(2),
       'parishioners_access': parishioners_access, // new field
       'report_type': report_type, // new field
+      'month': month,
+      'day': day,
+      'year': year,
+      'end_month': end_month,
+      'end_day': end_day,
+      'end_year': end_year,
     };
   }
 
